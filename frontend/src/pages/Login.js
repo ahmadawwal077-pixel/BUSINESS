@@ -220,15 +220,22 @@ const Login = () => {
 
               {/* Forgot Password Link */}
               <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                <a href="javascript:void(0)" style={{
-                  color: '#0066cc',
-                  textDecoration: 'none',
-                  fontSize: '0.9rem',
-                  fontWeight: '500',
-                  transition: 'color 0.3s ease',
-                }}>
+                <button
+                  onClick={() => {}}
+                  style={{
+                    color: '#0066cc',
+                    background: 'none',
+                    border: 'none',
+                    textDecoration: 'none',
+                    fontSize: '0.9rem',
+                    fontWeight: '500',
+                    transition: 'color 0.3s ease',
+                    cursor: 'pointer',
+                    padding: '0',
+                  }}
+                >
                   Forgot your password?
-                </a>
+                </button>
               </div>
 
               {/* Divider */}

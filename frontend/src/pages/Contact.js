@@ -428,9 +428,9 @@ const Contact = () => {
               { icon: 'in', label: 'LinkedIn' },
               { icon: 'ig', label: 'Instagram' },
             ].map((social, idx) => (
-              <a
+              <button
                 key={idx}
-                href="javascript:void(0)"
+                onClick={() => {}}
                 style={{
                   width: '50px',
                   height: '50px',
@@ -440,6 +440,8 @@ const Contact = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
                   textDecoration: 'none',
                   fontSize: '1.3rem',
                   fontWeight: 'bold',

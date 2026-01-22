@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { blogAPI } from '../services/api';
 
 const BlogDetail = () => {
@@ -8,8 +8,9 @@ const BlogDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Sample blog data for demonstration
-  const sampleBlogs = {
+  useEffect(() => {
+    // Sample blog data for demonstration
+    const sampleBlogs = {
     'digital-transformation-future': {
       title: 'The Future of Digital Transformation',
       author: { name: 'Sarah Johnson' },
@@ -134,9 +135,8 @@ const BlogDetail = () => {
       `,
       color: '#0096c7',
     },
-  };
+    };
 
-  useEffect(() => {
     const fetchBlog = async () => {
       try {
         setLoading(true);
@@ -161,7 +161,7 @@ const BlogDetail = () => {
     };
 
     fetchBlog();
-  }, [slug, sampleBlogs]);
+  }, [slug]);
 
   if (loading) {
     return (
