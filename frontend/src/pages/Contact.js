@@ -430,7 +430,7 @@ const Contact = () => {
             ].map((social, idx) => (
               <a
                 key={idx}
-                href="#"
+                href="javascript:void(0)"
                 style={{
                   width: '50px',
                   height: '50px',

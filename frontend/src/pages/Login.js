@@ -220,7 +220,7 @@ const Login = () => {
 
               {/* Forgot Password Link */}
               <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                <a href="#" style={{
+                <a href="javascript:void(0)" style={{
                   color: '#0066cc',
                   textDecoration: 'none',
                   fontSize: '0.9rem',

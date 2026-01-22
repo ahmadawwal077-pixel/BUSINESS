@@ -4,7 +4,6 @@ import {
   Rocket,
   Globe,
   DesktopTower,
-  TrendUp,
   Users,
   Lightbulb,
   CheckCircle,

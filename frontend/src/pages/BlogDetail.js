@@ -4,7 +4,6 @@ import { blogAPI } from '../services/api';
 
 const BlogDetail = () => {
   const { slug } = useParams();
-  const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -162,7 +161,7 @@ const BlogDetail = () => {
     };
 
     fetchBlog();
-  }, [slug]);
+  }, [slug, sampleBlogs]);
 
   if (loading) {
     return (

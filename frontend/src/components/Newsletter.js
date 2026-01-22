@@ -19,7 +19,7 @@ const Newsletter = () => {
       setMessage({ type: '', text: '' });
       
       // Call the newsletter API
-      const response = await newsletterAPI.subscribe(email);
+      await newsletterAPI.subscribe(email);
       
       setEmail('');
       setMessage({ 
