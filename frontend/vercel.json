@@ -1,4 +1,8 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "build"
+  "build": {
+    "env": {
+      "CI": "false",
+      "NODE_OPTIONS": "--max-old-space-size=4096"
+    }
+  }
 }
