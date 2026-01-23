@@ -184,7 +184,7 @@ const Services = () => {
       <section className="section" style={{ backgroundColor: 'white' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '1rem' }}>Why Choose ConsultPro?</h2>
+            <h2 style={{ color: '#0066cc', marginBottom: '1rem' }}>Why Choose PositiveHills?</h2>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>

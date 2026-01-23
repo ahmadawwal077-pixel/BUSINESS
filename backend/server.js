@@ -9,6 +9,10 @@ const blogRoutes = require('./routes/blogRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const newsletterRoutes = require('./routes/newsletterRoutes');
+const courseRoutes = require('./routes/courseRoutes');
+const liveRoutes = require('./routes/liveRoutes');
+const userRoutes = require('./routes/userRoutes');
+const assignmentRoutes = require('./routes/assignmentRoutes');
 
 const app = express();
 
@@ -16,7 +20,8 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 
 // Routes
@@ -25,6 +30,10 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api/live', liveRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -49,7 +49,7 @@ const Navbar = () => {
         onMouseLeave={(e) => {
           e.target.style.transform = 'scale(1)';
         }}>
-          ConsultPro
+          PositiveHills
         </Link>
 
         {/* Desktop Menu */}
@@ -66,6 +66,7 @@ const Navbar = () => {
             { name: 'About', path: '/about' },
             { name: 'Services', path: '/services' },
             { name: 'Projects', path: '/projects' },
+            { name: 'Courses', path: '/courses' },
             { name: 'Blog', path: '/blog' },
             { name: 'Contact', path: '/contact' },
           ].map((item) => {
@@ -342,6 +343,7 @@ const Navbar = () => {
             { name: 'About', path: '/about' },
             { name: 'Services', path: '/services' },
             { name: 'Projects', path: '/projects' },
+            { name: 'Courses', path: '/courses' },
             { name: 'Blog', path: '/blog' },
             { name: 'Contact', path: '/contact' },
           ].map((item) => (

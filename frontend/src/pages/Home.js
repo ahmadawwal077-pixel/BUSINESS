@@ -155,7 +155,7 @@ const Home = () => {
             <div>
               <h2 style={{ color: '#0066cc', marginBottom: '1.5rem', fontSize: '2.2rem', fontWeight: 'bold' }}>About Our Company</h2>
               <p style={{ color: '#666', lineHeight: '1.8', marginBottom: '1rem', fontSize: '1rem' }}>
-                ConsultPro is a leading management consulting firm with over 10 years of experience helping businesses transform and grow. Our team of expert consultants brings industry-leading knowledge and proven methodologies to every engagement.
+                PositiveHills is a leading management consulting firm with over 10 years of experience helping businesses transform and grow. Our team of expert consultants brings industry-leading knowledge and proven methodologies to every engagement.
               </p>
               <p style={{ color: '#666', lineHeight: '1.8', marginBottom: '2rem', fontSize: '1rem' }}>
                 We partner with organizations across diverse industries—from startups to Fortune 500 companies—to unlock their potential and drive sustainable success. Our commitment to excellence and client success has earned us a 95% satisfaction rate.
@@ -403,7 +403,7 @@ const Home = () => {
       <section className="section" style={{ backgroundColor: '#f8f9fa' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '1rem' }}>Why Choose ConsultPro?</h2>
+            <h2 style={{ color: '#0066cc', marginBottom: '1rem' }}>Why Choose PositiveHills?</h2>
             <p style={{ fontSize: '1.1rem', color: '#666', maxWidth: '600px', margin: '0 auto' }}>
               We combine industry expertise with innovative solutions to deliver exceptional results
             </p>
@@ -549,7 +549,7 @@ const Home = () => {
               </span>
               <span style={{ opacity: 0.7 }}>|</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <MagnifyingGlass size={20} weight="bold" /> Email: hello@consultpro.com
+                <MagnifyingGlass size={20} weight="bold" /> Email: hello@positivehills.com
               </span>
             </p>
             <p style={{ fontSize: '0.9rem', opacity: 0.85 }}>

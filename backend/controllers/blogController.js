@@ -47,24 +47,36 @@ exports.getBlogBySlug = async (req, res) => {
 // Create blog (Admin only)
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content, excerpt, category, tags, published } = req.body;
+    const { title, content, excerpt, category, featuredImage, author, published = true } = req.body;
+
+    // Validate required fields
+    if (!title || !content || !excerpt) {
+      return res.status(400).json({ message: 'Title, content, and excerpt are required' });
+    }
 
     const slug = title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+
+    // Check if slug already exists
+    const existingBlog = await Blog.findOne({ slug });
+    if (existingBlog) {
+      return res.status(400).json({ message: 'A blog with this title already exists' });
+    }
 
     const blog = new Blog({
       title,
       slug,
       content,
       excerpt,
-      category,
-      tags: tags ? tags.split(',').map(t => t.trim()) : [],
+      category: category || 'General',
+      featuredImage: featuredImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
       published,
       author: req.userId,
     });
 
     await blog.save();
-    res.status(201).json({ message: 'Blog created', blog });
+    res.status(201).json({ message: 'Blog created successfully', blog });
   } catch (error) {
+    console.error('Blog creation error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

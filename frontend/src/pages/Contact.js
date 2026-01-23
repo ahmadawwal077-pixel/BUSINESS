@@ -87,8 +87,8 @@ const Contact = () => {
                 {
                   icon: EnvelopeSimple,
                   title: 'Email',
-                  content: ['info@consultpro.com'],
-                  link: 'mailto:info@consultpro.com',
+                  content: ['info@positivehills.com'],
+                  link: 'mailto:info@positivehills.com',
                   color: '#0096c7',
                 },
                 {
@@ -419,7 +419,7 @@ const Contact = () => {
         <div className="container">
           <h2 style={{ marginBottom: '1rem', fontSize: '2.5rem' }}>Connect With Us</h2>
           <p style={{ fontSize: '1.1rem', marginBottom: '2rem', opacity: '0.95', maxWidth: '600px', margin: '0 auto 2rem' }}>
-            Follow us on social media and stay updated with the latest insights and updates from ConsultPro
+            Follow us on social media and stay updated with the latest insights and updates from PositiveHills
           </p>
           <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginBottom: '3rem', flexWrap: 'wrap' }}>
             {[
@@ -428,9 +428,9 @@ const Contact = () => {
               { icon: 'in', label: 'LinkedIn' },
               { icon: 'ig', label: 'Instagram' },
             ].map((social, idx) => (
-              <button
+              <a
                 key={idx}
-                onClick={() => {}}
+                href="#"
                 style={{
                   width: '50px',
                   height: '50px',
@@ -440,8 +440,6 @@ const Contact = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
                   textDecoration: 'none',
                   fontSize: '1.3rem',
                   fontWeight: 'bold',

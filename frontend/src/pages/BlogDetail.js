@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { blogAPI } from '../services/api';
 
 const BlogDetail = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Sample blog data for demonstration
     const sampleBlogs = {
-    'digital-transformation-future': {
-      title: 'The Future of Digital Transformation',
-      author: { name: 'Sarah Johnson' },
-      category: 'Digital Strategy',
-      createdAt: '2024-01-20',
-      featuredImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
-      excerpt: 'Explore how digital transformation is reshaping industries and what businesses need to know to stay competitive.',
-      content: `
+      'digital-transformation-future': {
+        title: 'The Future of Digital Transformation',
+        author: { name: 'Sarah Johnson' },
+        category: 'Digital Strategy',
+        createdAt: '2024-01-20',
+        featuredImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
+        excerpt: 'Explore how digital transformation is reshaping industries and what businesses need to know to stay competitive.',
+        content: `
         <h2>Understanding Digital Transformation</h2>
         <p>Digital transformation is no longer a luxury—it's a necessity for businesses that want to remain competitive in today's rapidly evolving marketplace. Organizations across all industries are embracing digital technologies to streamline operations, enhance customer experiences, and drive innovation.</p>
 
@@ -46,16 +46,16 @@ const BlogDetail = () => {
 
         <p>Digital transformation is not a destination but a continuous journey. The most successful organizations are those that view it as an ongoing process of evolution and improvement, always seeking new ways to leverage technology to create value for their customers and stakeholders.</p>
       `,
-      color: '#0066cc',
-    },
-    'strategic-planning-growth': {
-      title: 'Strategic Planning for Growth',
-      author: { name: 'Michael Chen' },
-      category: 'Strategy',
-      createdAt: '2024-01-18',
-      featuredImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
-      excerpt: 'Learn essential strategies for planning and executing sustainable business growth in competitive markets.',
-      content: `
+        color: '#0066cc',
+      },
+      'strategic-planning-growth': {
+        title: 'Strategic Planning for Growth',
+        author: { name: 'Michael Chen' },
+        category: 'Strategy',
+        createdAt: '2024-01-18',
+        featuredImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
+        excerpt: 'Learn essential strategies for planning and executing sustainable business growth in competitive markets.',
+        content: `
         <h2>Strategic Planning for Sustainable Growth</h2>
         <p>Strategic planning is the foundation for sustainable business growth. It provides direction, aligns stakeholders, and creates a roadmap for achieving organizational objectives. In this article, we'll explore the key elements of effective strategic planning.</p>
 
@@ -87,16 +87,16 @@ const BlogDetail = () => {
 
         <p>Successful growth is achieved through careful planning, disciplined execution, and continuous learning. Organizations that invest in strategic planning are better equipped to navigate uncertainty and capitalize on opportunities.</p>
       `,
-      color: '#00b4d8',
-    },
-    'change-management-best-practices': {
-      title: 'Change Management Best Practices',
-      author: { name: 'Emma Williams' },
-      category: 'Management',
-      createdAt: '2024-01-15',
-      featuredImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
-      excerpt: 'Discover proven methodologies for managing organizational change and ensuring successful implementation.',
-      content: `
+        color: '#00b4d8',
+      },
+      'change-management-best-practices': {
+        title: 'Change Management Best Practices',
+        author: { name: 'Emma Williams' },
+        category: 'Management',
+        createdAt: '2024-01-15',
+        featuredImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
+        excerpt: 'Discover proven methodologies for managing organizational change and ensuring successful implementation.',
+        content: `
         <h2>Managing Organizational Change Effectively</h2>
         <p>Change is inevitable in modern organizations. Whether driven by market conditions, technology adoption, or strategic initiatives, successful change management is critical for organizational success. This article explores best practices for managing change effectively.</p>
 
@@ -133,8 +133,8 @@ const BlogDetail = () => {
 
         <p>Successful change management requires a disciplined approach, strong leadership, and genuine engagement with employees. Organizations that master change management are better positioned for continuous improvement and competitive advantage.</p>
       `,
-      color: '#0096c7',
-    },
+        color: '#0096c7',
+      },
     };
 
     const fetchBlog = async () => {
@@ -205,7 +205,7 @@ const BlogDetail = () => {
       {/* Hero Section */}
       <section
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(0, 102, 204, 0.85) 0%, rgba(0, 82, 163, 0.85) 100%), url("${blog.featuredImage}")`,
+          backgroundImage: `linear-gradient(135deg, rgba(0, 102, 204, 0.85) 0%, rgba(0, 82, 163, 0.85) 100%), url("${blog.featuredImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop'}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
@@ -247,7 +247,7 @@ const BlogDetail = () => {
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             {/* Featured Image */}
             <img
-              src={blog.featuredImage}
+              src={blog.featuredImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop'}
               alt={blog.title}
               style={{
                 width: '100%',

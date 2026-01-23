@@ -32,7 +32,7 @@ const About = () => {
       >
         <div className="container">
           <h1 style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: 'bold', letterSpacing: '1px' }}>
-            About ConsultPro
+            About PositiveHills
           </h1>
           <p style={{ fontSize: '1.4rem', marginBottom: '2rem', fontWeight: '300' }}>
             Leading the way in business transformation and strategic consulting
@@ -50,7 +50,7 @@ const About = () => {
 
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <p style={{ fontSize: '1.1rem', color: '#555', lineHeight: '1.8', marginBottom: '1.5rem', textAlign: 'center' }}>
-              ConsultPro is a leading management consulting firm dedicated to helping businesses achieve their strategic objectives. With over a decade of experience, we've worked with hundreds of companies across various industries, delivering transformative solutions that drive growth and create lasting value.
+              PositiveHills is a leading management consulting firm dedicated to helping businesses achieve their strategic objectives. With over a decade of experience, we've worked with hundreds of companies across various industries, delivering transformative solutions that drive growth and create lasting value.
             </p>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', marginTop: '3rem' }}>

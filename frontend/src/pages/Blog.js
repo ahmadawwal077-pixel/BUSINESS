@@ -110,8 +110,8 @@ const Blog = () => {
   }, [page]);
 
   useEffect(() => {
-    // Uncomment to fetch from API
-    // fetchBlogs();
+    // Fetch blogs from API
+    fetchBlogs();
   }, [fetchBlogs]);
 
   if (loading) {
@@ -137,7 +137,7 @@ const Blog = () => {
       >
         <div className="container">
           <h1 style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: 'bold', letterSpacing: '1px' }}>
-            ConsultPro Blog
+            PositiveHills Blog
           </h1>
           <p style={{ fontSize: '1.4rem', marginBottom: '2rem', fontWeight: '300' }}>
             Insights, strategies, and best practices for business success
@@ -230,7 +230,7 @@ const Blog = () => {
                       {/* Featured Image */}
                       <div style={{ position: 'relative', overflow: 'hidden', height: '220px' }}>
                         <img
-                          src={blog.featuredImage}
+                          src={blog.featuredImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=250&fit=crop'}
                           alt={blog.title}
                           style={{
                             width: '100%',
@@ -265,7 +265,7 @@ const Blog = () => {
                       {/* Content */}
                       <div style={{ padding: '2rem', flex: '1', display: 'flex', flexDirection: 'column' }}>
                         <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', color: blog.color || '#0066cc' }}>
-                          {React.createElement(blog.icon, { size: 40, weight: 'bold' })}
+                          {blog.icon ? React.createElement(blog.icon, { size: 40, weight: 'bold' }) : <Gear size={40} weight="bold" />}
                         </div>
                         <h3 style={{ color: blog.color || '#0066cc', marginBottom: '0.75rem', fontSize: '1.3rem', lineHeight: '1.4' }}>
                           {blog.title}

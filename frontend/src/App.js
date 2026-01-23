@@ -21,6 +21,9 @@ import Appointments from './pages/Appointments';
 import MakeAppointment from './pages/MakeAppointment';
 import Payments from './pages/Payments';
 import AdminBlog from './pages/AdminBlog';
+import Courses from './pages/Courses';
+import CourseDetail from './pages/CourseDetail';
+import AdminDashboard from './pages/AdminDashboard';
 
 // Styles
 import './styles/global.css';
@@ -43,6 +46,8 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/course/:id" element={<CourseDetail />} />
 
               {/* Protected Routes */}
               <Route
@@ -90,6 +95,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AdminBlog />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
                   </ProtectedRoute>
                 }
               />

@@ -31,7 +31,7 @@ const Footer = () => {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           }}>
-            ConsultPro
+            PositiveHills
           </h3>
           <p style={{
             color: '#cbd5e1',
@@ -192,7 +192,7 @@ const Footer = () => {
           </h4>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {[
-              { icon: '✉️', label: 'Email', value: 'info@consultpro.com', href: 'mailto:info@consultpro.com' },
+              { icon: '✉️', label: 'Email', value: 'info@positivehills.com', href: 'mailto:info@positivehills.com' },
               { icon: '📞', label: 'Phone', value: '+1 (234) 567-890', href: 'tel:+1234567890' },
               { icon: '📍', label: 'Location', value: '123 Business St, City, State 12345', href: '#' },
             ].map((item, idx) => (
@@ -248,7 +248,7 @@ const Footer = () => {
         gap: '1rem',
       }}>
         <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.9rem' }}>
-          &copy; {currentYear} ConsultPro. All rights reserved.
+          &copy; {currentYear} PositiveHills. All rights reserved.
         </p>
         <div style={{ display: 'flex', gap: '2rem' }}>
           {[

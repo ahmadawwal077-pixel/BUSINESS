@@ -58,4 +58,29 @@ export const newsletterAPI = {
   getSubscribers: () => apiClient.get('/newsletter/subscribers'),
 };
 
+// Course API
+export const courseAPI = {
+  getAllCourses: (filters) => apiClient.get('/courses', { params: filters }),
+  getCourseById: (id) => apiClient.get(`/courses/${id}`),
+  createCourse: (data) => apiClient.post('/courses/create', data),
+  updateCourse: (id, data) => apiClient.put(`/courses/${id}`, data),
+  deleteCourse: (id) => apiClient.delete(`/courses/${id}`),
+  enrollCourse: (courseId) => apiClient.post('/courses/enroll', { courseId }),
+  confirmEnrollmentPayment: (enrollmentId) => apiClient.post('/courses/confirm-payment', { enrollmentId }),
+  getMyEnrolledCourses: () => apiClient.get('/courses/my-courses'),
+  getCourseAssignments: (courseId) => apiClient.get(`/courses/${courseId}/assignments`),
+  getCourseAttendance: (courseId) => apiClient.get(`/courses/${courseId}/attendance`),
+  addAssignment: (courseId, data) => apiClient.post(`/courses/${courseId}/add-assignment`, data),
+  markAttendance: (courseId, data) => apiClient.post(`/courses/${courseId}/mark-attendance`, data),
+  // New endpoints
+  getStudents: () => apiClient.get('/users'),
+  markAssignment: (assignmentId, data) => apiClient.post(`/assignments/${assignmentId}/mark`, data),
+  getStudentCourseDetail: (courseId) => apiClient.get(`/courses/${courseId}/student-dashboard`),
+  // Live class endpoints
+  addLiveClass: (courseId, data) => apiClient.post(`/courses/${courseId}/live-classes`, data),
+  getCourseLiveClasses: (courseId) => apiClient.get(`/courses/${courseId}/live-classes`),
+  getUpcomingLiveClasses: () => apiClient.get('/live/upcoming'),
+  getStudentDashboardStats: () => apiClient.get('/courses/dashboard/student-stats'),
+};
+
 export default apiClient;
