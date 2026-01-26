@@ -50,6 +50,28 @@ app.get('/', (req, res) => {
 });
 
 console.log('📍 Registering API routes...');
+
+// API root route
+app.get('/api', (req, res) => {
+  res.json({
+    message: 'Business Consultation API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      auth: '/api/auth',
+      courses: '/api/courses',
+      assignments: '/api/assignments',
+      appointments: '/api/appointments',
+      payments: '/api/payments',
+      blogs: '/api/blogs',
+      users: '/api/users',
+      newsletter: '/api/newsletter',
+      live: '/api/live',
+      health: '/api/health'
+    }
+  });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
