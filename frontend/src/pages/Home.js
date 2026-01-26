@@ -28,28 +28,90 @@ const Home = () => {
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
           color: 'white',
-          padding: '8rem 0',
+          padding: 'clamp(4rem, 10vw, 8rem) clamp(1rem, 5vw, 2rem)',
           textAlign: 'center',
-          minHeight: '700px',
+          minHeight: 'clamp(500px, 80vh, 700px)',
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <div className="container">
-          <h1 style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: 'bold', letterSpacing: '1px' }}>
+        <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 clamp(1rem, 5vw, 2rem)' }}>
+          <h1 style={{ 
+            fontSize: 'clamp(1.8rem, 6vw, 4rem)', 
+            marginBottom: 'clamp(0.75rem, 2vw, 1rem)', 
+            fontWeight: 'bold', 
+            letterSpacing: '-1px',
+            lineHeight: '1.2',
+          }}>
             Transform Your Business
           </h1>
-          <p style={{ fontSize: '1.4rem', marginBottom: '0.5rem', fontWeight: '300' }}>
+          <p style={{ 
+            fontSize: 'clamp(1rem, 3vw, 1.4rem)', 
+            marginBottom: 'clamp(0.5rem, 1vw, 0.5rem)', 
+            fontWeight: '300',
+            lineHeight: '1.4',
+          }}>
             Expert consulting solutions for sustainable growth
           </p>
-          <p style={{ fontSize: '1.1rem', marginBottom: '3rem', opacity: '0.95' }}>
+          <p style={{ 
+            fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)', 
+            marginBottom: 'clamp(2rem, 4vw, 3rem)', 
+            opacity: '0.95',
+            lineHeight: '1.5',
+          }}>
             Partner with industry leaders to achieve measurable results and lasting success
           </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/services" className="btn btn-primary" style={{ display: 'inline-block', background: 'white', color: '#0066cc', fontWeight: 'bold', padding: '0.9rem 2rem', fontSize: '1.05rem' }}>
+          <div style={{ 
+            display: 'flex', 
+            gap: 'clamp(0.75rem, 2vw, 1rem)', 
+            justifyContent: 'center', 
+            flexWrap: 'wrap',
+            padding: '0 clamp(0.5rem, 2vw, 1rem)',
+          }}>
+            <Link to="/services" style={{ 
+              display: 'inline-block', 
+              background: 'white', 
+              color: '#0066cc', 
+              fontWeight: 'bold', 
+              padding: 'clamp(0.7rem, 1.5vw, 0.9rem) clamp(1.2rem, 3vw, 2rem)', 
+              fontSize: 'clamp(0.85rem, 2vw, 1.05rem)',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+            }}>
               Explore Services
             </Link>
-            <Link to="/contact" className="btn btn-secondary" style={{ display: 'inline-block', borderColor: 'white', color: 'white', fontWeight: 'bold', padding: '0.9rem 2rem', fontSize: '1.05rem' }}>
+            <Link to="/contact" style={{ 
+              display: 'inline-block', 
+              borderColor: 'white', 
+              color: 'white', 
+              fontWeight: 'bold', 
+              padding: 'clamp(0.7rem, 1.5vw, 0.9rem) clamp(1.2rem, 3vw, 2rem)', 
+              fontSize: 'clamp(0.85rem, 2vw, 1.05rem)',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              border: '2px solid white',
+              transition: 'all 0.3s ease',
+              background: 'rgba(255, 255, 255, 0.1)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}>
               Get Started
             </Link>
           </div>
@@ -57,14 +119,30 @@ const Home = () => {
       </section>
 
       {/* Services Preview */}
-      <section className="section" style={{ backgroundColor: '#f8f9fa' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '0.5rem' }}>Our Services</h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>Comprehensive solutions tailored to your business needs</p>
+      <section className="section" style={{ 
+        backgroundColor: '#f8f9fa',
+        padding: 'clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 5vw, 3rem)' }}>
+            <h2 style={{ 
+              color: '#0066cc', 
+              marginBottom: 'clamp(0.5rem, 1.5vw, 0.5rem)',
+              fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+              fontWeight: 'bold',
+            }}>Our Services</h2>
+            <p style={{ 
+              fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', 
+              color: '#666',
+              lineHeight: '1.5',
+            }}>Comprehensive solutions tailored to your business needs</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(280px, 90vw, 340px), 1fr))', 
+            gap: 'clamp(1.5rem, 3vw, 2rem)',
+          }}>
             {[
               {
                 icon: ChartBar,
@@ -110,7 +188,7 @@ const Home = () => {
                 style={{
                   background: 'white',
                   borderRadius: '12px',
-                  padding: '2rem',
+                  padding: 'clamp(1.5rem, 3vw, 2rem)',
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
                   transition: 'all 0.3s ease',
                   border: `3px solid ${service.color}`,
@@ -126,13 +204,22 @@ const Home = () => {
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
                 }}
               >
-                <div style={{ fontSize: '3.5rem', marginBottom: '1rem', color: service.color }}>
-                  <Icon size={48} weight="bold" />
+                <div style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', marginBottom: 'clamp(0.75rem, 2vw, 1rem)', color: service.color }}>
+                  <Icon size={Math.min(56, Math.max(40, window.innerWidth * 0.1))} weight="bold" />
                 </div>
-                <h3 style={{ color: service.color, marginBottom: '0.75rem', fontSize: '1.3rem' }}>
+                <h3 style={{ 
+                  color: service.color, 
+                  marginBottom: 'clamp(0.5rem, 1.5vw, 0.75rem)', 
+                  fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
+                  fontWeight: '700',
+                }}>
                   {service.title}
                 </h3>
-                <p style={{ color: '#666', lineHeight: '1.6' }}>
+                <p style={{ 
+                  color: '#666', 
+                  lineHeight: '1.6',
+                  fontSize: 'clamp(0.85rem, 1.8vw, 1rem)',
+                }}>
                   {service.description}
                 </p>
               </div>
@@ -140,8 +227,27 @@ const Home = () => {
             })}
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
-            <Link to="/services" className="btn btn-primary" style={{ display: 'inline-block' }}>
+          <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 4vw, 2.5rem)' }}>
+            <Link to="/services" style={{
+              display: 'inline-block',
+              padding: 'clamp(0.7rem, 1.5vw, 0.85rem) clamp(1.2rem, 3vw, 1.8rem)',
+              background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              transition: 'all 0.3s ease',
+              fontSize: 'clamp(0.85rem, 2vw, 0.95rem)',
+              boxShadow: '0 4px 15px rgba(0, 102, 204, 0.3)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 102, 204, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 102, 204, 0.3)';
+            }}>
               View All Services
             </Link>
           </div>
@@ -149,34 +255,58 @@ const Home = () => {
       </section>
 
       {/* About Preview Section */}
-      <section className="section" style={{ backgroundColor: 'white' }}>
-        <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '3rem', alignItems: 'center' }}>
+      <section className="section" style={{ 
+        backgroundColor: 'white',
+        padding: 'clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(300px, 90vw, 450px), 1fr))', 
+            gap: 'clamp(2rem, 5vw, 3rem)', 
+            alignItems: 'center',
+          }}>
             <div>
-              <h2 style={{ color: '#0066cc', marginBottom: '1.5rem', fontSize: '2.2rem', fontWeight: 'bold' }}>About Our Company</h2>
-              <p style={{ color: '#666', lineHeight: '1.8', marginBottom: '1rem', fontSize: '1rem' }}>
+              <h2 style={{ 
+                color: '#0066cc', 
+                marginBottom: 'clamp(1rem, 2vw, 1.5rem)', 
+                fontSize: 'clamp(1.5rem, 4vw, 2.2rem)',
+                fontWeight: 'bold',
+              }}>About Our Company</h2>
+              <p style={{ 
+                color: '#666', 
+                lineHeight: '1.8', 
+                marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', 
+                fontSize: 'clamp(0.85rem, 2vw, 1rem)',
+              }}>
                 PositiveHills is a leading management consulting firm with over 10 years of experience helping businesses transform and grow. Our team of expert consultants brings industry-leading knowledge and proven methodologies to every engagement.
               </p>
-              <p style={{ color: '#666', lineHeight: '1.8', marginBottom: '2rem', fontSize: '1rem' }}>
+              <p style={{ 
+                color: '#666', 
+                lineHeight: '1.8', 
+                marginBottom: 'clamp(1.5rem, 2vw, 2rem)', 
+                fontSize: 'clamp(0.85rem, 2vw, 1rem)',
+              }}>
                 We partner with organizations across diverse industries—from startups to Fortune 500 companies—to unlock their potential and drive sustainable success. Our commitment to excellence and client success has earned us a 95% satisfaction rate.
               </p>
               <Link to="/about" style={{
                 display: 'inline-block',
-                padding: '0.85rem 1.8rem',
+                padding: 'clamp(0.7rem, 1.5vw, 0.85rem) clamp(1.2rem, 3vw, 1.8rem)',
                 background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
                 color: 'white',
                 textDecoration: 'none',
                 borderRadius: '8px',
                 fontWeight: '600',
                 transition: 'all 0.3s ease',
+                fontSize: 'clamp(0.85rem, 2vw, 0.95rem)',
               }}
               onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 8px 20px rgba(0, 102, 204, 0.3)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 102, 204, 0.3)';
               }}
               onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
               }}>
                 Learn More About Us
               </Link>
@@ -185,7 +315,15 @@ const Home = () => {
               <img 
                 src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop" 
                 alt="About" 
-                style={{ borderRadius: '12px', width: '100%', height: 'auto', boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)' }}
+                style={{ 
+                  borderRadius: '12px', 
+                  width: '100%', 
+                  height: 'auto', 
+                  boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+                  maxWidth: '500px',
+                  margin: '0 auto',
+                  display: 'block',
+                }}
               />
             </div>
           </div>
@@ -193,14 +331,30 @@ const Home = () => {
       </section>
 
       {/* Projects Preview Section */}
-      <section className="section" style={{ backgroundColor: '#f8f9fa' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '0.5rem', fontSize: '2.2rem' }}>Featured Projects</h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>See how we've helped businesses achieve their goals</p>
+      <section className="section" style={{ 
+        backgroundColor: '#f8f9fa',
+        padding: 'clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 5vw, 3rem)' }}>
+            <h2 style={{ 
+              color: '#0066cc', 
+              marginBottom: 'clamp(0.5rem, 1.5vw, 0.5rem)', 
+              fontSize: 'clamp(1.5rem, 4vw, 2.2rem)',
+              fontWeight: 'bold',
+            }}>Featured Projects</h2>
+            <p style={{ 
+              fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', 
+              color: '#666',
+              lineHeight: '1.5',
+            }}>See how we've helped businesses achieve their goals</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(280px, 90vw, 320px), 1fr))', 
+            gap: 'clamp(1.5rem, 3vw, 2rem)',
+          }}>
             {[
               {
                 title: 'Digital Transformation Initiative',
@@ -234,7 +388,7 @@ const Home = () => {
                 style={{
                   background: 'white',
                   borderRadius: '12px',
-                  padding: '2rem',
+                  padding: 'clamp(1.5rem, 3vw, 2rem)',
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
                   transition: 'all 0.3s ease',
                   borderTop: '4px solid #0066cc',
@@ -248,23 +402,36 @@ const Home = () => {
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
                 }}
               >
-                <div style={{ fontSize: '2.5rem', marginBottom: '1rem', color: '#0066cc' }}>
-                  <ProjectIcon size={40} weight="bold" />
+                <div style={{ 
+                  fontSize: 'clamp(2rem, 4vw, 2.5rem)', 
+                  marginBottom: 'clamp(0.75rem, 2vw, 1rem)', 
+                  color: '#0066cc',
+                }}>
+                  <ProjectIcon size={Math.min(48, Math.max(36, window.innerWidth * 0.1))} weight="bold" />
                 </div>
-                <h4 style={{ color: '#1f2937', marginBottom: '0.5rem', fontSize: '1.2rem' }}>
+                <h4 style={{ 
+                  color: '#1f2937', 
+                  marginBottom: 'clamp(0.5rem, 1vw, 0.5rem)', 
+                  fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+                  fontWeight: '700',
+                }}>
                   {project.title}
                 </h4>
-                <p style={{ color: '#6b7280', marginBottom: '1rem', fontSize: '0.9rem' }}>
+                <p style={{ 
+                  color: '#6b7280', 
+                  marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', 
+                  fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
+                }}>
                   {project.company}
                 </p>
                 <div style={{
                   background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
                   color: 'white',
-                  padding: '0.75rem 1rem',
+                  padding: 'clamp(0.6rem, 1.2vw, 0.75rem) clamp(0.8rem, 1.5vw, 1rem)',
                   borderRadius: '6px',
                   textAlign: 'center',
                   fontWeight: '600',
-                  fontSize: '0.95rem',
+                  fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
                 }}>
                   {project.result}
                 </div>
@@ -273,24 +440,26 @@ const Home = () => {
             })}
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
+          <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 4vw, 2.5rem)' }}>
             <Link to="/projects" style={{
               display: 'inline-block',
-              padding: '0.85rem 1.8rem',
+              padding: 'clamp(0.7rem, 1.5vw, 0.85rem) clamp(1.2rem, 3vw, 1.8rem)',
               background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
               color: 'white',
               textDecoration: 'none',
               borderRadius: '8px',
               fontWeight: '600',
               transition: 'all 0.3s ease',
+              fontSize: 'clamp(0.85rem, 2vw, 0.95rem)',
+              boxShadow: '0 4px 15px rgba(0, 102, 204, 0.3)',
             }}
             onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 8px 20px rgba(0, 102, 204, 0.3)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 102, 204, 0.4)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 102, 204, 0.3)';
             }}>
               View All Projects
             </Link>
@@ -299,14 +468,30 @@ const Home = () => {
       </section>
 
       {/* Blog Preview Section */}
-      <section className="section" style={{ backgroundColor: 'white' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '0.5rem', fontSize: '2.2rem' }}>Latest Insights</h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>Expert articles on business strategy and transformation</p>
+      <section className="section" style={{ 
+        backgroundColor: 'white',
+        padding: 'clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 5vw, 3rem)' }}>
+            <h2 style={{ 
+              color: '#0066cc', 
+              marginBottom: 'clamp(0.5rem, 1.5vw, 0.5rem)', 
+              fontSize: 'clamp(1.5rem, 4vw, 2.2rem)',
+              fontWeight: 'bold',
+            }}>Latest Insights</h2>
+            <p style={{ 
+              fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', 
+              color: '#666',
+              lineHeight: '1.5',
+            }}>Expert articles on business strategy and transformation</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(330px, 1fr))', gap: '2rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(280px, 90vw, 330px), 1fr))', 
+            gap: 'clamp(1.5rem, 3vw, 2rem)',
+          }}>
             {[
               {
                 title: 'The Future of Digital Transformation',
@@ -351,21 +536,43 @@ const Home = () => {
               >
                 <div style={{
                   background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
-                  padding: '1rem',
+                  padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                   color: 'white',
                 }}>
-                  <span style={{ display: 'inline-block', fontSize: '0.8rem', fontWeight: '600', opacity: 0.9 }}>
+                  <span style={{ 
+                    display: 'inline-block', 
+                    fontSize: 'clamp(0.7rem, 1.2vw, 0.8rem)', 
+                    fontWeight: '600', 
+                    opacity: 0.9 
+                  }}>
                     {article.category}
                   </span>
                 </div>
-                <div style={{ padding: '1.5rem' }}>
-                  <h4 style={{ color: '#1f2937', marginBottom: '0.75rem', fontSize: '1.1rem' }}>
+                <div style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
+                  <h4 style={{ 
+                    color: '#1f2937', 
+                    marginBottom: 'clamp(0.5rem, 1vw, 0.75rem)', 
+                    fontSize: 'clamp(1rem, 2vw, 1.1rem)',
+                    fontWeight: '700',
+                  }}>
                     {article.title}
                   </h4>
-                  <p style={{ color: '#666', marginBottom: '1rem', fontSize: '0.9rem', lineHeight: '1.6' }}>
+                  <p style={{ 
+                    color: '#666', 
+                    marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', 
+                    fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)', 
+                    lineHeight: '1.6' 
+                  }}>
                     {article.excerpt}
                   </p>
-                  <div style={{ color: '#6b7280', fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between' }}>
+                  <div style={{ 
+                    color: '#6b7280', 
+                    fontSize: 'clamp(0.75rem, 1.2vw, 0.8rem)', 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem',
+                  }}>
                     <span>{article.author}</span>
                     <span>{article.date}</span>
                   </div>
@@ -374,24 +581,26 @@ const Home = () => {
             ))}
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
+          <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 4vw, 2.5rem)' }}>
             <Link to="/blog" style={{
               display: 'inline-block',
-              padding: '0.85rem 1.8rem',
+              padding: 'clamp(0.7rem, 1.5vw, 0.85rem) clamp(1.2rem, 3vw, 1.8rem)',
               background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
               color: 'white',
               textDecoration: 'none',
               borderRadius: '8px',
               fontWeight: '600',
               transition: 'all 0.3s ease',
+              fontSize: 'clamp(0.85rem, 2vw, 0.95rem)',
+              boxShadow: '0 4px 15px rgba(0, 102, 204, 0.3)',
             }}
             onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 8px 20px rgba(0, 102, 204, 0.3)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 102, 204, 0.4)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 102, 204, 0.3)';
             }}>
               Read All Articles
             </Link>
@@ -400,16 +609,34 @@ const Home = () => {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="section" style={{ backgroundColor: '#f8f9fa' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '1rem' }}>Why Choose PositiveHills?</h2>
-            <p style={{ fontSize: '1.1rem', color: '#666', maxWidth: '600px', margin: '0 auto' }}>
+      <section className="section" style={{ 
+        backgroundColor: '#f8f9fa',
+        padding: 'clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 5vw, 3rem)' }}>
+            <h2 style={{ 
+              color: '#0066cc', 
+              marginBottom: 'clamp(1rem, 2vw, 1rem)',
+              fontSize: 'clamp(1.5rem, 4vw, 2.2rem)',
+              fontWeight: 'bold',
+            }}>Why Choose PositiveHills?</h2>
+            <p style={{ 
+              fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', 
+              color: '#666', 
+              maxWidth: '600px', 
+              margin: '0 auto',
+              lineHeight: '1.5',
+            }}>
               We combine industry expertise with innovative solutions to deliver exceptional results
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(280px, 90vw, 1fr), 1fr))', 
+            gap: 'clamp(1.5rem, 3vw, 2rem)',
+          }}>
             {[
               { icon: CheckCircle, title: '500+ Projects', text: 'Successfully delivered across multiple industries', color: '#10b981' },
               { icon: Users, title: '50+ Experts', text: 'Experienced consultants with proven track records', color: '#0066cc' },
@@ -423,20 +650,43 @@ const Home = () => {
               <div
                 key={idx}
                 style={{
-                  padding: '2rem',
-                  background: '#f8f9fa',
+                  padding: 'clamp(1.5rem, 2.5vw, 2rem)',
+                  background: 'white',
                   borderRadius: '10px',
                   borderLeft: `4px solid ${item.color}`,
                   textAlign: 'center',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.05)';
                 }}
               >
-                <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', color: item.color }}>
-                  <ItemIcon size={40} weight="bold" />
+                <div style={{ 
+                  fontSize: 'clamp(2rem, 4vw, 2.5rem)', 
+                  marginBottom: 'clamp(0.5rem, 1vw, 0.75rem)', 
+                  color: item.color 
+                }}>
+                  <ItemIcon size={Math.min(44, Math.max(32, window.innerWidth * 0.08))} weight="bold" />
                 </div>
-                <h4 style={{ color: item.color, marginBottom: '0.5rem', fontSize: '1.1rem' }}>
+                <h4 style={{ 
+                  color: item.color, 
+                  marginBottom: 'clamp(0.5rem, 1vw, 0.5rem)', 
+                  fontSize: 'clamp(1rem, 2vw, 1.1rem)',
+                  fontWeight: '700',
+                }}>
                   {item.title}
                 </h4>
-                <p style={{ color: '#666', fontSize: '0.95rem', lineHeight: '1.6' }}>
+                <p style={{ 
+                  color: '#666', 
+                  fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)', 
+                  lineHeight: '1.6' 
+                }}>
                   {item.text}
                 </p>
               </div>
@@ -451,12 +701,16 @@ const Home = () => {
         style={{
           background: 'linear-gradient(135deg, #0066cc 0%, #0052a3 100%)',
           color: 'white',
-          padding: '4rem 0',
-          marginBottom: '4rem',
+          padding: 'clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)',
         }}
       >
-        <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '3rem', textAlign: 'center' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(240px, 90vw, 280px), 1fr))', 
+            gap: 'clamp(2rem, 4vw, 3rem)', 
+            textAlign: 'center',
+          }}>
             {[
               { number: '500+', label: 'Happy Clients' },
               { number: '10+', label: 'Years Expertise' },
@@ -464,10 +718,19 @@ const Home = () => {
               { number: '95%', label: 'Success Rate' },
             ].map((stat, idx) => (
               <div key={idx}>
-                <div style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                <div style={{ 
+                  fontSize: 'clamp(2rem, 6vw, 3rem)', 
+                  fontWeight: 'bold', 
+                  marginBottom: 'clamp(0.5rem, 1vw, 0.5rem)',
+                  lineHeight: '1',
+                }}>
                   {stat.number}
                 </div>
-                <p style={{ fontSize: '1.1rem', opacity: '0.95' }}>{stat.label}</p>
+                <p style={{ 
+                  fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', 
+                  opacity: '0.95',
+                  lineHeight: '1.4',
+                }}>{stat.label}</p>
               </div>
             ))}
           </div>
@@ -479,44 +742,65 @@ const Home = () => {
         style={{
           background: 'linear-gradient(135deg, #0066cc 0%, #0052a3 100%)',
           color: 'white',
-          padding: '5rem 2rem',
+          padding: 'clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)',
           textAlign: 'center',
         }}
       >
-        <div className="container">
-          <h2 style={{ marginBottom: '1rem', fontSize: '2.5rem', fontWeight: 'bold' }}>Ready to Transform Your Business?</h2>
-          <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem', opacity: 0.95 }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <h2 style={{ 
+            marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', 
+            fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', 
+            fontWeight: 'bold',
+            lineHeight: '1.2',
+          }}>Ready to Transform Your Business?</h2>
+          <p style={{ 
+            fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', 
+            marginBottom: 'clamp(0.5rem, 1vw, 0.5rem)', 
+            opacity: 0.95,
+            lineHeight: '1.5',
+          }}>
             Get in touch with our expert consultants today
           </p>
-          <p style={{ fontSize: '1rem', marginBottom: '3rem', opacity: 0.9 }}>
+          <p style={{ 
+            fontSize: 'clamp(0.85rem, 1.8vw, 1rem)', 
+            marginBottom: 'clamp(2rem, 4vw, 3rem)', 
+            opacity: 0.9,
+            lineHeight: '1.5',
+          }}>
             We're here to help you achieve your business goals with tailored solutions
           </p>
           
-          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem' }}>
+          <div style={{ 
+            display: 'flex', 
+            gap: 'clamp(1rem, 2vw, 1.5rem)', 
+            justifyContent: 'center', 
+            flexWrap: 'wrap', 
+            marginBottom: 'clamp(2rem, 4vw, 3rem)',
+          }}>
             <Link to="/contact" style={{
               display: 'inline-block',
-              padding: '0.95rem 2rem',
+              padding: 'clamp(0.7rem, 1.5vw, 0.95rem) clamp(1.2rem, 3vw, 2rem)',
               background: 'white',
               color: '#0066cc',
               textDecoration: 'none',
               borderRadius: '8px',
               fontWeight: '700',
               transition: 'all 0.3s ease',
-              fontSize: '1rem',
+              fontSize: 'clamp(0.85rem, 2vw, 1rem)',
             }}
             onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-3px)';
-              e.target.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
+              e.currentTarget.style.transform = 'translateY(-3px)';
+              e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
             }}>
               Contact Us
             </Link>
             <Link to="/make-appointment" style={{
               display: 'inline-block',
-              padding: '0.95rem 2rem',
+              padding: 'clamp(0.7rem, 1.5vw, 0.95rem) clamp(1.2rem, 3vw, 2rem)',
               background: 'rgba(255, 255, 255, 0.2)',
               color: 'white',
               textDecoration: 'none',
@@ -524,13 +808,15 @@ const Home = () => {
               fontWeight: '700',
               border: '2px solid white',
               transition: 'all 0.3s ease',
-              fontSize: '1rem',
+              fontSize: 'clamp(0.85rem, 2vw, 1rem)',
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              e.currentTarget.style.transform = 'translateY(0)';
             }}>
               Book Appointment
             </Link>
@@ -538,21 +824,35 @@ const Home = () => {
 
           <div style={{
             background: 'rgba(255, 255, 255, 0.1)',
-            padding: '2rem',
+            padding: 'clamp(1.5rem, 3vw, 2rem)',
             borderRadius: '12px',
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255, 255, 255, 0.2)',
           }}>
-            <p style={{ fontSize: '0.95rem', marginBottom: '1rem', opacity: 0.95, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Phone size={20} weight="bold" /> Call us: +1 (555) 123-4567
+            <p style={{ 
+              fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)', 
+              marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', 
+              opacity: 0.95, 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: 'clamp(0.5rem, 1vw, 1rem)', 
+              flexWrap: 'wrap',
+              lineHeight: '1.5',
+            }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.3rem, 0.8vw, 0.5rem)' }}>
+                <Phone size={Math.min(18, Math.max(14, window.innerWidth * 0.04))} weight="bold" /> Call us: +1 (555) 123-4567
               </span>
               <span style={{ opacity: 0.7 }}>|</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <MagnifyingGlass size={20} weight="bold" /> Email: hello@positivehills.com
+              <span style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.3rem, 0.8vw, 0.5rem)' }}>
+                <MagnifyingGlass size={Math.min(18, Math.max(14, window.innerWidth * 0.04))} weight="bold" /> Email: hello@positivehills.com
               </span>
             </p>
-            <p style={{ fontSize: '0.9rem', opacity: 0.85 }}>
+            <p style={{ 
+              fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)', 
+              opacity: 0.85,
+              lineHeight: '1.4',
+            }}>
               Available Monday - Friday, 9:00 AM - 6:00 PM
             </p>
           </div>

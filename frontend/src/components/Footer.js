@@ -8,24 +8,24 @@ const Footer = () => {
     <footer style={{
       background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
       color: 'white',
-      marginTop: '5rem',
+      marginTop: 'clamp(3rem, 8vw, 5rem)',
       borderTop: '2px solid rgba(0, 102, 204, 0.2)',
     }}>
       {/* Main Content */}
       <div style={{
         maxWidth: '1400px',
         margin: '0 auto',
-        padding: '4rem 2rem',
+        padding: 'clamp(1.5rem, 3vw, 3rem) clamp(1rem, 4vw, 2rem)',
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '3rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(250px, 90vw, 280px), 1fr))',
+        gap: 'clamp(1.5rem, 3vw, 2.5rem)',
       }}>
         {/* Brand Section */}
         <div>
           <h3 style={{
-            fontSize: '1.8rem',
+            fontSize: 'clamp(1.3rem, 4vw, 1.6rem)',
             fontWeight: 'bold',
-            marginBottom: '1rem',
+            marginBottom: 'clamp(0.6rem, 1.5vw, 0.8rem)',
             background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -35,14 +35,14 @@ const Footer = () => {
           </h3>
           <p style={{
             color: '#cbd5e1',
-            lineHeight: '1.7',
-            fontSize: '0.95rem',
-            marginBottom: '1.5rem',
+            lineHeight: '1.6',
+            fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
+            marginBottom: 'clamp(0.8rem, 2vw, 1rem)',
           }}>
             Transforming businesses through strategic consulting and expert guidance. We empower companies to achieve sustainable growth and competitive advantage.
           </p>
           {/* Social Links */}
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: 'clamp(0.6rem, 2vw, 0.8rem)' }}>
             {[
               { icon: '🔗', url: '#', name: 'LinkedIn' },
               { icon: '𝕏', url: '#', name: 'Twitter' },
@@ -53,8 +53,8 @@ const Footer = () => {
                 href={social.url}
                 title={social.name}
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: 'clamp(36px, 8vw, 40px)',
+                  height: 'clamp(36px, 8vw, 40px)',
                   borderRadius: '50%',
                   background: 'rgba(0, 102, 204, 0.1)',
                   border: '2px solid rgba(0, 102, 204, 0.3)',
@@ -62,8 +62,8 @@ const Footer = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  fontSize: '1.2rem',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
                   textDecoration: 'none',
                   color: '#0066cc',
                 }}
@@ -87,23 +87,23 @@ const Footer = () => {
         {/* Services */}
         <div>
           <h4 style={{
-            fontSize: '1.1rem',
+            fontSize: 'clamp(0.9rem, 2vw, 1rem)',
             fontWeight: '700',
-            marginBottom: '1.5rem',
+            marginBottom: 'clamp(0.8rem, 2vw, 1rem)',
             color: '#ffffff',
             textTransform: 'uppercase',
-            letterSpacing: '1px',
+            letterSpacing: '0.5px',
           }}>
             Services
           </h4>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {[
               { name: 'Strategic Planning', path: '/services' },
               { name: 'Digital Transformation', path: '/services' },
               { name: 'Market Analysis', path: '/services' },
               { name: 'Team Development', path: '/services' },
             ].map((item, idx) => (
-              <li key={idx} style={{ marginBottom: '0.75rem' }}>
+              <li key={idx} style={{ marginBottom: 'clamp(0.4rem, 1vw, 0.6rem)' }}>
                 <Link
                   to={item.path}
                   style={{
@@ -111,9 +111,9 @@ const Footer = () => {
                     textDecoration: 'none',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
-                    transition: 'all 0.3s ease',
-                    fontSize: '0.95rem',
+                    gap: 'clamp(0.3rem, 1vw, 0.5rem)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    fontSize: 'clamp(0.8rem, 1.8vw, 0.9rem)',
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.color = '#0066cc';
@@ -134,23 +134,23 @@ const Footer = () => {
         {/* Company */}
         <div>
           <h4 style={{
-            fontSize: '1.1rem',
+            fontSize: 'clamp(0.9rem, 2vw, 1rem)',
             fontWeight: '700',
-            marginBottom: '1.5rem',
+            marginBottom: 'clamp(0.8rem, 2vw, 1rem)',
             color: '#ffffff',
             textTransform: 'uppercase',
-            letterSpacing: '1px',
+            letterSpacing: '0.5px',
           }}>
             Company
           </h4>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {[
               { name: 'Home', path: '/' },
               { name: 'About Us', path: '/about' },
               { name: 'Blog', path: '/blog' },
               { name: 'Contact', path: '/contact' },
             ].map((item, idx) => (
-              <li key={idx} style={{ marginBottom: '0.75rem' }}>
+              <li key={idx} style={{ marginBottom: 'clamp(0.4rem, 1vw, 0.6rem)' }}>
                 <Link
                   to={item.path}
                   style={{
@@ -158,9 +158,9 @@ const Footer = () => {
                     textDecoration: 'none',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
-                    transition: 'all 0.3s ease',
-                    fontSize: '0.95rem',
+                    gap: 'clamp(0.3rem, 1vw, 0.5rem)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    fontSize: 'clamp(0.8rem, 1.8vw, 0.9rem)',
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.color = '#0066cc';
@@ -181,22 +181,22 @@ const Footer = () => {
         {/* Contact Info */}
         <div>
           <h4 style={{
-            fontSize: '1.1rem',
+            fontSize: 'clamp(0.9rem, 2vw, 1rem)',
             fontWeight: '700',
-            marginBottom: '1.5rem',
+            marginBottom: 'clamp(0.8rem, 2vw, 1rem)',
             color: '#ffffff',
             textTransform: 'uppercase',
-            letterSpacing: '1px',
+            letterSpacing: '0.5px',
           }}>
             Get In Touch
           </h4>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {[
               { icon: '✉️', label: 'Email', value: 'info@positivehills.com', href: 'mailto:info@positivehills.com' },
               { icon: '📞', label: 'Phone', value: '+1 (234) 567-890', href: 'tel:+1234567890' },
               { icon: '📍', label: 'Location', value: '123 Business St, City, State 12345', href: '#' },
             ].map((item, idx) => (
-              <li key={idx} style={{ marginBottom: '1.25rem' }}>
+              <li key={idx} style={{ marginBottom: 'clamp(0.6rem, 1.5vw, 0.8rem)' }}>
                 <a
                   href={item.href}
                   style={{
@@ -204,9 +204,9 @@ const Footer = () => {
                     color: '#cbd5e1',
                     display: 'flex',
                     alignItems: 'flex-start',
-                    gap: '0.75rem',
-                    transition: 'color 0.3s ease',
-                    fontSize: '0.95rem',
+                    gap: 'clamp(0.5rem, 1vw, 0.75rem)',
+                    transition: 'color 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    fontSize: 'clamp(0.8rem, 1.8vw, 0.9rem)',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = '#0066cc';
@@ -217,10 +217,10 @@ const Footer = () => {
                 >
                   <span style={{ fontSize: '1.2rem', marginTop: '2px' }}>{item.icon}</span>
                   <div>
-                    <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '2px' }}>
+                    <div style={{ fontSize: 'clamp(0.7rem, 1.5vw, 0.8rem)', color: '#94a3b8', marginBottom: '2px' }}>
                       {item.label}
                     </div>
-                    <div style={{ fontWeight: '500' }}>{item.value}</div>
+                    <div style={{ fontWeight: '500', fontSize: 'clamp(0.8rem, 1.7vw, 0.9rem)' }}>{item.value}</div>
                   </div>
                 </a>
               </li>
@@ -233,24 +233,24 @@ const Footer = () => {
       <div style={{
         height: '1px',
         background: 'linear-gradient(90deg, transparent 0%, rgba(0, 102, 204, 0.3) 50%, transparent 100%)',
-        margin: '0 2rem',
+        margin: '0 clamp(1rem, 4vw, 2rem)',
       }} />
 
       {/* Footer Bottom */}
       <div style={{
         maxWidth: '1400px',
         margin: '0 auto',
-        padding: '2rem',
+        padding: 'clamp(1rem, 2vw, 1.5rem) clamp(1rem, 4vw, 2rem)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: '1rem',
+        gap: 'clamp(0.75rem, 2vw, 1rem)',
       }}>
-        <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.9rem' }}>
+        <p style={{ color: '#94a3b8', margin: 0, fontSize: 'clamp(0.75rem, 1.5vw, 0.85rem)' }}>
           &copy; {currentYear} PositiveHills. All rights reserved.
         </p>
-        <div style={{ display: 'flex', gap: '2rem' }}>
+        <div style={{ display: 'flex', gap: 'clamp(1rem, 3vw, 1.5rem)' }}>
           {[
             { name: 'Privacy Policy', path: '#' },
             { name: 'Terms of Service', path: '#' },
@@ -261,8 +261,8 @@ const Footer = () => {
               style={{
                 color: '#94a3b8',
                 textDecoration: 'none',
-                transition: 'color 0.3s ease',
-                fontSize: '0.9rem',
+                transition: 'color 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                fontSize: 'clamp(0.75rem, 1.5vw, 0.85rem)',
               }}
               onMouseEnter={(e) => {
                 e.target.style.color = '#0066cc';
