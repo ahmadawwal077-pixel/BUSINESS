@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { courseAPI } from '../services/api';
+import { courseAPI, liveClassAPI } from '../services/api';
+import AssignmentManager from '../components/AssignmentManager';
 
 const AdminDashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -50,6 +51,12 @@ const AdminDashboard = () => {
     status: 'present',
   });
 
+  // Live class attendance state
+  const [selectedLiveClass, setSelectedLiveClass] = useState(null);
+  const [liveClassEnrollments, setLiveClassEnrollments] = useState([]);
+  const [liveClassAttendanceState, setLiveClassAttendanceState] = useState({});
+  const [showLiveClassAttendanceModal, setShowLiveClassAttendanceModal] = useState(false);
+
   const [message, setMessage] = useState({ type: '', text: '' });
 
   // Assignment marking state
@@ -58,6 +65,10 @@ const AdminDashboard = () => {
   const [markForm, setMarkForm] = useState({ assignmentId: '', studentId: '', marks: '' });
   const [showScheduleLiveModal, setShowScheduleLiveModal] = useState(false);
   const [liveForm, setLiveForm] = useState({ title: '', description: '', scheduledAt: '', durationMinutes: 60, meetingUrl: '' });
+  
+  // Upcoming Classes State
+  const [upcomingClasses, setUpcomingClasses] = useState([]);
+  const [selectedCourseForClass, setSelectedCourseForClass] = useState(null);
 
   const fetchCourses = useCallback(async () => {
     try {
@@ -92,6 +103,28 @@ const AdminDashboard = () => {
     }
   }, []);
 
+  const fetchUpcomingClasses = useCallback(async () => {
+    try {
+      const courses = await courseAPI.getAllCourses();
+      const allClasses = [];
+      
+      for (const course of courses.data) {
+        try {
+          const classes = await liveClassAPI.getCourseLiveClasses(course._id);
+          allClasses.push(...classes.data.map(cls => ({ ...cls, courseName: course.title })));
+        } catch (err) {
+          // Silently ignore errors for individual courses
+        }
+      }
+      
+      // Sort by scheduled date
+      allClasses.sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
+      setUpcomingClasses(allClasses);
+    } catch (error) {
+      console.error('Error fetching upcoming classes:', error);
+    }
+  }, []);
+
   const showMessage = (type, text) => {
     setMessage({ type, text });
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
@@ -100,10 +133,11 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchCourses();
     fetchStudents();
+    fetchUpcomingClasses();
     if (!user?.isAdmin) {
       navigate('/dashboard');
     }
-  }, [user, navigate, fetchCourses, fetchStudents]);
+  }, [user, navigate, fetchCourses, fetchStudents, fetchUpcomingClasses]);
 
   // Course Management Functions
   const handleAddCourse = async (e) => {
@@ -197,8 +231,13 @@ const AdminDashboard = () => {
   const handleDeleteCourse = async (courseId) => {
     if (window.confirm('Are you sure you want to delete this course?')) {
       try {
-        await courseAPI.deleteCourse(courseId);
+        const response = await courseAPI.deleteCourse(courseId);
         showMessage('success', 'Course deleted successfully!');
+        
+        // Broadcast course deletion event to all tabs/windows
+        localStorage.setItem('course_deleted', JSON.stringify({ courseId, timestamp: Date.now() }));
+        window.dispatchEvent(new CustomEvent('course_deleted', { detail: { courseId } }));
+        
         fetchCourses();
       } catch (error) {
         showMessage('error', 'Failed to delete course');
@@ -291,6 +330,34 @@ const AdminDashboard = () => {
       fetchCourses();
     } catch (error) {
       showMessage('error', 'Failed to mark attendance');
+    }
+  };
+
+  const handleScheduleLiveClass = async (e) => {
+    e.preventDefault();
+    if (!selectedCourseForClass) {
+      showMessage('error', 'Please select a course');
+      return;
+    }
+    if (!liveForm.title || !liveForm.scheduledAt || !liveForm.meetingUrl) {
+      showMessage('error', 'Please fill in all required fields');
+      return;
+    }
+    try {
+      // Convert datetime-local value to ISO string
+      const scheduledDate = new Date(liveForm.scheduledAt);
+      const dataToSend = {
+        ...liveForm,
+        scheduledAt: scheduledDate.toISOString(),
+      };
+      await liveClassAPI.addLiveClass(selectedCourseForClass._id, dataToSend);
+      showMessage('success', 'Live class scheduled successfully!');
+      setLiveForm({ title: '', description: '', scheduledAt: '', durationMinutes: 60, meetingUrl: '' });
+      setShowScheduleLiveModal(false);
+      fetchUpcomingClasses();
+    } catch (error) {
+      console.error('Error scheduling live class:', error);
+      showMessage('error', error.response?.data?.message || 'Failed to schedule live class');
     }
   };
 
@@ -406,7 +473,7 @@ const AdminDashboard = () => {
           borderBottom: '2px solid rgba(0, 0, 0, 0.1)',
           flexWrap: 'wrap',
         }}>
-          {['courses', 'assignments', 'attendance', 'students'].map((tab) => (
+          {['courses', 'assignments', 'upcomingClasses', 'attendance'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -434,8 +501,8 @@ const AdminDashboard = () => {
             >
               {tab === 'courses' && '📚 Courses'}
               {tab === 'assignments' && '📋 Assignments'}
-              {tab === 'attendance' && '✓ Attendance'}
-              {tab === 'students' && '👥 Students'}
+              {tab === 'upcomingClasses' && '🎓 Upcoming Classes'}
+              {tab === 'attendance' && '✅ Attendance'}
             </button>
           ))}
         </div>
@@ -701,207 +768,208 @@ const AdminDashboard = () => {
             padding: '2rem',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
           }}>
-            <h2 style={{
-              margin: '0 0 2rem 0',
-              fontSize: '1.5rem',
-              fontWeight: 'bold',
-              color: '#1f2937',
-            }}>
-              Manage Assignments
-            </h2>
-
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-              gap: '2rem',
-            }}>
-              {courses.map((course) => (
-                <div key={course._id} style={{
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  padding: '1.5rem',
-                  transition: 'all 0.3s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#7c3aed';
-                  e.currentTarget.style.boxShadow = '0 10px 30px rgba(124, 58, 237, 0.1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}>
-                  <h3 style={{
-                    margin: '0 0 1rem 0',
-                    fontSize: '1.1rem',
-                    fontWeight: 'bold',
-                    color: '#1f2937',
-                  }}>
-                    {course.title}
-                  </h3>
-                  <p style={{
-                    margin: '0 0 1rem 0',
-                    fontSize: '0.9rem',
-                    color: '#6b7280',
-                  }}>
-                    📚 {course.category} • {course.enrolledStudents} students
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSelectedCourseForAssignment(course);
-                      setShowAddAssignmentModal(true);
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '0.8rem',
-                      background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.transform = 'scale(1.05)';
-                      e.target.style.opacity = '0.9';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.transform = 'scale(1)';
-                      e.target.style.opacity = '1';
-                    }}
-                  >
-                    + Add Assignment
-                  </button>
-                  <button
-                    onClick={async () => {
-                      setSelectedCourseForAssignment(course);
-                      await fetchAssignments(course._id);
-                      setShowMarkAssignmentModal(true);
-                    }}
-                    style={{
-                      marginTop: '0.5rem',
-                      width: '100%',
-                      padding: '0.7rem',
-                      background: 'linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    📝 Mark Assignment
-                  </button>
-                  <button
-                    onClick={async () => {
-                      setSelectedCourseForAssignment(course);
-                      // open schedule live class modal
-                      setShowScheduleLiveModal(true);
-                    }}
-                    style={{
-                      marginTop: '0.5rem',
-                      width: '100%',
-                      padding: '0.7rem',
-                      background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    🎥 Schedule Live Class
-                  </button>
-                </div>
-              ))}
-            </div>
+            <AssignmentManager />
           </div>
         )}
 
         {/* Attendance Tab */}
-        {activeTab === 'attendance' && (
+        {activeTab === 'upcomingClasses' && (
           <div style={{
             background: 'white',
             borderRadius: '15px',
             padding: '2rem',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
           }}>
-            <h2 style={{
-              margin: '0 0 2rem 0',
-              fontSize: '1.5rem',
-              fontWeight: 'bold',
-              color: '#1f2937',
-            }}>
-              Manage Attendance
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+              <h2 style={{
+                margin: 0,
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                color: '#1f2937',
+              }}>
+                🎓 Upcoming Classes
+              </h2>
+              <button
+                onClick={() => {
+                  setShowScheduleLiveModal(true);
+                  setSelectedCourseForClass(null);
+                }}
+                style={{
+                  padding: '0.8rem 1.5rem',
+                  background: 'linear-gradient(135deg, #0066cc 0%, #0052a3 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  fontSize: '0.95rem',
+                }}
+              >
+                + Schedule Class
+              </button>
+            </div>
 
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-              gap: '2rem',
-            }}>
-              {courses.map((course) => (
-                <div key={course._id} style={{
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  padding: '1.5rem',
-                  transition: 'all 0.3s ease',
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                Select Course (Optional - to see only this course's classes):
+              </label>
+              <select
+                value={selectedCourseForClass?._id || ''}
+                onChange={(e) => {
+                  const course = courses.find(c => c._id === e.target.value);
+                  setSelectedCourseForClass(course);
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#10b981';
-                  e.currentTarget.style.boxShadow = '0 10px 30px rgba(16, 185, 129, 0.1)';
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #ddd',
+                  borderRadius: '6px',
+                  fontSize: '0.95rem',
+                  boxSizing: 'border-box',
                 }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}>
-                  <h3 style={{
-                    margin: '0 0 1rem 0',
-                    fontSize: '1.1rem',
-                    fontWeight: 'bold',
-                    color: '#1f2937',
-                  }}>
-                    {course.title}
-                  </h3>
-                  <p style={{
-                    margin: '0 0 1rem 0',
-                    fontSize: '0.9rem',
-                    color: '#6b7280',
-                  }}>
-                    👥 {course.enrolledStudents} students enrolled
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSelectedCourseForAttendance(course);
-                      setShowAttendanceModal(true);
-                    }}
+              >
+                <option value="">All Courses</option>
+                {courses.map(course => (
+                  <option key={course._id} value={course._id}>{course.title}</option>
+                ))}
+              </select>
+            </div>
+
+            {upcomingClasses.filter(cls => !selectedCourseForClass || cls.course === selectedCourseForClass._id).length === 0 ? (
+              <p style={{ color: '#999', textAlign: 'center', padding: '2rem' }}>
+                No upcoming classes. Click "Schedule Class" to create one.
+              </p>
+            ) : (
+              <div style={{ display: 'grid', gap: '1.5rem' }}>
+                {upcomingClasses.filter(cls => !selectedCourseForClass || cls.course === selectedCourseForClass._id).map((liveClass) => (
+                  <div
+                    key={liveClass._id}
                     style={{
-                      width: '100%',
-                      padding: '0.8rem',
-                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '12px',
+                      padding: '1.5rem',
+                      backgroundColor: new Date(liveClass.scheduledAt) < new Date() ? '#f9fafb' : '#fff',
                       transition: 'all 0.3s ease',
                     }}
-                    onMouseEnter={(e) => {
-                      e.target.style.transform = 'scale(1.05)';
-                      e.target.style.opacity = '0.9';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.transform = 'scale(1)';
-                      e.target.style.opacity = '1';
-                    }}
                   >
-                    ✓ Mark Attendance
-                  </button>
-                </div>
-              ))}
-            </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
+                      <div>
+                        <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', fontWeight: 'bold', color: '#1f2937' }}>
+                          {liveClass.title}
+                        </h3>
+                        <p style={{ margin: '0.25rem 0', color: '#666', fontSize: '0.9rem' }}>
+                          📚 {liveClass.courseName || 'Course'}
+                        </p>
+                      </div>
+                      <div style={{
+                        padding: '0.5rem 1rem',
+                        background: new Date(liveClass.scheduledAt) < new Date() ? '#f3f4f6' : '#e0f2fe',
+                        borderRadius: '6px',
+                        fontSize: '0.85rem',
+                        fontWeight: '600',
+                        color: new Date(liveClass.scheduledAt) < new Date() ? '#6b7280' : '#0369a1',
+                      }}>
+                        {new Date(liveClass.scheduledAt) < new Date() ? 'Past' : 'Upcoming'}
+                      </div>
+                    </div>
+
+                    {liveClass.description && (
+                      <p style={{ margin: '0.5rem 0', color: '#666', fontSize: '0.95rem' }}>
+                        {liveClass.description}
+                      </p>
+                    )}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                      <div>
+                        <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.85rem', color: '#666', fontWeight: '600' }}>📅 Date & Time:</p>
+                        <p style={{ margin: 0, fontSize: '0.95rem', color: '#1f2937', fontWeight: '500' }}>
+                          {new Date(liveClass.scheduledAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <div>
+                        <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.85rem', color: '#666', fontWeight: '600' }}>⏱️ Duration:</p>
+                        <p style={{ margin: 0, fontSize: '0.95rem', color: '#1f2937', fontWeight: '500' }}>
+                          {liveClass.durationMinutes} minutes
+                        </p>
+                      </div>
+                    </div>
+
+                    {liveClass.meetingUrl && (
+                      <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f0f9ff', borderRadius: '8px', borderLeft: '4px solid #0066cc' }}>
+                        <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#0066cc', fontWeight: '600' }}>🔗 Zoom Link:</p>
+                        <a
+                          href={liveClass.meetingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: '#0066cc',
+                            textDecoration: 'none',
+                            fontSize: '0.95rem',
+                            wordBreak: 'break-all',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {liveClass.meetingUrl}
+                        </a>
+                      </div>
+                    )}
+
+                    <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
+                      <button
+                        onClick={async () => {
+                          setSelectedLiveClass(liveClass);
+                          try {
+                            const r = await courseAPI.getCourseEnrollments(liveClass.course);
+                            setLiveClassEnrollments(r.data || []);
+                            const state = {};
+                            (r.data || []).forEach(e => { state[e.student._id] = 'present' });
+                            setLiveClassAttendanceState(state);
+                            setShowLiveClassAttendanceModal(true);
+                          } catch (err) {
+                            showMessage('error', 'Failed to load enrollments');
+                          }
+                        }}
+                        style={{
+                          padding: '0.6rem 1.2rem',
+                          background: '#7c3aed',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontWeight: '600',
+                          flex: 1,
+                        }}
+                      >
+                        ✅ Mark Attendance
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!window.confirm('Delete this live class?')) return;
+                          try {
+                            await courseAPI.deleteLiveClass(liveClass._id);
+                            showMessage('success', 'Live class deleted');
+                            fetchUpcomingClasses();
+                          } catch (err) {
+                            showMessage('error', 'Failed to delete class');
+                          }
+                        }}
+                        style={{
+                          padding: '0.6rem 1.2rem',
+                          background: '#ef4444',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontWeight: '600',
+                        }}
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
         {activeTab === 'students' && (
@@ -955,7 +1023,180 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'attendance' && (
+          <div style={{
+            background: 'white',
+            borderRadius: '15px',
+            padding: '2rem',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+          }}>
+            <h2 style={{
+              margin: '0 0 2rem 0',
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              color: '#1f2937',
+            }}>
+              Mark Attendance for Live Classes
+            </h2>
+
+            {upcomingClasses.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#6b7280' }}>No upcoming live classes</div>
+            ) : (
+              <div style={{ display: 'grid', gap: '0.75rem' }}>
+                {upcomingClasses.map(lc => (
+                  <div key={lc._id} style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: '#f3f4f6',
+                    padding: '1rem',
+                    borderRadius: '8px',
+                  }}>
+                    <div>
+                      <div style={{ fontWeight: 700 }}>{lc.title}</div>
+                      <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+                        {lc.courseName} • {new Date(lc.scheduledAt).toLocaleString()}
+                      </div>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        setSelectedLiveClass(lc);
+                        try {
+                          const r = await courseAPI.getCourseEnrollments(lc.course);
+                          setLiveClassEnrollments(r.data || []);
+                          const state = {};
+                          (r.data || []).forEach(e => { state[e.student._id] = 'present' });
+                          setLiveClassAttendanceState(state);
+                          setShowLiveClassAttendanceModal(true);
+                        } catch (err) {
+                          showMessage('error', 'Failed to load enrollments');
+                        }
+                      }}
+                      style={{
+                        padding: '0.5rem 1rem',
+                        background: '#7c3aed',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Mark Attendance
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Live Class Attendance Modal */}
+      {showLiveClassAttendanceModal && selectedLiveClass && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '2rem',
+            maxWidth: '600px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            boxShadow: '0 20px 25px rgba(0, 0, 0, 0.2)',
+          }}>
+            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.3rem', fontWeight: 'bold' }}>
+              Mark Attendance — {selectedLiveClass.title}
+            </h3>
+            <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1.5rem' }}>
+              {selectedLiveClass.courseName} • {new Date(selectedLiveClass.scheduledAt).toLocaleString()}
+            </div>
+
+            {liveClassEnrollments.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>No enrolled students</div>
+            ) : (
+              <div style={{ display: 'grid', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                {liveClassEnrollments.map(e => (
+                  <div key={e._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', background: '#f9f9f9', borderRadius: '6px' }}>
+                    <div>
+                      <div style={{ fontWeight: '600' }}>{e.student.name}</div>
+                      <div style={{ fontSize: '0.85rem', color: '#666' }}>{e.student.email}</div>
+                    </div>
+                    <select
+                      value={liveClassAttendanceState[e.student._id] || 'present'}
+                      onChange={(ev) => setLiveClassAttendanceState({ ...liveClassAttendanceState, [e.student._id]: ev.target.value })}
+                      style={{
+                        padding: '0.5rem',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px',
+                        fontSize: '0.9rem',
+                      }}
+                    >
+                      <option value="present">Present</option>
+                      <option value="absent">Absent</option>
+                      <option value="late">Late</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowLiveClassAttendanceModal(false)}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: '#f3f4f6',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  const attendance = Object.keys(liveClassAttendanceState).map(studentId => ({
+                    studentId,
+                    status: liveClassAttendanceState[studentId],
+                  }));
+                  try {
+                    await courseAPI.markLiveClassAttendance(selectedLiveClass._id, attendance);
+                    showMessage('success', 'Attendance marked successfully');
+                    setShowLiveClassAttendanceModal(false);
+                    setSelectedLiveClass(null);
+                  } catch (err) {
+                    showMessage('error', 'Failed to mark attendance');
+                  }
+                }}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: '#7c3aed',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                }}
+              >
+                Save Attendance
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add/Edit Course Modal */}
       {showAddCourseModal && (
@@ -1729,6 +1970,203 @@ const AdminDashboard = () => {
                   }}
                   style={{
                     flex: 1,
+                    padding: '0.8rem',
+                    background: '#e5e7eb',
+                    color: '#1f2937',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Schedule Live Class Modal */}
+      {showScheduleLiveModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '15px',
+            padding: '2rem',
+            width: '90%',
+            maxWidth: '500px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+          }}>
+            <h2 style={{ margin: '0 0 1.5rem 0', fontSize: '1.3rem', fontWeight: 'bold', color: '#1f2937' }}>
+              Schedule Live Class
+            </h2>
+
+            <form onSubmit={handleScheduleLiveClass} style={{ display: 'grid', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                  Course *
+                </label>
+                <select
+                  value={selectedCourseForClass?._id || ''}
+                  onChange={(e) => {
+                    const course = courses.find(c => c._id === e.target.value);
+                    setSelectedCourseForClass(course);
+                  }}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <option value="">Select a course</option>
+                  {courses.map(course => (
+                    <option key={course._id} value={course._id}>{course.title}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                  Class Title *
+                </label>
+                <input
+                  type="text"
+                  value={liveForm.title}
+                  onChange={(e) => setLiveForm({ ...liveForm, title: e.target.value })}
+                  placeholder="e.g., Strategy Session 1"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                  Description
+                </label>
+                <textarea
+                  value={liveForm.description}
+                  onChange={(e) => setLiveForm({ ...liveForm, description: e.target.value })}
+                  placeholder="Brief description of the class"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    fontSize: '0.95rem',
+                    minHeight: '80px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                  Scheduled Date & Time *
+                </label>
+                <input
+                  type="datetime-local"
+                  value={liveForm.scheduledAt}
+                  onChange={(e) => setLiveForm({ ...liveForm, scheduledAt: e.target.value })}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                  Duration (minutes)
+                </label>
+                <input
+                  type="number"
+                  value={liveForm.durationMinutes}
+                  onChange={(e) => setLiveForm({ ...liveForm, durationMinutes: parseInt(e.target.value) })}
+                  placeholder="60"
+                  min="15"
+                  max="480"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                  Zoom Meeting Link *
+                </label>
+                <input
+                  type="url"
+                  value={liveForm.meetingUrl}
+                  onChange={(e) => setLiveForm({ ...liveForm, meetingUrl: e.target.value })}
+                  placeholder="https://zoom.us/j/..."
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.5rem' }}>
+                <button
+                  type="submit"
+                  style={{
+                    padding: '0.8rem',
+                    background: 'linear-gradient(135deg, #0066cc 0%, #0052a3 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Schedule Class
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowScheduleLiveModal(false);
+                    setLiveForm({ title: '', description: '', scheduledAt: '', durationMinutes: 60, meetingUrl: '' });
+                  }}
+                  style={{
                     padding: '0.8rem',
                     background: '#e5e7eb',
                     color: '#1f2937',

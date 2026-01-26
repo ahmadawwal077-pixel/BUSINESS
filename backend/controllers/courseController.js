@@ -1,8 +1,10 @@
 const Course = require('../models/Course');
 const CourseEnrollment = require('../models/CourseEnrollment');
 const Assignment = require('../models/Assignment');
+const AssignmentSubmission = require('../models/AssignmentSubmission');
 const Attendance = require('../models/Attendance');
 const AssignmentMark = require('../models/AssignmentMark');
+const User = require('../models/User');
 
 // Create a new course (Admin/Instructor only)
 exports.createCourse = async (req, res) => {
@@ -103,9 +105,37 @@ exports.deleteCourse = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to delete this course' });
     }
 
+    const courseId = course._id;
+    
+    // Delete all related data when course is deleted
+    // Get all assignments for this course
+    const assignments = await Assignment.find({ course: courseId });
+    const assignmentIds = assignments.map(a => a._id);
+    
+    // Delete all submissions for these assignments
+    await AssignmentSubmission.deleteMany({ assignment: { $in: assignmentIds } });
+    
+    // Delete all assignment marks
+    await AssignmentMark.deleteMany({ assignment: { $in: assignmentIds } });
+    
+    // Delete all assignments
+    await Assignment.deleteMany({ course: courseId });
+    
+    // Delete all enrollments
+    await CourseEnrollment.deleteMany({ course: courseId });
+    
+    // Delete all attendance records
+    await Attendance.deleteMany({ course: courseId });
+    
+    // Delete the course
     await Course.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Course deleted successfully' });
+    
+    res.json({ 
+      message: 'Course and all related data deleted successfully',
+      courseId: courseId
+    });
   } catch (error) {
+    console.error('Course deletion error:', error);
     res.status(500).json({ message: 'Error deleting course', error: error.message });
   }
 };
@@ -232,21 +262,32 @@ exports.getStudentCourseDetail = async (req, res) => {
     // Get assignments for the course
     const assignments = await Assignment.find({ course: courseId }).sort({ dueDate: 1 });
 
-    // For each assignment, get student's mark if exists
-    const assignmentIds = assignments.map(a => a._id);
-    const marks = await AssignmentMark.find({ assignment: { $in: assignmentIds }, student: req.userId });
-
-    const assignmentDetails = assignments.map(a => {
-      const m = marks.find(x => x.assignment.toString() === a._id.toString());
+    // For each assignment, get student's submission and mark
+    const assignmentDetails = await Promise.all(assignments.map(async (a) => {
+      const submission = await AssignmentSubmission.findOne({
+        assignment: a._id,
+        student: req.userId,
+      });
+      
       return {
         _id: a._id,
         title: a.title,
         description: a.description,
         dueDate: a.dueDate,
         totalPoints: a.totalPoints,
-        studentMark: m ? { marks: m.marks, gradedBy: m.gradedBy, gradedAt: m.gradedAt } : null,
+        content: a.content,
+        instructor: a.instructor,
+        submission: submission ? {
+          status: submission.grading.status,
+          score: submission.grading.score,
+          maxScore: submission.grading.maxScore,
+          percentage: submission.grading.percentage,
+          comment: submission.grading.comment,
+          submittedAt: submission.submittedAt,
+          isLate: submission.isLate,
+        } : null,
       };
-    });
+    }));
 
     // Attendance summary for this student
     const attendanceRecords = await Attendance.find({ course: courseId, student: req.userId }).sort({ date: -1 });
@@ -369,5 +410,40 @@ exports.getStudentDashboardStats = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching dashboard stats', error: error.message });
+  }
+};
+
+// Get enrolled students for a course (Instructor/Admin only)
+exports.getCourseEnrollments = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    // Verify course exists
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    // Check if user is instructor or admin
+    const user = await User.findById(req.userId);
+    const isInstructor = course.instructor.toString() === req.userId;
+    const isAdmin = user.isAdmin;
+
+    if (!isInstructor && !isAdmin) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    // Get active enrollments with student details
+    const enrollments = await CourseEnrollment.find({
+      course: courseId,
+      paymentStatus: 'completed',
+      status: 'active',
+    })
+      .populate('student', 'name email phone')
+      .lean();
+
+    res.json(enrollments);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching enrollments', error: error.message });
   }
 };

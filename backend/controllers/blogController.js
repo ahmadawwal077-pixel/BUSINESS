@@ -1,4 +1,5 @@
 const Blog = require('../models/Blog');
+const User = require('../models/User');
 
 // Get all published blogs
 exports.getAllBlogs = async (req, res) => {
@@ -47,6 +48,12 @@ exports.getBlogBySlug = async (req, res) => {
 // Create blog (Admin only)
 exports.createBlog = async (req, res) => {
   try {
+    // Check if user is admin
+    const user = await User.findById(req.userId);
+    if (!user || !user.isAdmin) {
+      return res.status(403).json({ message: 'Only admin users can create blog posts' });
+    }
+
     const { title, content, excerpt, category, featuredImage, author, published = true } = req.body;
 
     // Validate required fields
@@ -84,6 +91,12 @@ exports.createBlog = async (req, res) => {
 // Update blog
 exports.updateBlog = async (req, res) => {
   try {
+    // Check if user is admin
+    const user = await User.findById(req.userId);
+    if (!user || !user.isAdmin) {
+      return res.status(403).json({ message: 'Only admin users can update blog posts' });
+    }
+
     const blog = await Blog.findByIdAndUpdate(
       req.params.id,
       { ...req.body, updatedAt: Date.now() },
@@ -103,6 +116,12 @@ exports.updateBlog = async (req, res) => {
 // Delete blog
 exports.deleteBlog = async (req, res) => {
   try {
+    // Check if user is admin
+    const user = await User.findById(req.userId);
+    if (!user || !user.isAdmin) {
+      return res.status(403).json({ message: 'Only admin users can delete blog posts' });
+    }
+
     const blog = await Blog.findByIdAndDelete(req.params.id);
 
     if (!blog) {

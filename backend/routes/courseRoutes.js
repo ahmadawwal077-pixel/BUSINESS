@@ -15,6 +15,7 @@ const {
   addAssignment,
   markAttendance,
   getStudentDashboardStats,
+  getCourseEnrollments,
 } = require('../controllers/courseController');
 const { protect } = require('../middleware/auth');
 const { addLiveClass, getCourseLiveClasses } = require('../controllers/liveClassController');
@@ -44,6 +45,9 @@ router.get('/:courseId/live-classes', protect, getCourseLiveClasses);
 // Attendance routes
 router.get('/:courseId/attendance', protect, getCourseAttendance);
 router.post('/:courseId/mark-attendance', protect, markAttendance); // Instructor only
+
+// Enrollments route
+router.get('/:courseId/enrollments', protect, getCourseEnrollments);
 
 // Dashboard stats
 router.get('/dashboard/student-stats', protect, getStudentDashboardStats);

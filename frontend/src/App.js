@@ -24,6 +24,7 @@ import AdminBlog from './pages/AdminBlog';
 import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
 import AdminDashboard from './pages/AdminDashboard';
+import StudentPreviousGrades from './pages/StudentPreviousGrades';
 
 // Styles
 import './styles/global.css';
@@ -95,6 +96,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AdminBlog />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student-previous-grades"
+                element={
+                  <ProtectedRoute>
+                    <StudentPreviousGrades />
                   </ProtectedRoute>
                 }
               />

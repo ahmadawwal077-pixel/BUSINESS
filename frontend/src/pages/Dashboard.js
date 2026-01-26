@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { courseAPI } from '../services/api';
+import AssignmentPopup from '../components/AssignmentPopup';
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -14,6 +15,8 @@ const Dashboard = () => {
   });
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
 
   // Extracted fetch function so it can be called from event listeners too
   const fetchDashboardData = useCallback(async () => {
@@ -37,13 +40,19 @@ const Dashboard = () => {
             courseAPI.getCourseLiveClasses(enr.course._id).catch(() => ({ data: [] })),
           ]);
 
-          return { ...enr, detail: detailRes.data, liveClasses: liveRes.data || [] };
+          return { ...enr, detail: detailRes.data, liveClasses: liveRes.data || [], deleted: false };
         } catch (e) {
-          return { ...enr, detail: null, liveClasses: [] };
+          // If course is deleted (404) or details can't be fetched, mark as deleted
+          if (e.response?.status === 404) {
+            return { ...enr, detail: null, liveClasses: [], deleted: true };
+          }
+          return { ...enr, detail: null, liveClasses: [], deleted: false };
         }
       }));
 
-      setEnrolledCourses(detailed);
+      // Filter out deleted courses
+      const validCourses = detailed.filter(course => !course.deleted);
+      setEnrolledCourses(validCourses);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -66,7 +75,7 @@ const Dashboard = () => {
     };
   }, [user, fetchDashboardData]);
 
-  // Listen for enrollment updates (from other tabs or same-tab custom events)
+  // Listen for enrollment updates and course deletion events
   useEffect(() => {
     if (!user) return;
 
@@ -80,16 +89,28 @@ const Dashboard = () => {
       }
     };
 
+    const handleCourseDelete = (ev) => {
+      // When a course is deleted, refetch dashboard to remove it
+      try {
+        fetchDashboardData();
+      } catch (e) {
+        console.error('Error handling course delete event', e);
+      }
+    };
+
     const storageHandler = (e) => {
       if (e.key === 'enrollment_update') handleEnrollmentUpdate(e);
+      if (e.key === 'course_deleted') handleCourseDelete(e);
     };
 
     window.addEventListener('storage', storageHandler);
     window.addEventListener('enrollment_update', handleEnrollmentUpdate);
+    window.addEventListener('course_deleted', handleCourseDelete);
 
     return () => {
       window.removeEventListener('storage', storageHandler);
       window.removeEventListener('enrollment_update', handleEnrollmentUpdate);
+      window.removeEventListener('course_deleted', handleCourseDelete);
     };
   }, [user, fetchDashboardData]);
 
@@ -114,6 +135,7 @@ const Dashboard = () => {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const courseActions = [
     {
       icon: '📚',
@@ -365,6 +387,56 @@ const Dashboard = () => {
             ))}
           </div>
 
+          {/* View Previous Grades Card */}
+          <div style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: '18px',
+            padding: '2rem',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+            marginBottom: '3rem',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-5px)';
+            e.currentTarget.style.boxShadow = '0 10px 30px rgba(102, 126, 234, 0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
+          }}
+          onClick={() => navigate('/student-previous-grades')}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <div>
+                <h3 style={{
+                  margin: '0 0 0.5rem 0',
+                  fontSize: '1.5rem',
+                  fontWeight: 'bold',
+                  color: 'white',
+                }}>
+                  📜 View Previous Grades
+                </h3>
+                <p style={{
+                  margin: 0,
+                  fontSize: '0.95rem',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                }}>
+                  Review all your submitted assignments and their grades
+                </p>
+              </div>
+              <div style={{
+                fontSize: '2.5rem',
+                opacity: 0.8,
+              }}>
+                →
+              </div>
+            </div>
+          </div>
+
           {/* My Enrolled Courses */}
           {enrolledCourses.length > 0 ? (
             <div style={{
@@ -468,6 +540,7 @@ const Dashboard = () => {
                           margin: '0.5rem 0 0 0',
                           fontSize: '0.75rem',
                           color: '#6b7280',
+                          transition: 'color 0.6s ease-in-out',
                         }}>
                           {enrollment.totalAttendance > 0 ? ((enrollment.presentDays / enrollment.totalAttendance) * 100).toFixed(0) : 0}% Attended
                         </p>
@@ -487,14 +560,42 @@ const Dashboard = () => {
                                 <div style={{ color: '#6b7280', fontSize: '0.85rem' }}>No assignments yet</div>
                               )}
                               {enrollment.detail.assignments.map((a) => (
-                                <div key={a._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div
+                                  key={a._id}
+                                  onClick={() => {
+                                    setSelectedAssignment(a);
+                                    setSelectedCourseId(enrollment.course._id);
+                                  }}
+                                  style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '0.5rem',
+                                    backgroundColor: '#f9fafb',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#f0f4ff';
+                                    e.currentTarget.style.borderLeft = '3px solid #0066cc';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#f9fafb';
+                                    e.currentTarget.style.borderLeft = 'none';
+                                  }}
+                                >
                                   <div>
                                     <div style={{ fontWeight: 600, color: '#111827' }}>{a.title}</div>
                                     <div style={{ color: '#6b7280', fontSize: '0.8rem' }}>Due: {a.dueDate ? a.dueDate.split('T')[0] : 'TBD'}</div>
                                   </div>
                                   <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontWeight: 700, color: '#0066cc' }}>{a.studentMark ? `${a.studentMark.marks}/${a.totalPoints}` : 'Not graded'}</div>
-                                    <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>{a.studentMark ? `Graded` : ''}</div>
+                                    <div style={{ fontWeight: 700, color: '#0066cc' }}>
+                                      {a.submission?.status === 'graded' ? `${a.submission.score}/${a.submission.maxScore}` : 'Not graded'}
+                                    </div>
+                                    <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                                      {a.submission ? (a.submission.status === 'graded' ? 'Graded' : 'Submitted') : 'Pending'}
+                                    </div>
                                   </div>
                                 </div>
                               ))}
@@ -516,12 +617,57 @@ const Dashboard = () => {
                               {/* Upcoming Live Classes */}
                               {enrollment.liveClasses && enrollment.liveClasses.length > 0 && (
                                 <div style={{ marginTop: '0.75rem' }}>
-                                  <div style={{ fontWeight: 700, marginBottom: '0.4rem' }}>Upcoming Live Classes</div>
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                                  <div style={{ fontWeight: 700, marginBottom: '0.4rem' }}>🎓 Upcoming Live Classes</div>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                     {enrollment.liveClasses.slice(0,3).map((lc) => (
-                                      <div key={lc._id} style={{ background: '#fff7ed', padding: '0.5rem', borderRadius: '8px', fontSize: '0.9rem' }}>
-                                        <div style={{ fontWeight: 700 }}>{lc.title}</div>
-                                        <div style={{ color: '#6b7280', fontSize: '0.85rem' }}>{new Date(lc.scheduledAt).toLocaleString()}</div>
+                                      <div key={lc._id} style={{
+                                        background: new Date(lc.scheduledAt) < new Date() ? '#f3f4f6' : '#e0f2fe',
+                                        padding: '0.75rem',
+                                        borderRadius: '8px',
+                                        fontSize: '0.9rem',
+                                        border: lc.meetingUrl ? '1px solid #0066cc' : 'none',
+                                      }}>
+                                        <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>{lc.title}</div>
+                                        <div style={{ color: '#6b7280', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
+                                          📅 {new Date(lc.scheduledAt).toLocaleString()}
+                                        </div>
+                                        {lc.durationMinutes && (
+                                          <div style={{ color: '#6b7280', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
+                                            ⏱️ {lc.durationMinutes} minutes
+                                          </div>
+                                        )}
+                                        {lc.meetingUrl && new Date(lc.scheduledAt) > new Date() && (
+                                          <a
+                                            href={lc.meetingUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                              display: 'inline-block',
+                                              marginTop: '0.5rem',
+                                              padding: '0.4rem 0.8rem',
+                                              background: '#0066cc',
+                                              color: 'white',
+                                              borderRadius: '4px',
+                                              textDecoration: 'none',
+                                              fontSize: '0.8rem',
+                                              fontWeight: '600',
+                                            }}
+                                          >
+                                            🔗 Join Zoom
+                                          </a>
+                                        )}
+                                        {lc.meetingUrl && new Date(lc.scheduledAt) <= new Date() && (
+                                          <div style={{
+                                            marginTop: '0.5rem',
+                                            padding: '0.4rem 0.8rem',
+                                            background: '#f3f4f6',
+                                            borderRadius: '4px',
+                                            fontSize: '0.75rem',
+                                            color: '#6b7280',
+                                          }}>
+                                            Class ended
+                                          </div>
+                                        )}
                                       </div>
                                     ))}
                                   </div>
@@ -581,8 +727,8 @@ const Dashboard = () => {
           ) : null}
         </div>
 
-        {/* Course Management Section */}
-        <div style={{
+        {/* Course Management Section 
+        // <div style={{
           maxWidth: '1400px',
           margin: '0 auto',
           marginBottom: '3rem',
@@ -606,7 +752,7 @@ const Dashboard = () => {
           }}>
             {courseActions.map((item) => renderActionCard(item))}
           </div>
-        </div>
+        </div> 
 
         {/* Consultation Management Section */}
         <div style={{
@@ -681,6 +827,21 @@ const Dashboard = () => {
             Need help? <a href="/contact" style={{ color: '#0066cc', textDecoration: 'none', fontWeight: '600' }}>Contact Support</a> or visit our <a href="/blog" style={{ color: '#0066cc', textDecoration: 'none', fontWeight: '600' }}>Knowledge Base</a>
           </p>
         </div>
+
+        {/* Assignment Popup */}
+        {selectedAssignment && selectedCourseId && (
+          <AssignmentPopup
+            assignment={selectedAssignment}
+            courseId={selectedCourseId}
+            onClose={() => {
+              setSelectedAssignment(null);
+              setSelectedCourseId(null);
+            }}
+            onSubmit={() => {
+              fetchDashboardData();
+            }}
+          />
+        )}
       </div>
     </>
   );

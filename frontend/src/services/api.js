@@ -80,7 +80,34 @@ export const courseAPI = {
   addLiveClass: (courseId, data) => apiClient.post(`/courses/${courseId}/live-classes`, data),
   getCourseLiveClasses: (courseId) => apiClient.get(`/courses/${courseId}/live-classes`),
   getUpcomingLiveClasses: () => apiClient.get('/live/upcoming'),
+  deleteLiveClass: (liveId) => apiClient.delete(`/live/${liveId}`),
+  markLiveClassAttendance: (liveId, attendance) => apiClient.post(`/live/${liveId}/attendance`, { attendance }),
+  getCourseEnrollments: (courseId) => apiClient.get(`/courses/${courseId}/enrollments`),
   getStudentDashboardStats: () => apiClient.get('/courses/dashboard/student-stats'),
+  getMySubmissions: () => apiClient.get('/assignments/my-submissions'),
+};
+
+// Assignment API
+export const assignmentAPI = {
+  createAssignment: (data) => apiClient.post('/assignments/create', data),
+  getCourseAssignments: (courseId) => apiClient.get(`/assignments/course/${courseId}`),
+  getAssignmentById: (assignmentId) => apiClient.get(`/assignments/${assignmentId}`),
+  updateAssignment: (assignmentId, data) => apiClient.put(`/assignments/${assignmentId}`, data),
+  deleteAssignment: (assignmentId) => apiClient.delete(`/assignments/${assignmentId}`),
+  submitResponse: (assignmentId, courseId, data) => apiClient.post(`/assignments/${assignmentId}/course/${courseId}/submit`, data),
+  getMySubmission: (assignmentId) => apiClient.get(`/assignments/${assignmentId}/my-submission`),
+  getSubmissions: (assignmentId) => apiClient.get(`/assignments/${assignmentId}/submissions`),
+  gradeSubmission: (submissionId, data) => apiClient.post(`/assignments/${submissionId}/grade`, data),
+};
+
+// Live Classes API
+export const liveClassAPI = {
+  getUpcomingClasses: () => apiClient.get('/live/upcoming'),
+  getCourseLiveClasses: (courseId) => apiClient.get(`/live/course/${courseId}`),
+  addLiveClass: (courseId, data) => apiClient.post(`/live/course/${courseId}`, data),
+  deleteLiveClass: (liveId) => apiClient.delete(`/live/${liveId}`),
+  markLiveClassAttendance: (liveId, attendance) => apiClient.post(`/live/${liveId}/attendance`, { attendance }),
+  getCourseEnrollments: (courseId) => apiClient.get(`/courses/${courseId}/enrollments`),
 };
 
 export default apiClient;

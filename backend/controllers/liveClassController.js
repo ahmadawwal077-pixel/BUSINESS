@@ -67,3 +67,71 @@ exports.getUpcomingLiveClassesForStudent = async (req, res) => {
     res.status(500).json({ message: 'Error fetching upcoming live classes', error: error.message });
   }
 };
+
+// Delete a live class (instructor or admin)
+exports.deleteLiveClass = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const live = await LiveClass.findById(id);
+    if (!live) return res.status(404).json({ message: 'Live class not found' });
+
+    const course = await Course.findById(live.course);
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    const requestingUser = await User.findById(req.userId);
+    if (!requestingUser) return res.status(403).json({ message: 'Not authorized' });
+    if (course.instructor.toString() !== req.userId && !requestingUser.isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to delete this live class' });
+    }
+
+    await LiveClass.findByIdAndDelete(id);
+    res.json({ message: 'Live class deleted successfully', id });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting live class', error: error.message });
+  }
+};
+
+// Mark attendance for a live class (instructor or admin)
+exports.markAttendanceForLiveClass = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { attendance } = req.body; // [{ studentId, status, notes }]
+
+    if (!Array.isArray(attendance)) return res.status(400).json({ message: 'Attendance array required' });
+
+    const live = await LiveClass.findById(id);
+    if (!live) return res.status(404).json({ message: 'Live class not found' });
+
+    const course = await Course.findById(live.course);
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    const requestingUser = await User.findById(req.userId);
+    if (!requestingUser) return res.status(403).json({ message: 'Not authorized' });
+    if (course.instructor.toString() !== req.userId && !requestingUser.isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to mark attendance' });
+    }
+
+    const Attendance = require('../models/Attendance');
+    const classDate = new Date(live.scheduledAt);
+
+    const results = [];
+    for (const a of attendance) {
+      if (!a.studentId || !a.status) continue;
+      const filter = { course: course._id, student: a.studentId, date: classDate };
+      let record = await Attendance.findOne(filter);
+      if (record) {
+        record.status = a.status;
+        record.notes = a.notes || record.notes;
+        await record.save();
+      } else {
+        record = new Attendance({ course: course._id, student: a.studentId, date: classDate, status: a.status, notes: a.notes || '' });
+        await record.save();
+      }
+      results.push(record);
+    }
+
+    res.json({ message: 'Attendance updated', results });
+  } catch (error) {
+    res.status(500).json({ message: 'Error marking attendance', error: error.message });
+  }
+};
