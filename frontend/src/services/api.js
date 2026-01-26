@@ -2,20 +2,76 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
+console.log('🔗 API Configuration:');
+console.log('   Environment:', process.env.NODE_ENV);
+console.log('   Base URL:', API_URL);
+console.log('   Status: Ready');
+
 export const apiClient = axios.create({
   baseURL: API_URL,
-});
-
-// Add token to requests
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  timeout: 10000, // 10 second timeout
+  headers: {
+    'Content-Type': 'application/json',
   }
-  return config;
 });
 
-// Auth API
+// Request interceptor - Add token to all requests
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log('✓ Auth token attached to request');
+    }
+    console.log(`📤 ${config.method?.toUpperCase()} ${config.url}`);
+    return config;
+  },
+  (error) => {
+    console.error('❌ Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor - Handle errors
+apiClient.interceptors.response.use(
+  (response) => {
+    console.log(`✅ Response:`, response.status, response.statusText);
+    return response;
+  },
+  (error) => {
+    if (error.response) {
+      console.error(`❌ API Error ${error.response.status}:`, error.response.data);
+    } else if (error.request) {
+      console.error('❌ No response received:', error.message);
+    } else {
+      console.error('❌ Request setup error:', error.message);
+    }
+    return Promise.reject(error);
+  }
+);
+
+// ============ TEST METHODS ============
+export const testAPI = {
+  // Test basic connectivity
+  testHealth: () => apiClient.get('/health'),
+  
+  // Test API root
+  testAPIRoot: () => apiClient.get(''),
+  
+  // Test database
+  testDB: () => apiClient.get('/test/db'),
+  
+  // Test CORS
+  testCORS: () => apiClient.get('/test/cors'),
+  
+  // Test authentication
+  testAuth: () => apiClient.get('/test/auth'),
+  
+  // Test full status
+  testStatus: () => apiClient.get('/test/status'),
+};
+
+// ============ AUTH API ============
 export const authAPI = {
   register: (data) => apiClient.post('/auth/register', data),
   login: (data) => apiClient.post('/auth/login', data),
