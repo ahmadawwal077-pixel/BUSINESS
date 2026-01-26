@@ -24,6 +24,11 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ message: 'Business Consultation API Server', status: 'running' });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);

@@ -23,33 +23,28 @@ const { addLiveClass, getCourseLiveClasses } = require('../controllers/liveClass
 // Public routes
 router.get('/', getAllCourses);
 
+// Dashboard stats - MUST come before /:id routes
+router.get('/dashboard/student-stats', protect, getStudentDashboardStats);
+
 // Protected routes - must come before /:id routes
 router.post('/create', protect, createCourse); // Admin/Instructor
 router.post('/enroll', protect, enrollCourse);
 router.post('/confirm-payment', protect, confirmEnrollmentPayment);
 router.get('/my-courses', protect, getMyEnrolledCourses);
-router.put('/:id', protect, updateCourse); // Admin/Instructor
-router.delete('/:id', protect, deleteCourse); // Admin/Instructor
 
-// Course detail - must come after other routes
-router.get('/:id', getCourseById);
-
-// Assignment routes
+// Specific nested routes - must come before /:id routes
 router.get('/:courseId/assignments', protect, getCourseAssignments);
 router.post('/:courseId/add-assignment', protect, addAssignment); // Instructor only
 router.get('/:courseId/student-dashboard', protect, getStudentCourseDetail);
-// Live class (course-scoped)
 router.post('/:courseId/live-classes', protect, addLiveClass);
 router.get('/:courseId/live-classes', protect, getCourseLiveClasses);
-
-// Attendance routes
 router.get('/:courseId/attendance', protect, getCourseAttendance);
 router.post('/:courseId/mark-attendance', protect, markAttendance); // Instructor only
-
-// Enrollments route
 router.get('/:courseId/enrollments', protect, getCourseEnrollments);
 
-// Dashboard stats
-router.get('/dashboard/student-stats', protect, getStudentDashboardStats);
+// Generic :id routes - MUST come last
+router.put('/:id', protect, updateCourse); // Admin/Instructor
+router.delete('/:id', protect, deleteCourse); // Admin/Instructor
+router.get('/:id', getCourseById);
 
 module.exports = router;
