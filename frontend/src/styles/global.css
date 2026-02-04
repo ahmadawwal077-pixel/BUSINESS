@@ -122,6 +122,17 @@ button {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
+/* Why Choose Section - 3 columns on large screens */
+.why-choose-grid {
+  grid-template-columns: repeat(auto-fit, minmax(clamp(280px, 90vw, 1fr), 1fr)) !important;
+}
+
+@media (min-width: 1024px) {
+  .why-choose-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
 /* Section */
 .section {
   padding: 4rem 0;

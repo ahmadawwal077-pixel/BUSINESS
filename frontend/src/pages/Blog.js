@@ -11,6 +11,15 @@ import {
   Gear,
 } from 'phosphor-react';
 
+const iconsMap = {
+  DesktopTower,
+  TrendUp,
+  ArrowClockwise,
+  MagnifyingGlass,
+  Users,
+  Gear,
+};
+
 const Blog = () => {
   const [blogs, setBlogs] = useState([
     {
@@ -265,7 +274,23 @@ const Blog = () => {
                       {/* Content */}
                       <div style={{ padding: '2rem', flex: '1', display: 'flex', flexDirection: 'column' }}>
                         <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', color: blog.color || '#0066cc' }}>
-                          {blog.icon ? React.createElement(blog.icon, { size: 40, weight: 'bold' }) : <Gear size={40} weight="bold" />}
+                          {(() => {
+                            const iconValue = blog.icon;
+                            let IconComp = typeof iconValue === 'string' ? iconsMap[iconValue] : iconValue;
+                            if (!IconComp) {
+                              IconComp = TrendUp; // safe fallback
+                            }
+
+                            // Ensure IconComp is a valid component before creating it
+                            if (typeof IconComp === 'function' || (typeof IconComp === 'object' && IconComp !== null)) {
+                              return React.createElement(IconComp, { size: 40, weight: 'bold' });
+                            }
+
+                            // Fallback UI if something unexpected is present
+                            return (
+                              <div style={{ fontSize: '1.8rem', lineHeight: '1' }}>🔖</div>
+                            );
+                          })()}
                         </div>
                         <h3 style={{ color: blog.color || '#0066cc', marginBottom: '0.75rem', fontSize: '1.3rem', lineHeight: '1.4' }}>
                           {blog.title}

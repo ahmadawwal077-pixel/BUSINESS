@@ -18,6 +18,15 @@
 }
 
 .navbar-logo {
+  /* image logo sizing — keep font fallbacks for text-only variants */
+  height: clamp(40px, 6vw, 64px);
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* preserve previous text logo styles for fallback cases */
+.navbar-logo--text {
   font-size: 1.5rem;
   font-weight: 700;
   color: #0066cc;

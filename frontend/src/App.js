@@ -28,6 +28,7 @@ import StudentPreviousGrades from './pages/StudentPreviousGrades';
 
 // Styles
 import './styles/global.css';
+import AnalyticsConsent from './components/AnalyticsConsent';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
       <AuthProvider>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <Navbar />
+          <AnalyticsConsent />
           <main style={{ flex: 1 }}>
             <Routes>
               {/* Public Routes */}

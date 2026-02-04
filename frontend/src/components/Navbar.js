@@ -1,6 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import Logo from './Logo';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
@@ -16,9 +17,20 @@ const Navbar = () => {
     setMenuOpen(false);
   };
 
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setMenuOpen(false);
+        setDropdownOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   return (
     <>
-      <nav style={{
+      <nav aria-label="Main navigation" style={{
         background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
         boxShadow: '0 4px 20px rgba(0, 102, 204, 0.08)',
         position: 'sticky',
@@ -35,25 +47,20 @@ const Navbar = () => {
           margin: '0 auto',
           width: '100%',
         }}>
-          {/* Logo */}
+          {/* Logo (component) */}
           <Link to="/" style={{
-            fontSize: 'clamp(1.4rem, 4vw, 1.8rem)',
-            fontWeight: '800',
-            background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
+            display: 'inline-flex',
+            alignItems: 'center',
             textDecoration: 'none',
             transition: 'transform 0.3s ease',
-            letterSpacing: '-0.5px',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.05)';
+            e.currentTarget.style.transform = 'scale(1.03)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
           }}>
-            PositiveHills
+            <Logo className="navbar-logo" />
           </Link>
 
         {/* Desktop Menu */}
@@ -117,51 +124,58 @@ const Navbar = () => {
         }}>
           {!isAuthenticated ? (
             <>
-              <Link to="/login" style={{
-                color: '#0066cc',
-                textDecoration: 'none',
-                fontWeight: '600',
-                padding: 'clamp(0.5rem, 1vw, 0.7rem) clamp(0.8rem, 2vw, 1.3rem)',
-                borderRadius: '8px',
-                border: '2px solid #0066cc',
-                transition: 'all 0.3s ease',
-                display: 'inline-block',
-                fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 102, 204, 0.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-              }}>
-                Login
-              </Link>
-              <Link to="/register" style={{
-                color: 'white',
-                textDecoration: 'none',
-                fontWeight: '600',
-                padding: 'clamp(0.5rem, 1vw, 0.7rem) clamp(0.8rem, 2vw, 1.3rem)',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
-                transition: 'all 0.3s ease',
-                display: 'inline-block',
-                boxShadow: '0 4px 15px rgba(0, 102, 204, 0.3)',
-                fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 102, 204, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 102, 204, 0.3)';
-              }}>
-                Sign Up
-              </Link>
+              {location.pathname.startsWith('/courses') && (
+                <>
+                  <Link to="/login" style={{
+                    color: '#0066cc',
+                    textDecoration: 'none',
+                    fontWeight: '600',
+                    padding: 'clamp(0.5rem, 1vw, 0.7rem) clamp(0.8rem, 2vw, 1.3rem)',
+                    borderRadius: '8px',
+                    border: '2px solid #0066cc',
+                    transition: 'all 0.3s ease',
+                    display: 'inline-block',
+                    fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(0, 102, 204, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                  }}>
+                    Login
+                  </Link>
+                  <Link to="/register" style={{
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontWeight: '600',
+                    padding: 'clamp(0.5rem, 1vw, 0.7rem) clamp(0.8rem, 2vw, 1.3rem)',
+                    borderRadius: '8px',
+                    background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
+                    transition: 'all 0.3s ease',
+                    display: 'inline-block',
+                    boxShadow: '0 4px 15px rgba(0, 102, 204, 0.3)',
+                    fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 102, 204, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 102, 204, 0.3)';
+                  }}>
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </>
           ) : (
             <div style={{ position: 'relative' }}>
-              <div
+              <button
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen}
+                aria-controls="user-dropdown"
                 style={{
                   width: 'clamp(38px, 8vw, 44px)',
                   height: 'clamp(38px, 8vw, 44px)',
@@ -184,9 +198,12 @@ const Navbar = () => {
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'scale(1)';
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setDropdownOpen(false);
+                }}
               >
                 {user?.name?.charAt(0).toUpperCase()}
-              </div>
+              </button>
 
               {/* Dropdown Menu */}
               {dropdownOpen && (
@@ -299,6 +316,9 @@ const Navbar = () => {
 
         {/* Mobile Menu Toggle */}
         <button
+          aria-label="Toggle navigation menu"
+          aria-controls="mobile-menu"
+          aria-expanded={menuOpen}
           style={{
             display: 'none',
             background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
@@ -364,7 +384,7 @@ const Navbar = () => {
             }}
             onClick={() => setMenuOpen(false)}
           />
-          <div style={{
+          <div id="mobile-menu" aria-hidden={!menuOpen} style={{
             position: 'relative',
             background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
             borderTop: '2px solid rgba(0, 102, 204, 0.1)',
@@ -512,7 +532,7 @@ const Navbar = () => {
             )}
 
             {/* Guest CTA */}
-            {!isAuthenticated && (
+            {!isAuthenticated && location.pathname.startsWith('/courses') && (
               <div style={{ marginTop: 'clamp(1.5rem, 2.5vw, 2rem)', display: 'flex', flexDirection: 'column', gap: 'clamp(0.75rem, 1.5vw, 1rem)', animation: 'slideInLeft 0.4s ease 0.35s both' }}>
                 <Link
                   to="/login"

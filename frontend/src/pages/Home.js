@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChartBar,
@@ -6,7 +6,6 @@ import {
   MagnifyingGlass,
   Buildings,
   DesktopTower,
-  Lightning,
   Globe,
   Users,
   CheckCircle,
@@ -17,106 +16,128 @@ import {
   Phone,
 } from 'phosphor-react';
 
+const Carousel = () => {
+  const slides = [
+    {
+      image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop',
+      title: 'Scale Your Business with Mathematical Certainty',
+      subtitle: 'Expert consulting solutions for sustainable growth',
+      text: 'Partner with industry leaders to achieve measurable results and lasting success',
+      primary: { to: '/services', label: 'Explore Services' },
+      secondary: { to: '/contact', label: 'Get Started' },
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=1600&h=900&fit=crop',
+      title: 'Accelerate Growth',
+      subtitle: 'Data-driven strategies for measurable outcomes',
+      text: 'We combine analytics and execution to push your KPIs forward',
+      primary: { to: '/services', label: 'See Solutions' },
+      secondary: { to: '/contact', label: 'Contact Us' },
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1600&h=900&fit=crop',
+      title: 'Empower Your Team',
+      subtitle: 'Training and implementation for real results',
+      text: 'Practical upskilling and hands-on guidance to ensure adoption',
+      primary: { to: '/services', label: 'Training Programs' },
+      secondary: { to: '/contact', label: 'Get A Demo' },
+    },
+  ];
+
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    if (paused) return;
+    intervalRef.current = setInterval(() => setIndex((i) => (i + 1) % slides.length), 4500);
+    return () => clearInterval(intervalRef.current);
+  }, [paused, slides.length]);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'ArrowLeft') setIndex((i) => (i - 1 + slides.length) % slides.length);
+      if (e.key === 'ArrowRight') setIndex((i) => (i + 1) % slides.length);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [slides.length]);
+
+  const goTo = (i) => setIndex(i % slides.length);
+
+  return (
+    <section
+      aria-label="Homepage hero carousel"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      style={{ position: 'relative', overflow: 'hidden', minHeight: 'clamp(500px, 80vh, 700px)', color: 'white' }}
+    >
+      <style>{`/* Carousel styles */
+        .ph-slides { position:absolute; inset:0; }
+        .ph-slide { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0; transition:opacity 900ms ease; }
+        .ph-slide--visible { opacity:1; }
+        .ph-overlay { position:absolute; inset:0; background:linear-gradient(135deg, rgba(0,102,204,0.45) 0%, rgba(0,82,163,0.45) 100%); z-index:1 }
+        .ph-content { position:relative; z-index:2; display:flex; align-items:center; justify-content:center; min-height:inherit; padding:clamp(4rem,10vw,8rem) clamp(1rem,5vw,2rem); text-align:center; }
+        .ph-indicators { position:absolute; left:50%; transform:translateX(-50%); bottom:clamp(1rem,2vw,1.5rem); display:flex; gap:0.5rem; z-index:3; }
+        .ph-dot { width:11px; height:11px; border-radius:50%; background:rgba(255,255,255,0.5); border:none; cursor:pointer; }
+        .ph-dot--active { background:white; transform:scale(1.12); }
+        @media (prefers-reduced-motion: reduce) { .ph-slide { transition: none !important; } }
+      `}</style>
+
+      <div className="ph-slides" aria-hidden="true">
+        {slides.map((s, i) => {
+          // build a srcset for responsive loading
+          const srcBase = s.image;
+          const makeSrc = (w) => srcBase.replace(/w=\d+/, `w=${w}`);
+          const srcSet = `${makeSrc(800)} 800w, ${makeSrc(1200)} 1200w, ${makeSrc(1600)} 1600w`;
+          return (
+            <picture key={i} style={{ position: 'absolute', inset: 0 }}>
+              <img
+                id={`slide-${i + 1}`}
+                src={makeSrc(1600)}
+                srcSet={srcSet}
+                sizes="100vw"
+                alt={`${s.title} — ${s.subtitle}`}
+                loading={i === index ? 'eager' : 'lazy'}
+                decoding="async"
+                className={`ph-slide ${i === index ? 'ph-slide--visible' : ''}`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', zIndex: i === index ? 0 : -1 }}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`Slide ${i + 1} of ${slides.length}`}
+              />
+            </picture>
+          );
+        })}
+        <div className="ph-overlay" aria-hidden="true" />
+      </div>
+
+      <div className="ph-content" aria-live="polite">
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <h1 style={{ fontSize: 'clamp(1.8rem, 6vw, 3.5rem)', marginBottom: 'clamp(0.75rem, 2vw, 1rem)', fontWeight: '800', letterSpacing: '-0.5px' }}>{slides[index].title}</h1>
+          <p style={{ fontSize: 'clamp(1rem, 2.6vw, 1.3rem)', marginBottom: 'clamp(0.5rem, 1vw, 0.75rem)', fontWeight: '400', opacity: 0.95 }}>{slides[index].subtitle}</p>
+          <p style={{ fontSize: 'clamp(0.95rem, 2.2vw, 1.05rem)', marginBottom: 'clamp(1.25rem, 2.5vw, 1.75rem)', color: 'rgba(255,255,255,0.95)' }}>{slides[index].text}</p>
+          <div style={{ display: 'flex', gap: 'clamp(0.75rem, 2vw, 1rem)', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to={slides[index].primary.to} style={{ display: 'inline-block', background: 'white', color: '#0066cc', fontWeight: '700', padding: 'clamp(0.6rem,1vw,0.8rem) clamp(1rem,2vw,1.6rem)', borderRadius: '8px', textDecoration: 'none' }}>{slides[index].primary.label}</Link>
+            <Link to={slides[index].secondary.to} style={{ display: 'inline-block', color: 'white', border: '2px solid rgba(255,255,255,0.9)', padding: 'clamp(0.6rem,1vw,0.8rem) clamp(1rem,2vw,1.6rem)', borderRadius: '8px', textDecoration: 'none' }}>{slides[index].secondary.label}</Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="ph-indicators" role="tablist" aria-label="Slide selection">
+        {slides.map((_, i) => (
+          <button key={i} className={`ph-dot ${i === index ? 'ph-dot--active' : ''}`} aria-label={`Go to slide ${i + 1}`} aria-current={i === index} aria-controls={`slide-${i + 1}`} onClick={() => goTo(i)} />
+        ))}
+      </div>
+    </section>
+  );
+};
+
 const Home = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section
-        style={{
-          backgroundImage: 'linear-gradient(135deg, rgba(0, 102, 204, 0.85) 0%, rgba(0, 82, 163, 0.85) 100%), url("https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=600&fit=crop")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-          color: 'white',
-          padding: 'clamp(4rem, 10vw, 8rem) clamp(1rem, 5vw, 2rem)',
-          textAlign: 'center',
-          minHeight: 'clamp(500px, 80vh, 700px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '0 clamp(1rem, 5vw, 2rem)' }}>
-          <h1 style={{ 
-            fontSize: 'clamp(1.8rem, 6vw, 4rem)', 
-            marginBottom: 'clamp(0.75rem, 2vw, 1rem)', 
-            fontWeight: 'bold', 
-            letterSpacing: '-1px',
-            lineHeight: '1.2',
-          }}>
-            Transform Your Business
-          </h1>
-          <p style={{ 
-            fontSize: 'clamp(1rem, 3vw, 1.4rem)', 
-            marginBottom: 'clamp(0.5rem, 1vw, 0.5rem)', 
-            fontWeight: '300',
-            lineHeight: '1.4',
-          }}>
-            Expert consulting solutions for sustainable growth
-          </p>
-          <p style={{ 
-            fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)', 
-            marginBottom: 'clamp(2rem, 4vw, 3rem)', 
-            opacity: '0.95',
-            lineHeight: '1.5',
-          }}>
-            Partner with industry leaders to achieve measurable results and lasting success
-          </p>
-          <div style={{ 
-            display: 'flex', 
-            gap: 'clamp(0.75rem, 2vw, 1rem)', 
-            justifyContent: 'center', 
-            flexWrap: 'wrap',
-            padding: '0 clamp(0.5rem, 2vw, 1rem)',
-          }}>
-            <Link to="/services" style={{ 
-              display: 'inline-block', 
-              background: 'white', 
-              color: '#0066cc', 
-              fontWeight: 'bold', 
-              padding: 'clamp(0.7rem, 1.5vw, 0.9rem) clamp(1.2rem, 3vw, 2rem)', 
-              fontSize: 'clamp(0.85rem, 2vw, 1.05rem)',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
-            }}>
-              Explore Services
-            </Link>
-            <Link to="/contact" style={{ 
-              display: 'inline-block', 
-              borderColor: 'white', 
-              color: 'white', 
-              fontWeight: 'bold', 
-              padding: 'clamp(0.7rem, 1.5vw, 0.9rem) clamp(1.2rem, 3vw, 2rem)', 
-              fontSize: 'clamp(0.85rem, 2vw, 1.05rem)',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              border: '2px solid white',
-              transition: 'all 0.3s ease',
-              background: 'rgba(255, 255, 255, 0.1)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}>
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </section>
+      <Carousel />
 
       {/* Services Preview */}
       <section className="section" style={{ 
@@ -146,39 +167,21 @@ const Home = () => {
             {[
               {
                 icon: ChartBar,
-                title: 'Strategic Planning',
-                description: 'Develop long-term strategies for sustainable growth',
+                title: 'Fractional FP&A',
+                description: 'Budgeting & Forecasting, Cash Flow Management, and Variance Analysis to strengthen financial controls and forecasting.',
                 color: '#0066cc',
               },
               {
-                icon: Rocket,
-                title: 'Business Development',
-                description: 'Expand your market presence and revenue streams',
-                color: '#00b4d8',
-              },
-              {
-                icon: MagnifyingGlass,
-                title: 'Market Analysis',
-                description: 'In-depth market research and competitive analysis',
-                color: '#0096c7',
-              },
-              {
-                icon: Buildings,
-                title: 'Organizational Design',
-                description: 'Optimize your organizational structure',
-                color: '#0077b6',
-              },
-              {
                 icon: DesktopTower,
-                title: 'Digital Transformation',
-                description: 'Modernize your business processes',
+                title: 'Business Performance Reporting (BPR)',
+                description: 'Interactive dashboards, KPI tracking and monthly management reporting packs for real-time visibility.',
                 color: '#00b4d8',
               },
               {
-                icon: Lightning,
-                title: 'Change Management',
-                description: 'Guide your organization through transformation',
-                color: '#0096c7',
+                icon: Rocket,
+                title: 'Data Analytics Capacity Building (Training)',
+                description: 'Corporate training, the "Data to Insights" cohort, and practical financial modeling workshops.',
+                color: '#8b5cf6',
               },
             ].map((service, index) => {
               const Icon = service.icon;
@@ -632,7 +635,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div style={{ 
+          <div className="why-choose-grid" style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(280px, 90vw, 1fr), 1fr))', 
             gap: 'clamp(1.5rem, 3vw, 2rem)',
@@ -704,11 +707,11 @@ const Home = () => {
           padding: 'clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)',
         }}
       >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(240px, 90vw, 280px), 1fr))', 
-            gap: 'clamp(2rem, 4vw, 3rem)', 
+            gap: 'clamp(1.5rem, 3vw, 2rem)', 
             textAlign: 'center',
           }}>
             {[
@@ -744,6 +747,7 @@ const Home = () => {
           color: 'white',
           padding: 'clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem)',
           textAlign: 'center',
+          marginTop: 'clamp(2rem, 4vw, 3rem)',
         }}
       >
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>

@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { blogAPI } from '../services/api';
+import {
+  DesktopTower,
+  TrendUp,
+  ArrowClockwise,
+  MagnifyingGlass,
+  Users,
+  Gear,
+} from 'phosphor-react';
+
+const iconsMap = {
+  DesktopTower,
+  TrendUp,
+  ArrowClockwise,
+  MagnifyingGlass,
+  Users,
+  Gear,
+};
 
 const BlogDetail = () => {
   const { slug } = useParams();
@@ -218,12 +235,35 @@ const BlogDetail = () => {
         }}
       >
         <div className="container">
-          <div style={{ display: 'inline-block', marginBottom: '1rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%',
+              background: blog.color || '#0066cc',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+            }}>
+              {(() => {
+                const iconValue = blog.icon;
+                let IconComp = typeof iconValue === 'string' ? iconsMap[iconValue] : iconValue;
+                if (!IconComp) IconComp = TrendUp;
+
+                if (typeof IconComp === 'function' || (typeof IconComp === 'object' && IconComp !== null)) {
+                  return React.createElement(IconComp, { size: 22, weight: 'bold', color: 'white' });
+                }
+
+                return <span style={{ fontSize: '1.2rem' }}>🔖</span>;
+              })()}
+            </div>
+
             <span
               style={{
-                background: blog.color || '#0066cc',
+                background: 'rgba(255,255,255,0.12)',
                 color: 'white',
-                padding: '0.5rem 1.5rem',
+                padding: '0.5rem 1rem',
                 borderRadius: '25px',
                 fontWeight: '600',
                 fontSize: '0.9rem',

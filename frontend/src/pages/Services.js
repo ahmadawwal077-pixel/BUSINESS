@@ -3,91 +3,46 @@ import { Link } from 'react-router-dom';
 import {
   ChartBar,
   Rocket,
-  MagnifyingGlass,
-  Buildings,
   DesktopTower,
-  Lightning,
 } from 'phosphor-react';
 
 const Services = () => {
   const services = [
     {
       icon: ChartBar,
-      title: 'Strategic Planning',
+      title: 'Fractional FP&A',
       description:
-        'We help you develop comprehensive business strategies that align with your goals and market opportunities.',
+        'Financial Planning & Analysis support that gives you accurate forecasts and actionable insights without the overhead of a full-time hire.',
       features: [
-        'Market analysis and opportunity identification',
-        'Competitive positioning',
-        'Growth strategy development',
-        'Implementation roadmap',
+        'Budgeting & Forecasting: Developing robust financial roadmaps to guide business decisions.',
+        'Cash Flow Management: Monitoring inflows and outflows to ensure business liquidity and stability.',
+        'Variance Analysis: Comparing actual performance against budgets to identify and fix "leaks."',
       ],
       color: '#0066cc',
     },
     {
-      icon: Rocket,
-      title: 'Business Development',
-      description:
-        'Expand your market reach and revenue streams with our proven business development methodologies.',
-      features: [
-        'New market entry strategies',
-        'Partnership development',
-        'Sales optimization',
-        'Revenue diversification',
-      ],
-      color: '#00b4d8',
-    },
-    {
-      icon: MagnifyingGlass,
-      title: 'Market Analysis',
-      description:
-        'Make informed decisions with our comprehensive market research and competitive intelligence services.',
-      features: [
-        'Market size and segmentation',
-        'Competitor analysis',
-        'Trend identification',
-        'Customer insights',
-      ],
-      color: '#0096c7',
-    },
-    {
-      icon: Buildings,
-      title: 'Organizational Design',
-      description:
-        'Optimize your organizational structure for efficiency, agility, and performance.',
-      features: [
-        'Organizational assessment',
-        'Structure redesign',
-        'Process optimization',
-        'Performance management',
-      ],
-      color: '#0077b6',
-    },
-    {
       icon: DesktopTower,
-      title: 'Digital Transformation',
+      title: 'Business Performance Reporting (BPR)',
       description:
-        'Transform your business through strategic implementation of digital technologies.',
+        'Automated reporting and KPI tracking that gives leadership real-time visibility into performance.',
       features: [
-        'Digital strategy development',
-        'Technology implementation',
-        'Change management',
-        'Training and support',
+        'Interactive Dashboards: Building automated Power BI and Excel dashboards for real-time visibility.',
+        'KPI Tracking: Identifying and monitoring the metrics that actually move the needle for your industry.',
+        'Management Reporting Packs: Preparing monthly insights for stakeholders and board meetings.',
       ],
       color: '#00b4d8',
     },
     {
-      icon: Lightning,
-      title: 'Change Management',
+      icon: Rocket,
+      title: 'Data Analytics Capacity Building (Training)',
       description:
-        'Successfully navigate organizational change with our expert change management services.',
+        'Hands-on training programs to develop practical data skills across your finance and operations teams.',
       features: [
-        'Change assessment',
-        'Change strategy',
-        'Stakeholder management',
-        'Adoption support',
+        'Corporate Training: Custom data literacy programs for finance and operations teams.',
+        'The "Data to Insights" Cohort: Intensive training in Power BI, SQL, and Advanced Excel.',
+        'Financial Modeling: Teaching professionals how to build flexible, error-free financial models.',
       ],
-      color: '#0096c7',
+      color: '#8b5cf6',
     },
   ];
 

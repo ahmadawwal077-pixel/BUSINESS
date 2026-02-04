@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Logo from './Logo';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -22,6 +23,7 @@ const Footer = () => {
       }}>
         {/* Brand Section */}
         <div>
+          <Logo className="site-logo" style={{ marginBottom: 'clamp(0.6rem, 1.5vw, 0.8rem)' }} />
           <h3 style={{
             fontSize: 'clamp(1.3rem, 4vw, 1.6rem)',
             fontWeight: 'bold',
@@ -192,9 +194,9 @@ const Footer = () => {
           </h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {[
-              { icon: '✉️', label: 'Email', value: 'info@positivehills.com', href: 'mailto:info@positivehills.com' },
-              { icon: '📞', label: 'Phone', value: '+1 (234) 567-890', href: 'tel:+1234567890' },
-              { icon: '📍', label: 'Location', value: '123 Business St, City, State 12345', href: '#' },
+              { icon: '✉️', label: 'Email', value: 'Hillspositive@gmail.com', href: 'mailto:Hillspositive@gmail.com' },
+              { icon: '📞', label: 'Phone', value: '+234 (0) 902-701-5123', href: 'tel:+234 902 701 5123' },
+              { icon: '📍', label: 'Location', value: '16, Olaiya street Sabo-Oniba Ojo Lagos ', href: '#' },
             ].map((item, idx) => (
               <li key={idx} style={{ marginBottom: 'clamp(0.6rem, 1.5vw, 0.8rem)' }}>
                 <a

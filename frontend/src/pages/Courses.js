@@ -31,6 +31,7 @@ const Courses = () => {
     }
   };
 
+  /* FILTERS DISABLED - original filtering logic preserved below for easy restore:
   useEffect(() => {
     let filtered = courses;
 
@@ -65,6 +66,12 @@ const Courses = () => {
 
     setFilteredCourses(filtered);
   }, [selectedCategory, selectedLevel, courses, searchTerm, sortBy]);
+  */
+
+  // Show all courses while filters are disabled
+  useEffect(() => {
+    setFilteredCourses(courses);
+  }, [courses]);
 
   const getCategoryIcon = (category) => {
     const icons = {
@@ -189,7 +196,8 @@ const Courses = () => {
         margin: '0 auto',
         padding: '2rem',
       }}>
-        {/* Search and Controls */}
+        {/* Search and Controls - temporarily hidden (filters disabled) */}
+        {false && (
         <div style={{
           background: 'white',
           borderRadius: '18px',
@@ -380,6 +388,7 @@ const Courses = () => {
             ✕ Clear All
           </button>
         </div>
+        )}
 
         {/* Results Section */}
         <div style={{

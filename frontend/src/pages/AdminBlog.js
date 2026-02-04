@@ -7,7 +7,23 @@ import {
   Check,
   Warning,
   Lock,
+  DesktopTower,
+  TrendUp,
+  ArrowClockwise,
+  MagnifyingGlass,
+  Users,
+  Gear,
 } from 'phosphor-react';
+
+// Map string icon names to actual Phosphor components
+const iconsMap = {
+  DesktopTower,
+  TrendUp,
+  ArrowClockwise,
+  MagnifyingGlass,
+  Users,
+  Gear,
+};
 
 const AdminBlog = () => {
   const { user } = useContext(AuthContext);
@@ -25,6 +41,7 @@ const AdminBlog = () => {
     featuredImage: '',
     color: '#0066cc',
     icon: 'TrendUp',
+    published: true,
   });
 
   const iconOptions = [
@@ -68,6 +85,8 @@ const AdminBlog = () => {
       };
       
       reader.readAsDataURL(file);
+    } else if (type === 'checkbox') {
+      setFormData(prev => ({ ...prev, [name]: e.target.checked }));
     } else {
       setFormData(prev => ({
         ...prev,
@@ -149,9 +168,12 @@ const AdminBlog = () => {
         content: formData.content.trim(),
         category: formData.category,
         author: formData.author.trim(),
+        slug: formData.slug,
         featuredImage: imageData,
-        published: true,
-      };
+        color: formData.color,
+        icon: formData.icon, // stored as string, map on render
+        published: !!formData.published,
+      }; 
 
       console.log('Submitting blog data:', blogData);
       console.log('Author:', blogData.author);
@@ -498,6 +520,30 @@ const AdminBlog = () => {
               </p>
             </div>
 
+            {/* Publish Toggle */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                fontWeight: '600',
+                color: '#1f2937',
+                fontSize: '0.95rem',
+              }}>
+                <input
+                  type="checkbox"
+                  name="published"
+                  checked={!!formData.published}
+                  onChange={handleChange}
+                  style={{ width: '18px', height: '18px' }}
+                />
+                Publish now
+              </label>
+              <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.5rem' }}>
+                If unchecked, the post will be saved as a draft and will not appear on the public blog until published.
+              </p>
+            </div>
+
             {/* Featured Image */}
             <div style={{ marginBottom: '2rem' }}>
               <label style={{
@@ -720,6 +766,16 @@ const AdminBlog = () => {
                 onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.12)'}
                 onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)'}
                 >
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginRight: '1rem' }}>
+                    <div style={{ fontSize: '2rem', color: blog.color || '#0066cc' }}>
+                      {(() => {
+                        const iconVal = blog.icon;
+                        const IconComp = iconVal ? (iconsMap[iconVal] || null) : null;
+                        if (IconComp) return React.createElement(IconComp, { size: 28, weight: 'bold' });
+                        return <Gear size={28} weight="bold" />;
+                      })()}
+                    </div>
+                  </div>
                   <div style={{ flex: 1 }}>
                     <h3 style={{ color: '#1f2937', marginBottom: '0.5rem', fontSize: '1.2rem' }}>
                       {blog.title}
