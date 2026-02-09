@@ -220,15 +220,21 @@ const Login = () => {
 
               {/* Forgot Password Link */}
               <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                <a href="#" style={{
+                <Link to="/forgot-password" style={{
                   color: '#0066cc',
                   textDecoration: 'none',
                   fontSize: '0.9rem',
                   fontWeight: '500',
                   transition: 'color 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.color = '#00b4d8';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = '#0066cc';
                 }}>
                   Forgot your password?
-                </a>
+                </Link>
               </div>
 
               {/* Divider */}

@@ -17,6 +17,7 @@ const courseRoutes = require('./routes/courseRoutes');
 const liveRoutes = require('./routes/liveRoutes');
 const userRoutes = require('./routes/userRoutes');
 const assignmentRoutes = require('./routes/assignmentRoutes');
+const consultationRoutes = require('./routes/consultationRoutes');
 
 const app = express();
 
@@ -24,7 +25,19 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(express.json({ limit: '50mb' }));
+// Preserve raw body for specific webhook endpoint so we can verify signatures
+app.use(express.json({
+  limit: '50mb',
+  verify: (req, res, buf) => {
+    try {
+      if (req.originalUrl && req.originalUrl.includes('/api/payments/webhook/paystack')) {
+        req.rawBody = buf;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+}));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // CORS configuration - updated for all environments
@@ -40,12 +53,19 @@ const allowedOrigins = [
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl requests)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn(`⚠️  CORS blocked: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+    if (!origin) return callback(null, true);
+
+    // Normalize origin by removing trailing slash for robust matching
+    const normalize = (u) => (typeof u === 'string' ? u.replace(/\/$/, '') : u);
+    const normalizedOrigin = normalize(origin);
+    const normalizedAllowed = allowedOrigins.map(normalize);
+
+    if (normalizedAllowed.includes(normalizedOrigin)) {
+      return callback(null, true);
     }
+
+    console.warn(`⚠️  CORS blocked: ${origin}`);
+    return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -66,6 +86,20 @@ app.use((req, res, next) => {
 // Preflight requests handler
 app.options('*', cors(corsOptions));
 
+// Global error handler to return JSON errors (improves browser visibility)
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err && err.message ? err.message : err);
+  if (process.env.NODE_ENV === 'development' && err && err.stack) {
+    console.error(err.stack);
+  }
+  const status = (err && err.status) || 500;
+  const response = { message: err.message || 'Internal server error' };
+  if (process.env.NODE_ENV === 'development' && err && err.stack) {
+    response.stack = err.stack;
+  }
+  res.status(status).json(response);
+});
+
 // Root route
 app.get('/', (req, res) => {
   res.json({ message: 'Business Consultation API Server', status: 'running' });
@@ -84,6 +118,7 @@ app.get('/api', (req, res) => {
       courses: '/api/courses',
       assignments: '/api/assignments',
       appointments: '/api/appointments',
+      consultations: '/api/consultations',
       payments: '/api/payments',
       blogs: '/api/blogs',
       users: '/api/users',
@@ -98,6 +133,7 @@ app.get('/api', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/consultations', consultationRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/courses', courseRoutes);

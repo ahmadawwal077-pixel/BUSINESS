@@ -15,15 +15,16 @@ import {
   Sparkle,
   Phone,
 } from 'phosphor-react';
+import ScheduleConsultationPopup from '../components/ScheduleConsultationPopup';
 
-const Carousel = () => {
+const Carousel = ({ onOpenConsultation }) => {
   const slides = [
     {
       image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop',
       title: 'Scale Your Business with Mathematical Certainty',
       subtitle: 'Expert consulting solutions for sustainable growth',
       text: 'Partner with industry leaders to achieve measurable results and lasting success',
-      primary: { to: '/services', label: 'Explore Services' },
+      primary: { to: '/services', label: 'Schedule Consultation' },
       secondary: { to: '/contact', label: 'Get Started' },
     },
     {
@@ -31,7 +32,7 @@ const Carousel = () => {
       title: 'Accelerate Growth',
       subtitle: 'Data-driven strategies for measurable outcomes',
       text: 'We combine analytics and execution to push your KPIs forward',
-      primary: { to: '/services', label: 'See Solutions' },
+      primary: { to: '/services', label: 'Schedule Consultation' },
       secondary: { to: '/contact', label: 'Contact Us' },
     },
     {
@@ -39,7 +40,7 @@ const Carousel = () => {
       title: 'Empower Your Team',
       subtitle: 'Training and implementation for real results',
       text: 'Practical upskilling and hands-on guidance to ensure adoption',
-      primary: { to: '/services', label: 'Training Programs' },
+      primary: { to: '/services', label: 'Schedule Consultation' },
       secondary: { to: '/contact', label: 'Get A Demo' },
     },
   ];
@@ -118,7 +119,7 @@ const Carousel = () => {
           <p style={{ fontSize: 'clamp(1rem, 2.6vw, 1.3rem)', marginBottom: 'clamp(0.5rem, 1vw, 0.75rem)', fontWeight: '400', opacity: 0.95 }}>{slides[index].subtitle}</p>
           <p style={{ fontSize: 'clamp(0.95rem, 2.2vw, 1.05rem)', marginBottom: 'clamp(1.25rem, 2.5vw, 1.75rem)', color: 'rgba(255,255,255,0.95)' }}>{slides[index].text}</p>
           <div style={{ display: 'flex', gap: 'clamp(0.75rem, 2vw, 1rem)', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to={slides[index].primary.to} style={{ display: 'inline-block', background: 'white', color: '#0066cc', fontWeight: '700', padding: 'clamp(0.6rem,1vw,0.8rem) clamp(1rem,2vw,1.6rem)', borderRadius: '8px', textDecoration: 'none' }}>{slides[index].primary.label}</Link>
+            <button onClick={onOpenConsultation} style={{ display: 'inline-block', background: 'white', color: '#0066cc', fontWeight: '700', padding: 'clamp(0.6rem,1vw,0.8rem) clamp(1rem,2vw,1.6rem)', borderRadius: '8px', textDecoration: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.2)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>{slides[index].primary.label}</button>
             <Link to={slides[index].secondary.to} style={{ display: 'inline-block', color: 'white', border: '2px solid rgba(255,255,255,0.9)', padding: 'clamp(0.6rem,1vw,0.8rem) clamp(1rem,2vw,1.6rem)', borderRadius: '8px', textDecoration: 'none' }}>{slides[index].secondary.label}</Link>
           </div>
         </div>
@@ -134,10 +135,12 @@ const Carousel = () => {
 };
 
 const Home = () => {
+  const [consultationPopupOpen, setConsultationPopupOpen] = useState(false);
+
   return (
     <div>
       {/* Hero Section */}
-      <Carousel />
+      <Carousel onOpenConsultation={() => setConsultationPopupOpen(true)} />
 
       {/* Services Preview */}
       <section className="section" style={{ 
@@ -862,6 +865,12 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Schedule Consultation Popup */}
+      <ScheduleConsultationPopup
+        isOpen={consultationPopupOpen}
+        onClose={() => setConsultationPopupOpen(false)}
+      />
     </div>
   );
 };

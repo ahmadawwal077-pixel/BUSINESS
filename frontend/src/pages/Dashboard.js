@@ -136,33 +136,6 @@ const Dashboard = () => {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const courseActions = [
-    {
-      icon: '📚',
-      title: 'Browse Courses',
-      description: 'Explore and enroll in our professional courses',
-      path: '/courses',
-      color: '#0066cc',
-      bgColor: 'rgba(0, 102, 204, 0.1)',
-    },
-    {
-      icon: '📋',
-      title: 'My Assignments',
-      description: 'View and submit your course assignments',
-      path: '/my-assignments',
-      color: '#00b4d8',
-      bgColor: 'rgba(0, 180, 216, 0.1)',
-    },
-    {
-      icon: '✓',
-      title: 'Attendance',
-      description: 'Check your course attendance and participation',
-      path: '/attendance',
-      color: '#0096c7',
-      bgColor: 'rgba(0, 150, 199, 0.1)',
-    },
-  ];
-
   const consultationActions = [
     {
       icon: '📅',
@@ -754,49 +727,7 @@ const Dashboard = () => {
           </div>
         </div> 
 
-        {/* Consultation Management Section */}
-        <div style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
-          marginBottom: '3rem',
-        }}>
-          <h2 style={{
-            marginBottom: '2rem',
-            fontSize: '1.6rem',
-            fontWeight: 'bold',
-            color: '#1f2937',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}>
-            Consultation Management
-          </h2>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '2rem',
-            marginBottom: '3rem',
-          }}>
-            {consultationActions.map((item) => renderActionCard(item))}
-          </div>
-
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(244, 63, 94, 0.05) 100%)',
-            borderRadius: '15px',
-            padding: '2rem',
-            borderLeft: '4px solid #ec4899',
-            marginBottom: '3rem',
-          }}>
-            <p style={{
-              margin: 0,
-              color: '#6b7280',
-              lineHeight: '1.6',
-            }}>
-              <strong style={{ color: '#ec4899' }}>💡 About Consultations:</strong> Schedule one-on-one sessions with our expert consultants to discuss your business needs, strategy, and personalized solutions.
-            </p>
-          </div>
-        </div>
 
         {/* Profile Section */}
         <div style={{

@@ -45,8 +45,25 @@ const CourseDetail = () => {
     setEnrolling(true);
     try {
       const response = await courseAPI.enrollCourse(id);
-      setEnrollmentId(response.data.enrollment._id);
-      setPaymentModalOpen(true);
+      const enrollmentIdRes = response.data.enrollment._id;
+      setEnrollmentId(enrollmentIdRes);
+
+      // Initialize payment for this enrollment via Paystack
+      const paymentInit = await (await import('../services/api')).paymentAPI.createPaymentIntent({
+        amount: course.price || 0,
+        enrollmentId: enrollmentIdRes,
+        email: user.email,
+        fullName: user.name || user.email,
+      });
+
+      const { authorization_url } = paymentInit.data;
+      if (authorization_url) {
+        // Open Paystack payment page
+        window.open(authorization_url, '_blank');
+        alert('Payment window opened. Complete payment to finish enrollment.');
+      } else {
+        setPaymentModalOpen(true);
+      }
     } catch (error) {
       console.error('Error enrolling:', error);
       alert(error.response?.data?.message || 'Error enrolling in course');

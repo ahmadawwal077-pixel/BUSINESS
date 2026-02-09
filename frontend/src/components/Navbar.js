@@ -238,9 +238,7 @@ const Navbar = () => {
                   <div style={{ padding: '0.5rem 0' }}>
                     {[
                       { icon: '📊', name: 'Dashboard', path: '/dashboard' },
-                      { icon: '📅', name: 'My Appointments', path: '/appointments' },
-                      { icon: '💳', name: 'My Payments', path: '/payments' },
-                      { icon: '👤', name: 'Profile', path: '/profile' },
+                      { icon: '', name: 'Profile', path: '/profile' },
                       ...(user?.isAdmin ? [{ icon: '⚙️', name: 'Admin Dashboard', path: '/admin/dashboard' }] : []),
                       ...(user?.isAdmin ? [{ icon: '✍️', name: 'Create Blog Post', path: '/admin/blog' }] : []),
                     ].map((item) => (

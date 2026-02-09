@@ -45,10 +45,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       const response = await authAPI.register({ name, email, password });
-      const { token: newToken, user: userData } = response.data;
-      localStorage.setItem('token', newToken);
-      setToken(newToken);
-      setUser(userData);
+      // Don't auto-login, require email verification first
       return response.data;
     } catch (error) {
       throw error;

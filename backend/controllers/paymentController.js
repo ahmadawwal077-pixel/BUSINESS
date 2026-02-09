@@ -1,5 +1,6 @@
 const Payment = require('../models/Payment');
 const axios = require('axios');
+const crypto = require('crypto');
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const PAYSTACK_API = 'https://api.paystack.co';
@@ -7,23 +8,24 @@ const PAYSTACK_API = 'https://api.paystack.co';
 // Create payment transaction (Paystack)
 exports.createPaymentIntent = async (req, res) => {
   try {
-    const { amount, appointmentId, email, fullName } = req.body;
+    const { amount, appointmentId, enrollmentId, email, fullName } = req.body;
 
     // Validate required fields
-    if (!amount || !appointmentId || !email) {
-      return res.status(400).json({ message: 'Amount, appointment ID, and email are required' });
+    if (!amount || !email || (!appointmentId && !enrollmentId)) {
+      return res.status(400).json({ message: 'Amount, email, and appointmentId or enrollmentId are required' });
     }
 
-    console.log('Creating Paystack transaction:', { amount, email, appointmentId });
+    console.log('Creating Paystack transaction:', { amount, email, appointmentId, enrollmentId });
 
     // Create Paystack transaction
     const response = await axios.post(
       `${PAYSTACK_API}/transaction/initialize`,
       {
         email,
-        amount: Math.round(amount * 100), // Paystack expects amount in kobo (1 kobo = 0.01 NGN)
+        amount: Math.round(amount * 100), // Paystack expects amount in kobo
         metadata: {
           appointmentId,
+          enrollmentId,
           userId: req.userId,
           fullName,
         },
@@ -43,7 +45,8 @@ exports.createPaymentIntent = async (req, res) => {
     // Save payment record
     const payment = new Payment({
       user: req.userId,
-      appointment: appointmentId,
+      appointment: appointmentId || undefined,
+      enrollment: enrollmentId || undefined,
       amount,
       paystackPaymentRef: response.data.data.reference,
       status: 'pending',
@@ -97,18 +100,51 @@ exports.confirmPayment = async (req, res) => {
     const paymentData = response.data.data;
 
     if (paymentData.status === 'success') {
-      const payment = await Payment.findByIdAndUpdate(
-        paymentId,
-        {
-          status: 'completed',
-          paystackPaymentRef: reference,
-          paymentMethod: 'paystack',
-          verifiedAt: new Date(),
-        },
-        { new: true }
-      );
+      let payment;
+      if (paymentId) {
+        payment = await Payment.findByIdAndUpdate(
+          paymentId,
+          {
+            status: 'completed',
+            paystackPaymentRef: reference,
+            paymentMethod: 'paystack',
+            verifiedAt: new Date(),
+          },
+          { new: true }
+        );
+      } else {
+        payment = await Payment.findOneAndUpdate(
+          { paystackPaymentRef: reference },
+          {
+            status: 'completed',
+            paymentMethod: 'paystack',
+            verifiedAt: new Date(),
+          },
+          { new: true }
+        );
+      }
 
       console.log('Payment verified successfully:', payment._id);
+
+      // If payment is for an enrollment, activate the enrollment
+      if (payment && payment.enrollment) {
+        const CourseEnrollment = require('../models/CourseEnrollment');
+        const Course = require('../models/Course');
+        const enrollment = await CourseEnrollment.findById(payment.enrollment);
+        if (enrollment) {
+          enrollment.paymentStatus = 'completed';
+          enrollment.paymentDate = new Date();
+          enrollment.status = 'active';
+          await enrollment.save();
+
+          // Update course enrolled students count
+          const course = await Course.findById(enrollment.course);
+          if (course) {
+            course.enrolledStudents = (course.enrolledStudents || 0) + 1;
+            await course.save();
+          }
+        }
+      }
 
       return res.json({ message: 'Payment successful', payment });
     } else {
@@ -133,6 +169,69 @@ exports.getUserPayments = async (req, res) => {
     res.json(payments);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Paystack webhook handler
+exports.paystackWebhook = async (req, res) => {
+  try {
+    const signature = req.headers['x-paystack-signature'];
+    const secret = PAYSTACK_SECRET_KEY;
+
+    // Use raw body captured by server middleware when available
+    const raw = req.rawBody ? req.rawBody : Buffer.from(JSON.stringify(req.body));
+
+    const hash = crypto.createHmac('sha512', secret).update(raw).digest('hex');
+
+    if (hash !== signature) {
+      console.warn('Invalid Paystack webhook signature');
+      return res.status(400).send('Invalid signature');
+    }
+
+    const event = JSON.parse(raw.toString());
+    console.log('Paystack webhook received:', event.event);
+
+    const data = event.data;
+    const reference = data?.reference;
+
+    if (!reference) {
+      return res.status(400).send('No reference provided');
+    }
+
+    // Only handle successful transactions
+    if (data.status === 'success') {
+      // Update payment record
+      const payment = await Payment.findOneAndUpdate(
+        { paystackPaymentRef: reference },
+        { status: 'completed', paymentMethod: 'paystack', verifiedAt: new Date() },
+        { new: true }
+      );
+
+      if (payment && payment.enrollment) {
+        const CourseEnrollment = require('../models/CourseEnrollment');
+        const Course = require('../models/Course');
+        const enrollment = await CourseEnrollment.findById(payment.enrollment);
+        if (enrollment) {
+          enrollment.paymentStatus = 'completed';
+          enrollment.paymentDate = new Date();
+          enrollment.status = 'active';
+          await enrollment.save();
+
+          // Update course count
+          const course = await Course.findById(enrollment.course);
+          if (course) {
+            course.enrolledStudents = (course.enrolledStudents || 0) + 1;
+            await course.save();
+          }
+        }
+      }
+    }
+
+    // Acknowledge receipt
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Webhook processing error:', error);
+    res.status(500).send('Server error');
   }
 };
 

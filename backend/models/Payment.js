@@ -10,6 +10,10 @@ const paymentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appointment',
   },
+  enrollment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CourseEnrollment',
+  },
   amount: {
     type: Number,
     required: true,
