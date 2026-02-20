@@ -11,14 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('appointments', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('service');
-            $table->dateTime('appointmentDate');
-            $table->string('timeSlot');
-            $table->text('description')->nullable();
-            $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
+            $table->foreignId('appointment_id')->nullable()->constrained('appointments')->onDelete('set null');
+            $table->foreignId('enrollment_id')->nullable()->constrained('course_enrollments')->onDelete('set null');
+            $table->decimal('amount', 10, 2);
+            $table->string('currency')->default('NGN');
+            $table->string('paystackPaymentRef')->nullable();
+            $table->string('stripePaymentId')->nullable();
+            $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+            $table->enum('paymentMethod', ['paystack', 'stripe', 'card', 'bank_transfer', 'ussd'])->default('paystack');
+            $table->dateTime('verifiedAt')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('appointments');
+        Schema::dropIfExists('payments');
     }
 };

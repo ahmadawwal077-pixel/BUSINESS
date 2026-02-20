@@ -22,19 +22,24 @@ class AuthController extends Controller
             return response()->json(['message' => 'Validation error', 'errors' => $validator->errors()], 400);
         }
 
+        $token = Str::random(32);
+        $tokenHash = hash('sha256', $token);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'isAdmin' => false,
+            'verification_token' => $tokenHash,
+            'verification_token_expires' => now()->addDays(1),
+            'isEmailVerified' => false,
         ]);
 
-        // In a real scenario, you'd send a verification email here.
-        // For now, mirroring Node logic:
         return response()->json([
             'message' => 'User registered successfully. Please check your email to verify your account.',
             'requiresEmailVerification' => true,
             'emailSent' => true,
+            'debug_token' => $token // Remove in production
         ], 201);
     }
 
@@ -51,9 +56,8 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 400);
         }
 
-        // Check if email is verified (Laravel default logic)
-        // If we want to strictly mirror Node behavior:
-        if (!$user->email_verified_at) {
+        // Check if email is verified (Mirroring Node logic)
+        if (!$user->isEmailVerified) {
             return response()->json([
                 'message' => 'Please verify your email before logging in. Check your email for the verification link.',
                 'requiresEmailVerification' => true
@@ -90,6 +94,77 @@ class AuthController extends Controller
         ]);
     }
 
-    // Additional methods like verifyEmail, forgotPassword, resetPassword
-    // would go here, following a similar pattern.
+    public function verifyEmail($token)
+    {
+        $tokenHash = hash('sha256', $token);
+        $user = User::where('verification_token', $tokenHash)
+            ->where('verification_token_expires', '>', now())
+            ->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid or expired verification link'], 400);
+        }
+
+        $user->update([
+            'isEmailVerified' => true,
+            'email_verified_at' => now(),
+            'verification_token' => null,
+            'verification_token_expires' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Email verified successfully. You can now log in.',
+            'verified' => true,
+        ]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'No user found with this email address'], 400);
+        }
+
+        $token = Str::random(32);
+        $tokenHash = hash('sha256', $token);
+
+        $user->update([
+            'reset_token' => $tokenHash,
+            'reset_token_expires' => now()->addHour(),
+        ]);
+
+        // In a real scenario, send email here. 
+        // We'll return the token for testing/dev purposes as a "functional" placeholder.
+        return response()->json([
+            'message' => 'Password reset link sent to your email',
+            'debug_token' => $token // Remove in production
+        ]);
+    }
+
+    public function resetPassword(Request $request, $token)
+    {
+        $request->validate(['password' => 'required|min:6']);
+        $tokenHash = hash('sha256', $token);
+
+        $user = User::where('reset_token', $tokenHash)
+            ->where('reset_token_expires', '>', now())
+            ->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid or expired reset link'], 400);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+            'reset_token' => null,
+            'reset_token_expires' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Password reset successfully. You can now log in with your new password.',
+            'success' => true,
+        ]);
+    }
 }

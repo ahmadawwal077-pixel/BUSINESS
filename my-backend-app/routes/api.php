@@ -18,16 +18,10 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
 
-    // Auth placeholders for frontend alignment
-    Route::get('verify-email/{token}', function () {
-        return response()->json(['message' => 'Verification handled']);
-    });
-    Route::post('forgot-password', function () {
-        return response()->json(['message' => 'Reset link sent']);
-    });
-    Route::post('reset-password/{token}', function () {
-        return response()->json(['message' => 'Password reset successful']);
-    });
+    // Auth logic for frontend alignment
+    Route::get('verify-email/{token}', [AuthController::class, 'verifyEmail']);
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('reset-password/{token}', [AuthController::class, 'resetPassword']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('me', [AuthController::class, 'getCurrentUser']);

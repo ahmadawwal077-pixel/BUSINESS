@@ -25,6 +25,11 @@ class User extends Authenticatable
         'company',
         'profileImage',
         'isAdmin',
+        'verification_token',
+        'verification_token_expires',
+        'reset_token',
+        'reset_token_expires',
+        'isEmailVerified',
     ];
 
     /**
