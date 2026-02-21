@@ -21,8 +21,12 @@ class LiveClassController extends Controller
             $data = $cls->toArray();
             $data['_id'] = $cls->id;
             if ($cls->course) {
+                // Return course as an object with _id for frontend compatibility
+                $data['course'] = [
+                    '_id' => $cls->course->id,
+                    'title' => $cls->course->title
+                ];
                 $data['courseName'] = $cls->course->title;
-                $data['course']['_id'] = $cls->course->id;
             }
             return $data;
         });
@@ -83,7 +87,11 @@ class LiveClassController extends Controller
             $data = $cls->toArray();
             $data['_id'] = $cls->id;
             if ($cls->course) {
-                $data['course']['_id'] = $cls->course->id;
+                $data['course'] = [
+                    '_id' => $cls->course->id,
+                    'title' => $cls->course->title
+                ];
+                $data['courseName'] = $cls->course->title;
             }
             return $data;
         });

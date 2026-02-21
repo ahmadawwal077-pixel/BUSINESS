@@ -374,6 +374,15 @@ class CourseController extends Controller
             ->where('status', 'active')
             ->get();
 
-        return response()->json($enrollments);
+        $transformed = $enrollments->map(function (\App\Models\CourseEnrollment $enr) {
+            $data = $enr->toArray();
+            $data['_id'] = $enr->id;
+            if ($enr->student) {
+                $data['student']['_id'] = $enr->student->id;
+            }
+            return $data;
+        });
+
+        return response()->json($transformed);
     }
 }

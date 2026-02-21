@@ -1523,7 +1523,7 @@ const AdminDashboard = () => {
 														setSelectedLiveClass(liveClass);
 														try {
 															const r = await courseAPI.getCourseEnrollments(
-																liveClass.course,
+																liveClass.course._id || liveClass.course_id,
 															);
 															setLiveClassEnrollments(r.data || []);
 															const state = {};
@@ -1705,7 +1705,7 @@ const AdminDashboard = () => {
 												setSelectedLiveClass(lc);
 												try {
 													const r = await courseAPI.getCourseEnrollments(
-														lc.course,
+														lc.course._id || lc.course_id || lc.course,
 													);
 													setLiveClassEnrollments(r.data || []);
 													const state = {};
