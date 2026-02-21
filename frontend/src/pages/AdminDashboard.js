@@ -403,7 +403,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <div style={{
         background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)',
-        padding: '2rem',
+        padding: 'clamp(1rem, 3vw, 2rem)',
         color: 'white',
         boxShadow: '0 10px 30px rgba(124, 58, 237, 0.3)',
       }}>
@@ -414,12 +414,12 @@ const AdminDashboard = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1rem',
+          gap: 'clamp(1rem, 2vw, 1.5rem)',
         }}>
           <div>
             <h1 style={{
               margin: 0,
-              fontSize: '2rem',
+              fontSize: 'clamp(1.3rem, 4vw, 2rem)',
               fontWeight: 'bold',
             }}>
               🛠️ Admin Dashboard
@@ -427,7 +427,7 @@ const AdminDashboard = () => {
             <p style={{
               margin: '0.5rem 0 0 0',
               opacity: 0.95,
-              fontSize: '0.95rem',
+              fontSize: 'clamp(0.85rem, 2vw, 0.95rem)',
             }}>
               Welcome, {user?.name || 'Admin'}
             </p>
@@ -435,7 +435,7 @@ const AdminDashboard = () => {
           <button
             onClick={handleLogout}
             style={{
-              padding: '0.8rem 1.5rem',
+              padding: 'clamp(0.6rem, 1.5vw, 0.8rem) clamp(1rem, 2vw, 1.5rem)',
               background: 'rgba(255, 255, 255, 0.2)',
               border: '2px solid white',
               color: 'white',
@@ -443,6 +443,11 @@ const AdminDashboard = () => {
               fontWeight: '600',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
+              minHeight: '42px',
+              display: 'flex',
+              alignItems: 'center',
+              whiteSpace: 'nowrap',
+              fontSize: 'clamp(0.85rem, 1.8vw, 0.95rem)',
             }}
             onMouseEnter={(e) => {
               e.target.style.background = 'white';
@@ -462,12 +467,13 @@ const AdminDashboard = () => {
       {message.text && (
         <div style={{
           maxWidth: '1400px',
-          margin: '1rem auto',
-          padding: '1rem',
+          margin: 'clamp(0.75rem, 2vw, 1rem) auto',
+          padding: 'clamp(0.75rem, 2vw, 1rem)',
           background: message.type === 'success' ? '#d1fae5' : '#fee2e2',
           color: message.type === 'success' ? '#065f46' : '#991b1b',
           borderRadius: '10px',
           border: `2px solid ${message.type === 'success' ? '#6ee7b7' : '#fca5a5'}`,
+          fontSize: 'clamp(0.85rem, 1.8vw, 0.95rem)',
         }}>
           {message.type === 'success' ? '✅' : '❌'} {message.text}
         </div>
@@ -477,22 +483,23 @@ const AdminDashboard = () => {
       <div style={{
         maxWidth: '1400px',
         margin: '0 auto',
-        padding: '2rem',
+        padding: 'clamp(1rem, 3vw, 2rem)',
       }}>
         {/* Tabs */}
         <div style={{
           display: 'flex',
-          gap: '1rem',
-          marginBottom: '2rem',
+          gap: 'clamp(0.5rem, 1.5vw, 1rem)',
+          marginBottom: 'clamp(1.5rem, 3vw, 2rem)',
           borderBottom: '2px solid rgba(0, 0, 0, 0.1)',
           flexWrap: 'wrap',
+          overflowX: 'auto',
         }}>
           {['courses', 'assignments', 'upcomingClasses', 'attendance'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               style={{
-                padding: '1rem 1.5rem',
+                padding: 'clamp(0.7rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem)',
                 background: activeTab === tab ? 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)' : 'white',
                 color: activeTab === tab ? 'white' : '#6b7280',
                 border: 'none',
@@ -501,6 +508,11 @@ const AdminDashboard = () => {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 marginBottom: '-2px',
+                fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
+                minHeight: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                whiteSpace: 'nowrap',
               }}
               onMouseEnter={(e) => {
                 if (activeTab !== tab) {
@@ -526,20 +538,20 @@ const AdminDashboard = () => {
           <div style={{
             background: 'white',
             borderRadius: '15px',
-            padding: '2rem',
+            padding: 'clamp(1.5rem, 3vw, 2rem)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
           }}>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '2rem',
+              marginBottom: 'clamp(1.5rem, 3vw, 2rem)',
               flexWrap: 'wrap',
-              gap: '1rem',
+              gap: 'clamp(1rem, 2vw, 1.5rem)',
             }}>
               <h2 style={{
                 margin: 0,
-                fontSize: '1.5rem',
+                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
                 fontWeight: 'bold',
                 color: '#1f2937',
               }}>
@@ -551,7 +563,7 @@ const AdminDashboard = () => {
                   setShowAddCourseModal(true);
                 }}
                 style={{
-                  padding: '0.8rem 1.5rem',
+                  padding: 'clamp(0.6rem, 1.5vw, 0.8rem) clamp(1rem, 2vw, 1.5rem)',
                   background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)',
                   color: 'white',
                   border: 'none',
@@ -559,6 +571,11 @@ const AdminDashboard = () => {
                   fontWeight: '600',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
+                  minHeight: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  whiteSpace: 'nowrap',
+                  fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
                 }}
                 onMouseEnter={(e) => {
                   e.target.style.transform = 'scale(1.05)';
@@ -574,27 +591,29 @@ const AdminDashboard = () => {
             </div>
 
             {courses.length === 0 ? (
-              <p style={{ color: '#6b7280', textAlign: 'center' }}>No courses yet. Create your first course!</p>
+              <p style={{ color: '#6b7280', textAlign: 'center', fontSize: 'clamp(0.85rem, 1.8vw, 0.95rem)' }}>No courses yet. Create your first course!</p>
             ) : (
               <div style={{
                 overflowX: 'auto',
+                borderRadius: '8px',
+                border: '1px solid #e5e7eb',
               }}>
                 <table style={{
                   width: '100%',
                   borderCollapse: 'collapse',
-                  fontSize: '0.9rem',
+                  fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
                 }}>
                   <thead>
                     <tr style={{
                       background: '#f3f4f6',
                       borderBottom: '2px solid #e5e7eb',
                     }}>
-                      <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Course Title</th>
-                      <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Category</th>
-                      <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Level</th>
-                      <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Price</th>
-                      <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Students</th>
-                      <th style={{ padding: '1rem', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Actions</th>
+                      <th style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Course Title</th>
+                      <th style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Category</th>
+                      <th style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Level</th>
+                      <th style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Price</th>
+                      <th style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Students</th>
+                      <th style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', textAlign: 'left', fontWeight: '600', color: '#1f2937' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -609,27 +628,27 @@ const AdminDashboard = () => {
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'transparent';
                       }}>
-                        <td style={{ padding: '1rem', color: '#1f2937', fontWeight: '600' }}>{course.title}</td>
-                        <td style={{ padding: '1rem', color: '#6b7280' }}>{course.category}</td>
-                        <td style={{ padding: '1rem' }}>
+                        <td style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', color: '#1f2937', fontWeight: '600' }}>{course.title}</td>
+                        <td style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', color: '#6b7280' }}>{course.category}</td>
+                        <td style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)' }}>
                           <span style={{
                             background: course.level === 'Beginner' ? '#d1fae5' : course.level === 'Intermediate' ? '#fef3c7' : '#fee2e2',
                             color: course.level === 'Beginner' ? '#065f46' : course.level === 'Intermediate' ? '#92400e' : '#991b1b',
-                            padding: '0.3rem 0.8rem',
+                            padding: 'clamp(0.25rem, 0.5vw, 0.3rem) clamp(0.6rem, 1vw, 0.8rem)',
                             borderRadius: '20px',
-                            fontSize: '0.85rem',
+                            fontSize: 'clamp(0.7rem, 1.2vw, 0.85rem)',
                             fontWeight: '600',
                           }}>
                             {course.level}
                           </span>
                         </td>
-                        <td style={{ padding: '1rem', color: '#1f2937', fontWeight: '600' }}>₦{course.price?.toLocaleString()}</td>
-                        <td style={{ padding: '1rem', color: '#6b7280' }}>{course.enrolledStudents}/{course.maxStudents}</td>
-                        <td style={{ padding: '1rem' }}>
+                        <td style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', color: '#1f2937', fontWeight: '600' }}>₦{course.price?.toLocaleString()}</td>
+                        <td style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)', color: '#6b7280' }}>{course.enrolledStudents}/{course.maxStudents}</td>
+                        <td style={{ padding: 'clamp(0.75rem, 1.5vw, 1rem)' }}>
                           <button
                             onClick={() => handleEditCourse(course)}
                             style={{
-                              padding: '0.4rem 0.8rem',
+                              padding: 'clamp(0.3rem, 0.8vw, 0.4rem) clamp(0.6rem, 1.2vw, 0.8rem)',
                               background: '#dbeafe',
                               color: '#1e40af',
                               border: 'none',
@@ -638,6 +657,8 @@ const AdminDashboard = () => {
                               cursor: 'pointer',
                               marginRight: '0.5rem',
                               transition: 'all 0.2s ease',
+                              fontSize: 'clamp(0.7rem, 1.2vw, 0.85rem)',
+                              minHeight: '36px',
                             }}
                             onMouseEnter={(e) => {
                               e.target.style.background = '#bfdbfe';
@@ -651,7 +672,7 @@ const AdminDashboard = () => {
                           <button
                             onClick={() => handleDeleteCourse(course._id)}
                             style={{
-                              padding: '0.4rem 0.8rem',
+                              padding: 'clamp(0.3rem, 0.8vw, 0.4rem) clamp(0.6rem, 1.2vw, 0.8rem)',
                               background: '#fee2e2',
                               color: '#991b1b',
                               border: 'none',
@@ -659,6 +680,8 @@ const AdminDashboard = () => {
                               fontWeight: '600',
                               cursor: 'pointer',
                               transition: 'all 0.2s ease',
+                              fontSize: 'clamp(0.7rem, 1.2vw, 0.85rem)',
+                              minHeight: '36px',
                             }}
                             onMouseEnter={(e) => {
                               e.target.style.background = '#fca5a5';
@@ -683,11 +706,11 @@ const AdminDashboard = () => {
         {showMarkAssignmentModal && selectedCourseForAssignment && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: '1rem'
+            background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: 'clamp(0.5rem, 2vw, 1rem)'
           }}>
-            <div style={{ background: 'white', borderRadius: '15px', padding: '2rem', maxWidth: '520px', width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)'}}>
-              <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>Mark Assignment</h2>
-              <p style={{ margin: '0 0 1rem 0', color: '#6b7280' }}>Course: {selectedCourseForAssignment.title}</p>
+            <div style={{ background: 'white', borderRadius: '15px', padding: 'clamp(1.5rem, 3vw, 2rem)', maxWidth: 'clamp(280px, 90vw, 520px)', width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)'}}>
+              <h2 style={{ margin: '0 0 clamp(0.75rem, 1.5vw, 1rem) 0', fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', fontWeight: 'bold', color: '#1f2937' }}>Mark Assignment</h2>
+              <p style={{ margin: '0 0 clamp(0.75rem, 1.5vw, 1rem) 0', color: '#6b7280', fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)' }}>Course: {selectedCourseForAssignment.title}</p>
 
               <form onSubmit={async (e) => { e.preventDefault();
                 try {
@@ -706,27 +729,27 @@ const AdminDashboard = () => {
                   showMessage('error', msg);
                 }
               }}>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1f2937' }}>Assignment *</label>
-                  <select required value={markForm.assignmentId} onChange={(e) => setMarkForm({ ...markForm, assignmentId: e.target.value })} style={{ width: '100%', padding: '0.8rem', border: '2px solid #e5e7eb', borderRadius: '8px' }}>
+                <div style={{ marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1f2937', fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)' }}>Assignment *</label>
+                  <select required value={markForm.assignmentId} onChange={(e) => setMarkForm({ ...markForm, assignmentId: e.target.value })} style={{ width: '100%', padding: 'clamp(0.6rem, 1.2vw, 0.8rem)', border: '2px solid #e5e7eb', borderRadius: '8px', fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)' }}>
                     <option value="">Select assignment...</option>
                     {assignmentsForCourse.map(a => (<option key={a._id} value={a._id}>{a.title} — due {a.dueDate?.split('T')[0]}</option>))}
                   </select>
                 </div>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1f2937' }}>Student *</label>
-                  <select required value={markForm.studentId} onChange={(e) => setMarkForm({ ...markForm, studentId: e.target.value })} style={{ width: '100%', padding: '0.8rem', border: '2px solid #e5e7eb', borderRadius: '8px' }}>
+                <div style={{ marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1f2937', fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)' }}>Student *</label>
+                  <select required value={markForm.studentId} onChange={(e) => setMarkForm({ ...markForm, studentId: e.target.value })} style={{ width: '100%', padding: 'clamp(0.6rem, 1.2vw, 0.8rem)', border: '2px solid #e5e7eb', borderRadius: '8px', fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)' }}>
                     <option value="">Select student...</option>
                     {students.map(s => (<option key={s._id} value={s._id}>{s.name} — {s.email}</option>))}
                   </select>
                 </div>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1f2937' }}>Marks *</label>
-                  <input required type="number" min="0" step="0.1" value={markForm.marks} onChange={(e) => setMarkForm({ ...markForm, marks: e.target.value })} style={{ width: '100%', padding: '0.8rem', border: '2px solid #e5e7eb', borderRadius: '8px' }} />
+                <div style={{ marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1f2937', fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)' }}>Marks *</label>
+                  <input required type="number" min="0" step="0.1" value={markForm.marks} onChange={(e) => setMarkForm({ ...markForm, marks: e.target.value })} style={{ width: '100%', padding: 'clamp(0.6rem, 1.2vw, 0.8rem)', border: '2px solid #e5e7eb', borderRadius: '8px', fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)', minHeight: '40px' }} />
                 </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <button type="submit" style={{ flex: 1, padding: '0.8rem', background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600' }}>Save</button>
-                  <button type="button" onClick={() => { setShowMarkAssignmentModal(false); setMarkForm({ assignmentId: '', studentId: '', marks: '' }); }} style={{ flex: 1, padding: '0.8rem', background: '#e5e7eb', color: '#1f2937', border: 'none', borderRadius: '8px', fontWeight: '600' }}>Cancel</button>
+                <div style={{ display: 'flex', gap: 'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                  <button type="submit" style={{ flex: 1, padding: 'clamp(0.6rem, 1.5vw, 0.8rem)', background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)', minHeight: '40px' }}>Save</button>
+                  <button type="button" onClick={() => { setShowMarkAssignmentModal(false); setMarkForm({ assignmentId: '', studentId: '', marks: '' }); }} style={{ flex: 1, padding: 'clamp(0.6rem, 1.5vw, 0.8rem)', background: '#e5e7eb', color: '#1f2937', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)', minHeight: '40px' }}>Cancel</button>
                 </div>
               </form>
             </div>
@@ -735,10 +758,10 @@ const AdminDashboard = () => {
 
         {/* Schedule Live Class Modal */}
         {showScheduleLiveModal && selectedCourseForAssignment && (
-          <div style={{ position: 'fixed', top:0, left:0, right:0, bottom:0, background: 'rgba(0,0,0,0.5)', display:'flex', justifyContent:'center', alignItems:'center', zIndex:1000 }}>
-            <div style={{ background:'white', borderRadius:15, padding:'2rem', maxWidth:520, width:'100%', boxShadow:'0 20px 60px rgba(0,0,0,0.3)'}}>
-              <h2 style={{ margin:'0 0 1rem 0', fontSize:'1.5rem', fontWeight:'bold', color:'#1f2937' }}>Schedule Live Class</h2>
-              <p style={{ color:'#6b7280', marginBottom:'1rem' }}>{selectedCourseForAssignment.title}</p>
+          <div style={{ position: 'fixed', top:0, left:0, right:0, bottom:0, background: 'rgba(0,0,0,0.5)', display:'flex', justifyContent:'center', alignItems:'center', zIndex:1000, padding: 'clamp(0.5rem, 2vw, 1rem)' }}>
+            <div style={{ background:'white', borderRadius:15, padding:'clamp(1.5rem, 3vw, 2rem)', maxWidth:'clamp(280px, 90vw, 520px)', width:'100%', boxShadow:'0 20px 60px rgba(0,0,0,0.3)'}}>
+              <h2 style={{ margin:'0 0 clamp(0.75rem, 1.5vw, 1rem) 0', fontSize:'clamp(1.2rem, 3vw, 1.5rem)', fontWeight:'bold', color:'#1f2937' }}>Schedule Live Class</h2>
+              <p style={{ color:'#6b7280', marginBottom:'clamp(0.75rem, 1.5vw, 1rem)', fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)' }}>{selectedCourseForAssignment.title}</p>
               <form onSubmit={async (e) => { e.preventDefault();
                 try {
                   if (!liveForm.title || !liveForm.scheduledAt) { showMessage('error','Please provide title and scheduled time'); return; }
@@ -749,25 +772,25 @@ const AdminDashboard = () => {
                   setShowScheduleLiveModal(false);
                 } catch (err) { console.error(err); showMessage('error', err.response?.data?.message || err.message || 'Failed to schedule live class'); }
               }}>
-                <div style={{ marginBottom:'1rem' }}>
-                  <label style={{ display:'block', marginBottom:6, fontWeight:600 }}>Title *</label>
-                  <input required value={liveForm.title} onChange={(e)=>setLiveForm({...liveForm, title:e.target.value})} style={{ width:'100%', padding:'0.8rem', border:'2px solid #e5e7eb', borderRadius:8 }} />
+                <div style={{ marginBottom:'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                  <label style={{ display:'block', marginBottom:6, fontWeight:600, fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)' }}>Title *</label>
+                  <input required value={liveForm.title} onChange={(e)=>setLiveForm({...liveForm, title:e.target.value})} style={{ width:'100%', padding:'clamp(0.6rem, 1.2vw, 0.8rem)', border:'2px solid #e5e7eb', borderRadius:8, fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)', minHeight: '40px' }} />
                 </div>
-                <div style={{ marginBottom:'1rem' }}>
-                  <label style={{ display:'block', marginBottom:6, fontWeight:600 }}>Scheduled At *</label>
-                  <input required type='datetime-local' value={liveForm.scheduledAt} onChange={(e)=>setLiveForm({...liveForm, scheduledAt:e.target.value})} style={{ width:'100%', padding:'0.8rem', border:'2px solid #e5e7eb', borderRadius:8 }} />
+                <div style={{ marginBottom:'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                  <label style={{ display:'block', marginBottom:6, fontWeight:600, fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)' }}>Scheduled At *</label>
+                  <input required type='datetime-local' value={liveForm.scheduledAt} onChange={(e)=>setLiveForm({...liveForm, scheduledAt:e.target.value})} style={{ width:'100%', padding:'clamp(0.6rem, 1.2vw, 0.8rem)', border:'2px solid #e5e7eb', borderRadius:8, fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)', minHeight: '40px' }} />
                 </div>
-                <div style={{ marginBottom:'1rem' }}>
-                  <label style={{ display:'block', marginBottom:6, fontWeight:600 }}>Duration (minutes)</label>
-                  <input type='number' min='10' value={liveForm.durationMinutes} onChange={(e)=>setLiveForm({...liveForm, durationMinutes:parseInt(e.target.value)})} style={{ width:'100%', padding:'0.8rem', border:'2px solid #e5e7eb', borderRadius:8 }} />
+                <div style={{ marginBottom:'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                  <label style={{ display:'block', marginBottom:6, fontWeight:600, fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)' }}>Duration (minutes)</label>
+                  <input type='number' min='10' value={liveForm.durationMinutes} onChange={(e)=>setLiveForm({...liveForm, durationMinutes:parseInt(e.target.value)})} style={{ width:'100%', padding:'clamp(0.6rem, 1.2vw, 0.8rem)', border:'2px solid #e5e7eb', borderRadius:8, fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)', minHeight: '40px' }} />
                 </div>
-                <div style={{ marginBottom:'1rem' }}>
-                  <label style={{ display:'block', marginBottom:6, fontWeight:600 }}>Meeting URL (optional)</label>
-                  <input value={liveForm.meetingUrl} onChange={(e)=>setLiveForm({...liveForm, meetingUrl:e.target.value})} placeholder='Zoom/Meet link' style={{ width:'100%', padding:'0.8rem', border:'2px solid #e5e7eb', borderRadius:8 }} />
+                <div style={{ marginBottom:'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                  <label style={{ display:'block', marginBottom:6, fontWeight:600, fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)' }}>Meeting URL (optional)</label>
+                  <input value={liveForm.meetingUrl} onChange={(e)=>setLiveForm({...liveForm, meetingUrl:e.target.value})} placeholder='Zoom/Meet link' style={{ width:'100%', padding:'clamp(0.6rem, 1.2vw, 0.8rem)', border:'2px solid #e5e7eb', borderRadius:8, fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)', minHeight: '40px' }} />
                 </div>
-                <div style={{ display:'flex', gap:'1rem' }}>
-                  <button type='submit' style={{ flex:1, padding:'0.8rem', background:'linear-gradient(135deg,#f59e0b 0%,#ef4444 100%)', color:'white', border:'none', borderRadius:8, fontWeight:600 }}>Schedule</button>
-                  <button type='button' onClick={()=>setShowScheduleLiveModal(false)} style={{ flex:1, padding:'0.8rem', background:'#e5e7eb', color:'#1f2937', border:'none', borderRadius:8, fontWeight:600 }}>Cancel</button>
+                <div style={{ display:'flex', gap:'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                  <button type='submit' style={{ flex:1, padding:'clamp(0.6rem, 1.5vw, 0.8rem)', background:'linear-gradient(135deg,#f59e0b 0%,#ef4444 100%)', color:'white', border:'none', borderRadius:8, fontWeight:600, fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)', minHeight: '40px' }}>Schedule</button>
+                  <button type='button' onClick={()=>setShowScheduleLiveModal(false)} style={{ flex:1, padding:'clamp(0.6rem, 1.5vw, 0.8rem)', background:'#e5e7eb', color:'#1f2937', border:'none', borderRadius:8, fontWeight:600, fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)', minHeight: '40px' }}>Cancel</button>
                 </div>
               </form>
             </div>
@@ -779,7 +802,7 @@ const AdminDashboard = () => {
           <div style={{
             background: 'white',
             borderRadius: '15px',
-            padding: '2rem',
+            padding: 'clamp(1.5rem, 3vw, 2rem)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
           }}>
             <AssignmentManager />
@@ -791,13 +814,13 @@ const AdminDashboard = () => {
           <div style={{
             background: 'white',
             borderRadius: '15px',
-            padding: '2rem',
+            padding: 'clamp(1.5rem, 3vw, 2rem)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'clamp(1.5rem, 3vw, 2rem)', flexWrap: 'wrap', gap: 'clamp(1rem, 2vw, 1.5rem)' }}>
               <h2 style={{
                 margin: 0,
-                fontSize: '1.5rem',
+                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
                 fontWeight: 'bold',
                 color: '#1f2937',
               }}>
@@ -809,12 +832,18 @@ const AdminDashboard = () => {
                   setSelectedCourseForClass(null);
                 }}
                 style={{
-                  padding: '0.8rem 1.5rem',
+                  padding: 'clamp(0.6rem, 1.5vw, 0.8rem) clamp(1rem, 2vw, 1.5rem)',
                   background: 'linear-gradient(135deg, #0066cc 0%, #0052a3 100%)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
                   fontWeight: '600',
+                  fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
+                  cursor: 'pointer',
+                  minHeight: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  whiteSpace: 'nowrap',
                   cursor: 'pointer',
                   fontSize: '0.95rem',
                 }}
@@ -990,12 +1019,12 @@ const AdminDashboard = () => {
           <div style={{
             background: 'white',
             borderRadius: '15px',
-            padding: '2rem',
+            padding: 'clamp(1.5rem, 3vw, 2rem)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
           }}>
             <h2 style={{
-              margin: '0 0 2rem 0',
-              fontSize: '1.5rem',
+              margin: '0 0 clamp(1.5rem, 2vw, 2rem) 0',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
               fontWeight: 'bold',
               color: '#1f2937',
             }}>
@@ -1004,20 +1033,30 @@ const AdminDashboard = () => {
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-              gap: '1rem',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 200px), 1fr))',
+              gap: 'clamp(0.75rem, 1.5vw, 1rem)',
             }}>
               {students.map((s) => (
                 <div key={s._id} style={{
                   border: '1px solid #e5e7eb',
                   borderRadius: '12px',
-                  padding: '1rem',
-                  background: 'linear-gradient(180deg, #ffffff 0%, #fbfbff 100%)'
+                  padding: 'clamp(0.75rem, 1.5vw, 1rem)',
+                  background: 'linear-gradient(180deg, #ffffff 0%, #fbfbff 100%)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '0.75rem' }}>
                     <div style={{
-                      width: 48,
-                      height: 48,
+                      width: 40,
+                      height: 40,
                       borderRadius: '50%',
                       background: '#eef2ff',
                       display: 'flex',
@@ -1042,12 +1081,12 @@ const AdminDashboard = () => {
           <div style={{
             background: 'white',
             borderRadius: '15px',
-            padding: '2rem',
+            padding: 'clamp(1.5rem, 3vw, 2rem)',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
           }}>
             <h2 style={{
-              margin: '0 0 2rem 0',
-              fontSize: '1.5rem',
+              margin: '0 0 clamp(1.5rem, 2vw, 2rem) 0',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
               fontWeight: 'bold',
               color: '#1f2937',
             }}>
@@ -1055,21 +1094,23 @@ const AdminDashboard = () => {
             </h2>
 
             {upcomingClasses.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#6b7280' }}>No upcoming live classes</div>
+              <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 'clamp(0.85rem, 1.8vw, 0.95rem)' }}>No upcoming live classes</div>
             ) : (
-              <div style={{ display: 'grid', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gap: 'clamp(0.5rem, 1vw, 0.75rem)' }}>
                 {upcomingClasses.map(lc => (
                   <div key={lc._id} style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     background: '#f3f4f6',
-                    padding: '1rem',
+                    padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                     borderRadius: '8px',
+                    flexWrap: 'wrap',
+                    gap: 'clamp(0.5rem, 1vw, 1rem)',
                   }}>
                     <div>
-                      <div style={{ fontWeight: 700 }}>{lc.title}</div>
-                      <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+                      <div style={{ fontWeight: 700, fontSize: 'clamp(0.9rem, 1.8vw, 1rem)' }}>{lc.title}</div>
+                      <div style={{ color: '#6b7280', fontSize: 'clamp(0.75rem, 1.3vw, 0.85rem)' }}>
                         {lc.courseName} • {new Date(lc.scheduledAt).toLocaleString()}
                       </div>
                     </div>
@@ -1088,12 +1129,15 @@ const AdminDashboard = () => {
                         }
                       }}
                       style={{
-                        padding: '0.5rem 1rem',
+                        padding: 'clamp(0.4rem, 1vw, 0.5rem) clamp(0.8rem, 1.5vw, 1rem)',
                         background: '#7c3aed',
                         color: 'white',
                         border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
+                        fontSize: 'clamp(0.75rem, 1.3vw, 0.85rem)',
+                        minHeight: '36px',
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       Mark Attendance
@@ -1225,21 +1269,21 @@ const AdminDashboard = () => {
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 1000,
-          padding: '1rem',
+          padding: 'clamp(0.5rem, 2vw, 1rem)',
         }}>
           <div style={{
             background: 'white',
             borderRadius: '15px',
-            padding: '2rem',
-            maxWidth: '500px',
+            padding: 'clamp(1.5rem, 3vw, 2rem)',
+            maxWidth: 'clamp(280px, 90vw, 500px)',
             width: '100%',
             maxHeight: '90vh',
             overflowY: 'auto',
             boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
           }}>
             <h2 style={{
-              margin: '0 0 1.5rem 0',
-              fontSize: '1.5rem',
+              margin: '0 0 clamp(1rem, 2vw, 1.5rem) 0',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
               fontWeight: 'bold',
               color: '#1f2937',
             }}>
@@ -1495,9 +1539,9 @@ const AdminDashboard = () => {
 
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr',
-                gap: '1rem',
-                marginBottom: '2rem',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
+                gap: 'clamp(0.75rem, 1.5vw, 1rem)',
+                marginBottom: 'clamp(1.5rem, 2vw, 2rem)',
               }}>
                 <div>
                   <label style={{
@@ -1505,13 +1549,14 @@ const AdminDashboard = () => {
                     marginBottom: '0.5rem',
                     fontWeight: '600',
                     color: '#1f2937',
+                    fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
                   }}>
                     Schedule Days *
                   </label>
                   <div style={{
                     border: '2px solid #e5e7eb',
                     borderRadius: '8px',
-                    padding: '0.8rem',
+                    padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
                     background: '#f9fafb',
                   }}>
                     {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
@@ -1520,7 +1565,7 @@ const AdminDashboard = () => {
                         alignItems: 'center',
                         marginBottom: '0.5rem',
                         cursor: 'pointer',
-                        fontSize: '0.9rem',
+                        fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
                       }}>
                         <input
                           type="checkbox"
@@ -1535,8 +1580,9 @@ const AdminDashboard = () => {
                           style={{
                             marginRight: '0.5rem',
                             cursor: 'pointer',
-                            width: '16px',
-                            height: '16px',
+                            width: '18px',
+                            height: '18px',
+                            minWidth: '18px',
                           }}
                         />
                         {day}
@@ -1556,6 +1602,7 @@ const AdminDashboard = () => {
                     marginBottom: '0.5rem',
                     fontWeight: '600',
                     color: '#1f2937',
+                    fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
                   }}>
                     Start Time
                   </label>
@@ -1565,11 +1612,12 @@ const AdminDashboard = () => {
                     onChange={(e) => setCourseForm({ ...courseForm, scheduleStartTime: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: '0.8rem',
+                      padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
                       border: '2px solid #e5e7eb',
                       borderRadius: '8px',
-                      fontSize: '0.9rem',
+                      fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
                       boxSizing: 'border-box',
+                      minHeight: '40px',
                     }}
                   />
                 </div>
@@ -1580,6 +1628,7 @@ const AdminDashboard = () => {
                     marginBottom: '0.5rem',
                     fontWeight: '600',
                     color: '#1f2937',
+                    fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
                   }}>
                     End Time
                   </label>
@@ -1589,11 +1638,12 @@ const AdminDashboard = () => {
                     onChange={(e) => setCourseForm({ ...courseForm, scheduleEndTime: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: '0.8rem',
+                      padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
                       border: '2px solid #e5e7eb',
                       borderRadius: '8px',
-                      fontSize: '0.9rem',
+                      fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
                       boxSizing: 'border-box',
+                      minHeight: '40px',
                     }}
                   />
                 </div>
@@ -1601,13 +1651,13 @@ const AdminDashboard = () => {
 
               <div style={{
                 display: 'flex',
-                gap: '1rem',
+                gap: 'clamp(0.75rem, 1.5vw, 1rem)',
               }}>
                 <button
                   type="submit"
                   style={{
                     flex: 1,
-                    padding: '0.8rem',
+                    padding: 'clamp(0.6rem, 1.5vw, 0.8rem)',
                     background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)',
                     color: 'white',
                     border: 'none',
@@ -1615,6 +1665,8 @@ const AdminDashboard = () => {
                     fontWeight: '600',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
+                    minHeight: '40px',
+                    fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.opacity = '0.9';
@@ -1633,7 +1685,7 @@ const AdminDashboard = () => {
                   }}
                   style={{
                     flex: 1,
-                    padding: '0.8rem',
+                    padding: 'clamp(0.6rem, 1.5vw, 0.8rem)',
                     background: '#e5e7eb',
                     color: '#1f2937',
                     border: 'none',
@@ -1641,6 +1693,8 @@ const AdminDashboard = () => {
                     fontWeight: '600',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
+                    minHeight: '40px',
+                    fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.background = '#d1d5db';
@@ -1868,38 +1922,40 @@ const AdminDashboard = () => {
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 1000,
-          padding: '1rem',
+          padding: 'clamp(0.5rem, 2vw, 1rem)',
         }}>
           <div style={{
             background: 'white',
             borderRadius: '15px',
-            padding: '2rem',
-            maxWidth: '500px',
+            padding: 'clamp(1.5rem, 3vw, 2rem)',
+            maxWidth: 'clamp(280px, 90vw, 500px)',
             width: '100%',
             boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
           }}>
             <h2 style={{
-              margin: '0 0 1.5rem 0',
-              fontSize: '1.5rem',
+              margin: '0 0 clamp(1rem, 2vw, 1.5rem) 0',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
               fontWeight: 'bold',
               color: '#1f2937',
             }}>
               Mark Attendance
             </h2>
             <p style={{
-              margin: '0 0 1.5rem 0',
+              margin: '0 0 clamp(1rem, 2vw, 1.5rem) 0',
               color: '#6b7280',
+              fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
             }}>
               👥 {selectedCourseForAttendance.title}
             </p>
 
             <form onSubmit={handleMarkAttendance}>
-              <div style={{ marginBottom: '1rem' }}>
+              <div style={{ marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)' }}>
                   <label style={{
                     display: 'block',
                     marginBottom: '0.5rem',
                     fontWeight: '600',
                     color: '#1f2937',
+                    fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
                   }}>
                     Student *
                   </label>
@@ -1909,11 +1965,12 @@ const AdminDashboard = () => {
                     onChange={(e) => setAttendanceForm({ ...attendanceForm, studentId: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: '0.8rem',
+                      padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
                       border: '2px solid #e5e7eb',
                       borderRadius: '8px',
-                      fontSize: '0.9rem',
+                      fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
                       boxSizing: 'border-box',
+                      minHeight: '40px',
                     }}
                   >
                     <option value="">Select student...</option>
@@ -1923,12 +1980,13 @@ const AdminDashboard = () => {
                   </select>
               </div>
 
-              <div style={{ marginBottom: '1rem' }}>
+              <div style={{ marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)' }}>
                 <label style={{
                   display: 'block',
                   marginBottom: '0.5rem',
                   fontWeight: '600',
                   color: '#1f2937',
+                  fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
                 }}>
                   Date *
                 </label>
@@ -1939,21 +1997,23 @@ const AdminDashboard = () => {
                   onChange={(e) => setAttendanceForm({ ...attendanceForm, date: e.target.value })}
                   style={{
                     width: '100%',
-                    padding: '0.8rem',
+                    padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
                     border: '2px solid #e5e7eb',
                     borderRadius: '8px',
-                    fontSize: '0.9rem',
+                    fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
                     boxSizing: 'border-box',
+                    minHeight: '40px',
                   }}
                 />
               </div>
 
-              <div style={{ marginBottom: '2rem' }}>
+              <div style={{ marginBottom: 'clamp(1.5rem, 2vw, 2rem)' }}>
                 <label style={{
                   display: 'block',
                   marginBottom: '0.5rem',
                   fontWeight: '600',
                   color: '#1f2937',
+                  fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
                 }}>
                   Status *
                 </label>
@@ -1963,10 +2023,11 @@ const AdminDashboard = () => {
                   onChange={(e) => setAttendanceForm({ ...attendanceForm, status: e.target.value })}
                   style={{
                     width: '100%',
-                    padding: '0.8rem',
+                    padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
                     border: '2px solid #e5e7eb',
                     borderRadius: '8px',
-                    fontSize: '0.9rem',
+                    fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
+                    minHeight: '40px',
                   }}
                 >
                   <option value="present">✓ Present</option>
@@ -1977,13 +2038,13 @@ const AdminDashboard = () => {
 
               <div style={{
                 display: 'flex',
-                gap: '1rem',
+                gap: 'clamp(0.75rem, 1.5vw, 1rem)',
               }}>
                 <button
                   type="submit"
                   style={{
                     flex: 1,
-                    padding: '0.8rem',
+                    padding: 'clamp(0.6rem, 1.5vw, 0.8rem)',
                     background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                     color: 'white',
                     border: 'none',
@@ -1991,6 +2052,8 @@ const AdminDashboard = () => {
                     fontWeight: '600',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
+                    minHeight: '40px',
+                    fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.opacity = '0.9';
@@ -2010,13 +2073,15 @@ const AdminDashboard = () => {
                   }}
                   style={{
                     flex: 1,
-                    padding: '0.8rem',
+                    padding: 'clamp(0.6rem, 1.5vw, 0.8rem)',
                     background: '#e5e7eb',
                     color: '#1f2937',
                     border: 'none',
                     borderRadius: '8px',
                     fontWeight: '600',
                     cursor: 'pointer',
+                    minHeight: '40px',
+                    fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
                   }}
                 >
                   Cancel

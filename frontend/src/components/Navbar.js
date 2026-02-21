@@ -452,8 +452,8 @@ const Navbar = () => {
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(0.5rem, 1vw, 0.75rem)' }}>
                   {[
                     { icon: '📊', name: 'Dashboard', path: '/dashboard' },
-                    { icon: '📅', name: 'Appointments', path: '/appointments' },
-                    { icon: '💳', name: 'Payments', path: '/payments' },
+                    // { icon: '📅', name: 'Appointments', path: '/appointments' },
+                    // { icon: '💳', name: 'Payments', path: '/payments' },
                     { icon: '👤', name: 'Profile', path: '/profile' },
                     ...(user?.isAdmin ? [{ icon: '⚙️', name: 'Admin Panel', path: '/admin/dashboard' }] : []),
                   ].map((item, index) => (

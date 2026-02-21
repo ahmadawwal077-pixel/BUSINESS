@@ -128,18 +128,18 @@ const CourseDetail = () => {
     <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      padding: '2rem',
+      padding: 'clamp(1rem, 3vw, 2rem)',
     }}>
       {/* Back Button */}
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto',
-        marginBottom: '2rem',
+        marginBottom: 'clamp(1.5rem, 3vw, 2rem)',
       }}>
         <button
           onClick={() => navigate('/courses')}
           style={{
-            padding: '0.7rem 1.5rem',
+            padding: 'clamp(0.5rem, 1.5vw, 0.7rem) clamp(1rem, 2vw, 1.5rem)',
             background: 'white',
             border: 'none',
             borderRadius: '8px',
@@ -148,6 +148,10 @@ const CourseDetail = () => {
             color: '#0066cc',
             transition: 'all 0.3s ease',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            fontSize: 'clamp(0.85rem, 2vw, 0.95rem)',
+            minHeight: '40px',
+            display: 'flex',
+            alignItems: 'center',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = '#f3f4f6';
@@ -164,7 +168,7 @@ const CourseDetail = () => {
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto',
-        marginBottom: '2rem',
+        marginBottom: 'clamp(1.5rem, 3vw, 2rem)',
       }}>
         <div style={{
           background: 'white',
@@ -174,7 +178,7 @@ const CourseDetail = () => {
         }}>
           {/* Hero Image */}
           <div style={{
-            height: '350px',
+            height: 'clamp(200px, 40vw, 350px)',
             background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
             backgroundImage: course.image ? `url(${course.image})` : 'none',
             backgroundSize: 'cover',
@@ -183,12 +187,12 @@ const CourseDetail = () => {
           }}>
             <div style={{
               position: 'absolute',
-              top: '2rem',
-              left: '2rem',
+              top: 'clamp(1rem, 3vw, 2rem)',
+              left: 'clamp(1rem, 3vw, 2rem)',
               background: 'white',
-              padding: '0.7rem 1.5rem',
+              padding: 'clamp(0.5rem, 1vw, 0.7rem) clamp(1rem, 2vw, 1.5rem)',
               borderRadius: '20px',
-              fontSize: '0.9rem',
+              fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)',
               fontWeight: 'bold',
               color: '#0066cc',
             }}>
@@ -196,12 +200,12 @@ const CourseDetail = () => {
             </div>
             <div style={{
               position: 'absolute',
-              top: '2rem',
-              right: '2rem',
+              top: 'clamp(1rem, 3vw, 2rem)',
+              right: 'clamp(1rem, 3vw, 2rem)',
               background: 'white',
-              padding: '0.7rem 1.5rem',
+              padding: 'clamp(0.5rem, 1vw, 0.7rem) clamp(1rem, 2vw, 1.5rem)',
               borderRadius: '20px',
-              fontSize: '0.9rem',
+              fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)',
               fontWeight: 'bold',
               color: '#0066cc',
             }}>
@@ -211,11 +215,11 @@ const CourseDetail = () => {
 
           {/* Course Details */}
           <div style={{
-            padding: '3rem',
+            padding: 'clamp(1.5rem, 3vw, 3rem)',
           }}>
             <h1 style={{
               margin: '0 0 1rem 0',
-              fontSize: '2.5rem',
+              fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
               fontWeight: 'bold',
               color: '#1f2937',
             }}>
@@ -224,7 +228,7 @@ const CourseDetail = () => {
 
             <p style={{
               margin: '0 0 2rem 0',
-              fontSize: '1.1rem',
+              fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
               color: '#6b7280',
               lineHeight: '1.6',
             }}>
@@ -233,17 +237,17 @@ const CourseDetail = () => {
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '2rem',
-              marginBottom: '2rem',
-              paddingBottom: '2rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
+              gap: 'clamp(1.5rem, 3vw, 2rem)',
+              marginBottom: 'clamp(1.5rem, 3vw, 2rem)',
+              paddingBottom: 'clamp(1.5rem, 3vw, 2rem)',
               borderBottom: '1px solid #e5e7eb',
             }}>
               {/* Instructor */}
               <div>
                 <p style={{
                   margin: '0 0 0.5rem 0',
-                  fontSize: '0.85rem',
+                  fontSize: 'clamp(0.75rem, 1.8vw, 0.85rem)',
                   color: '#9ca3af',
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
@@ -252,7 +256,7 @@ const CourseDetail = () => {
                 </p>
                 <p style={{
                   margin: 0,
-                  fontSize: '1.1rem',
+                  fontSize: 'clamp(0.9rem, 2.2vw, 1.1rem)',
                   fontWeight: 'bold',
                   color: '#1f2937',
                 }}>
@@ -264,7 +268,7 @@ const CourseDetail = () => {
               <div>
                 <p style={{
                   margin: '0 0 0.5rem 0',
-                  fontSize: '0.85rem',
+                  fontSize: 'clamp(0.75rem, 1.8vw, 0.85rem)',
                   color: '#9ca3af',
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
@@ -273,7 +277,7 @@ const CourseDetail = () => {
                 </p>
                 <p style={{
                   margin: 0,
-                  fontSize: '1.1rem',
+                  fontSize: 'clamp(0.9rem, 2.2vw, 1.1rem)',
                   fontWeight: 'bold',
                   color: '#1f2937',
                 }}>
@@ -285,7 +289,7 @@ const CourseDetail = () => {
               <div>
                 <p style={{
                   margin: '0 0 0.5rem 0',
-                  fontSize: '0.85rem',
+                  fontSize: 'clamp(0.75rem, 1.8vw, 0.85rem)',
                   color: '#9ca3af',
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
@@ -294,7 +298,7 @@ const CourseDetail = () => {
                 </p>
                 <p style={{
                   margin: 0,
-                  fontSize: '1.1rem',
+                  fontSize: 'clamp(0.9rem, 2.2vw, 1.1rem)',
                   fontWeight: 'bold',
                   color: '#1f2937',
                 }}>
@@ -313,7 +317,7 @@ const CourseDetail = () => {
               <div>
                 <p style={{
                   margin: '0 0 0.5rem 0',
-                  fontSize: '0.85rem',
+                  fontSize: 'clamp(0.75rem, 1.8vw, 0.85rem)',
                   color: '#9ca3af',
                   fontWeight: 'bold',
                   textTransform: 'uppercase',
@@ -322,7 +326,7 @@ const CourseDetail = () => {
                 </p>
                 <p style={{
                   margin: 0,
-                  fontSize: '1.1rem',
+                  fontSize: 'clamp(0.9rem, 2.2vw, 1.1rem)',
                   fontWeight: 'bold',
                   color: course.enrolledStudents >= course.maxStudents ? '#dc2626' : '#0066cc',
                 }}>
@@ -336,12 +340,13 @@ const CourseDetail = () => {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              gap: '2rem',
+              gap: 'clamp(1.5rem, 3vw, 2rem)',
+              flexWrap: 'wrap',
             }}>
               <div>
                 <p style={{
                   margin: '0 0 0.5rem 0',
-                  fontSize: '0.85rem',
+                  fontSize: 'clamp(0.75rem, 1.8vw, 0.85rem)',
                   color: '#9ca3af',
                   fontWeight: 'bold',
                 }}>
@@ -349,7 +354,7 @@ const CourseDetail = () => {
                 </p>
                 <p style={{
                   margin: 0,
-                  fontSize: '2rem',
+                  fontSize: 'clamp(1.5rem, 3vw, 2rem)',
                   fontWeight: 'bold',
                   color: '#0066cc',
                 }}>
@@ -361,16 +366,20 @@ const CourseDetail = () => {
                 onClick={handleEnroll}
                 disabled={enrolling || enrolled || course.enrolledStudents >= course.maxStudents}
                 style={{
-                  padding: '1rem 2rem',
+                  padding: 'clamp(0.7rem, 1.5vw, 1rem) clamp(1.5rem, 3vw, 2rem)',
                   background: enrolled ? '#10b981' : (course.enrolledStudents >= course.maxStudents ? '#9ca3af' : 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)'),
                   color: 'white',
                   border: 'none',
                   borderRadius: '10px',
                   fontWeight: '600',
-                  fontSize: '1.1rem',
+                  fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
                   cursor: enrolling || enrolled || course.enrolledStudents >= course.maxStudents ? 'not-allowed' : 'pointer',
                   transition: 'all 0.3s ease',
                   opacity: enrolling || enrolled || course.enrolledStudents >= course.maxStudents ? 0.6 : 1,
+                  minHeight: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  whiteSpace: 'nowrap',
                 }}
                 onMouseEnter={(e) => {
                   if (!enrolling && !enrolled && course.enrolledStudents < course.maxStudents) {
@@ -393,19 +402,19 @@ const CourseDetail = () => {
         maxWidth: '1200px',
         margin: '0 auto',
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '2rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
+        gap: 'clamp(1.5rem, 3vw, 2rem)',
       }}>
         {/* What You'll Learn */}
         <div style={{
           background: 'white',
           borderRadius: '15px',
-          padding: '2rem',
+          padding: 'clamp(1.5rem, 2vw, 2rem)',
           boxShadow: '0 4px 15px rgba(0, 0, 0, 0.08)',
         }}>
           <h2 style={{
-            margin: '0 0 1.5rem 0',
-            fontSize: '1.3rem',
+            margin: '0 0 clamp(1rem, 2vw, 1.5rem) 0',
+            fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
             fontWeight: 'bold',
             color: '#1f2937',
           }}>
@@ -425,9 +434,9 @@ const CourseDetail = () => {
               'Connect with fellow students',
             ].map((item, idx) => (
               <li key={idx} style={{
-                margin: '0.8rem 0',
+                margin: 'clamp(0.5rem, 1vw, 0.8rem) 0',
                 color: '#6b7280',
-                fontSize: '0.95rem',
+                fontSize: 'clamp(0.85rem, 1.8vw, 0.95rem)',
                 lineHeight: '1.5',
               }}>
                 ✓ {item}
@@ -440,12 +449,12 @@ const CourseDetail = () => {
         <div style={{
           background: 'white',
           borderRadius: '15px',
-          padding: '2rem',
+          padding: 'clamp(1.5rem, 2vw, 2rem)',
           boxShadow: '0 4px 15px rgba(0, 0, 0, 0.08)',
         }}>
           <h2 style={{
-            margin: '0 0 1.5rem 0',
-            fontSize: '1.3rem',
+            margin: '0 0 clamp(1rem, 2vw, 1.5rem) 0',
+            fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
             fontWeight: 'bold',
             color: '#1f2937',
           }}>
@@ -465,9 +474,9 @@ const CourseDetail = () => {
               'Commitment to learning',
             ].map((item, idx) => (
               <li key={idx} style={{
-                margin: '0.8rem 0',
+                margin: 'clamp(0.5rem, 1vw, 0.8rem) 0',
                 color: '#6b7280',
-                fontSize: '0.95rem',
+                fontSize: 'clamp(0.85rem, 1.8vw, 0.95rem)',
                 lineHeight: '1.5',
               }}>
                 • {item}
@@ -480,12 +489,12 @@ const CourseDetail = () => {
         <div style={{
           background: 'white',
           borderRadius: '15px',
-          padding: '2rem',
+          padding: 'clamp(1.5rem, 2vw, 2rem)',
           boxShadow: '0 4px 15px rgba(0, 0, 0, 0.08)',
         }}>
           <h2 style={{
-            margin: '0 0 1.5rem 0',
-            fontSize: '1.3rem',
+            margin: '0 0 clamp(1rem, 2vw, 1.5rem) 0',
+            fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
             fontWeight: 'bold',
             color: '#1f2937',
           }}>
@@ -667,26 +676,28 @@ const CourseDetail = () => {
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 2000,
-          padding: '1rem',
+          padding: 'clamp(1rem, 3vw, 2rem)',
         }}>
           <div style={{
             background: 'white',
             borderRadius: '15px',
-            padding: '3rem',
+            padding: 'clamp(1.5rem, 3vw, 3rem)',
             maxWidth: '450px',
             width: '100%',
             boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3)',
             textAlign: 'center',
+            maxHeight: '90vh',
+            overflowY: 'auto',
           }}>
             <div style={{
-              fontSize: '3rem',
+              fontSize: 'clamp(2rem, 6vw, 3rem)',
               marginBottom: '1rem',
             }}>
               💳
             </div>
             <h2 style={{
               margin: '0 0 1rem 0',
-              fontSize: '1.5rem',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
               fontWeight: 'bold',
               color: '#1f2937',
             }}>
@@ -694,7 +705,7 @@ const CourseDetail = () => {
             </h2>
             <p style={{
               margin: '0 0 1.5rem 0',
-              fontSize: '1rem',
+              fontSize: 'clamp(0.9rem, 2vw, 1rem)',
               color: '#6b7280',
               lineHeight: '1.6',
             }}>
@@ -704,12 +715,12 @@ const CourseDetail = () => {
               background: '#f0f9ff',
               border: '2px solid #0066cc',
               borderRadius: '10px',
-              padding: '1rem',
+              padding: 'clamp(0.8rem, 1.5vw, 1rem)',
               marginBottom: '1.5rem',
             }}>
               <p style={{
                 margin: '0 0 0.5rem 0',
-                fontSize: '0.85rem',
+                fontSize: 'clamp(0.75rem, 1.8vw, 0.85rem)',
                 color: '#6b7280',
                 fontWeight: '600',
                 textTransform: 'uppercase',
@@ -718,7 +729,7 @@ const CourseDetail = () => {
               </p>
               <p style={{
                 margin: 0,
-                fontSize: '1.8rem',
+                fontSize: 'clamp(1.3rem, 3vw, 1.8rem)',
                 fontWeight: 'bold',
                 color: '#0066cc',
               }}>
@@ -729,10 +740,11 @@ const CourseDetail = () => {
               background: '#fef3c7',
               border: '1px solid #fcd34d',
               borderRadius: '8px',
-              padding: '0.8rem',
+              padding: 'clamp(0.6rem, 1.5vw, 0.8rem)',
               marginBottom: '1.5rem',
-              fontSize: '0.85rem',
+              fontSize: 'clamp(0.75rem, 1.8vw, 0.85rem)',
               color: '#78350f',
+              lineHeight: '1.5',
             }}>
               ⏱️ After completing payment, you'll be automatically redirected to your dashboard with the confirmation.
             </div>
@@ -740,7 +752,7 @@ const CourseDetail = () => {
               onClick={() => setPaymentWindowOpen(false)}
               style={{
                 width: '100%',
-                padding: '0.8rem',
+                padding: 'clamp(0.6rem, 1.5vw, 0.8rem)',
                 background: '#e5e7eb',
                 border: 'none',
                 borderRadius: '8px',
@@ -748,7 +760,11 @@ const CourseDetail = () => {
                 fontWeight: '600',
                 color: '#374151',
                 transition: 'all 0.3s ease',
-                fontSize: '0.95rem',
+                fontSize: 'clamp(0.85rem, 1.8vw, 0.95rem)',
+                minHeight: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#d1d5db';

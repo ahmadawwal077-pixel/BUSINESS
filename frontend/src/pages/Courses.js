@@ -136,7 +136,7 @@ const Courses = () => {
       {/* Header Section */}
       <div style={{
         background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
-        padding: '4rem 2rem',
+        padding: 'clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem)',
         textAlign: 'center',
         color: 'white',
         position: 'relative',
@@ -161,7 +161,7 @@ const Courses = () => {
         }}>
           <h1 style={{
             margin: '0 0 0.5rem 0',
-            fontSize: '3rem',
+            fontSize: 'clamp(1.5rem, 5vw, 3rem)',
             fontWeight: 'bold',
             textShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
           }}>
@@ -169,7 +169,7 @@ const Courses = () => {
           </h1>
           <p style={{
             margin: '0 0 1.5rem 0',
-            fontSize: '1.2rem',
+            fontSize: 'clamp(0.95rem, 2.5vw, 1.2rem)',
             opacity: 0.95,
             maxWidth: '600px',
             marginLeft: 'auto',
@@ -180,12 +180,15 @@ const Courses = () => {
           <div style={{
             background: 'rgba(255, 255, 255, 0.15)',
             backdropFilter: 'blur(10px)',
-            padding: '0.5rem 1rem',
+            padding: 'clamp(0.4rem, 1vw, 0.5rem) clamp(0.8rem, 2vw, 1rem)',
             borderRadius: '50px',
             display: 'inline-block',
             border: '1px solid rgba(255, 255, 255, 0.3)',
+            fontSize: 'clamp(0.85rem, 1.5vw, 1rem)',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
           }}>
-            <span style={{ fontSize: '1rem' }}>🎯</span> {filteredCourses.length} courses available | {courses.reduce((sum, c) => sum + c.enrolledStudents, 0)} students enrolled
+            <span style={{ fontSize: 'clamp(0.9rem, 2vw, 1rem)' }}>🎯</span> {filteredCourses.length} courses available | {courses.reduce((sum, c) => sum + c.enrolledStudents, 0)} students enrolled
           </div>
         </div>
       </div>
@@ -194,7 +197,7 @@ const Courses = () => {
       <div style={{
         maxWidth: '1400px',
         margin: '0 auto',
-        padding: '2rem',
+        padding: 'clamp(1rem, 3vw, 2rem)',
       }}>
         {/* Search and Controls - temporarily hidden (filters disabled) */}
         {false && (
@@ -392,16 +395,16 @@ const Courses = () => {
 
         {/* Results Section */}
         <div style={{
-          marginBottom: '2rem',
+          marginBottom: 'clamp(1.5rem, 3vw, 2rem)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1rem',
+          gap: 'clamp(0.8rem, 2vw, 1rem)',
         }}>
           <h2 style={{
             margin: 0,
-            fontSize: '1.6rem',
+            fontSize: 'clamp(1.1rem, 3vw, 1.6rem)',
             fontWeight: 'bold',
             color: '#1f2937',
           }}>
@@ -414,25 +417,25 @@ const Courses = () => {
           <div style={{
             background: 'white',
             borderRadius: '18px',
-            padding: '4rem 2rem',
+            padding: 'clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem)',
             textAlign: 'center',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
           }}>
             <div style={{
-              fontSize: '4rem',
+              fontSize: 'clamp(2.5rem, 8vw, 4rem)',
               marginBottom: '1rem',
             }}>
               🔍
             </div>
             <p style={{
-              fontSize: '1.2rem',
+              fontSize: 'clamp(1rem, 2vw, 1.2rem)',
               color: '#6b7280',
               marginBottom: '0.5rem',
             }}>
               No courses match your search criteria
             </p>
             <p style={{
-              fontSize: '0.95rem',
+              fontSize: 'clamp(0.85rem, 1.8vw, 0.95rem)',
               color: '#9ca3af',
             }}>
               Try adjusting your filters or search term
@@ -443,8 +446,8 @@ const Courses = () => {
             {/* Courses Grid */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-              gap: '2rem',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
+              gap: 'clamp(1.5rem, 3vw, 2rem)',
             }}>
               {filteredCourses.map(course => {
                 const enrollmentRate = (course.enrolledStudents / course.maxStudents) * 100;
@@ -483,15 +486,16 @@ const Courses = () => {
                       {isAlmostFull && (
                         <div style={{
                           position: 'absolute',
-                          top: '1rem',
-                          left: '1rem',
+                          top: 'clamp(0.75rem, 2vw, 1rem)',
+                          left: 'clamp(0.75rem, 2vw, 1rem)',
                           background: '#ff6b6b',
                           color: 'white',
-                          padding: '0.4rem 0.8rem',
+                          padding: 'clamp(0.3rem, 1vw, 0.4rem) clamp(0.6rem, 1.5vw, 0.8rem)',
                           borderRadius: '20px',
-                          fontSize: '0.75rem',
+                          fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)',
                           fontWeight: 'bold',
                           zIndex: 10,
+                          whiteSpace: 'nowrap',
                         }}>
                           ⚡ Almost Full
                         </div>
@@ -499,7 +503,7 @@ const Courses = () => {
 
                       {/* Course Image */}
                       <div style={{
-                        height: '200px',
+                        height: 'clamp(120px, 30vw, 200px)',
                         background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
                         backgroundImage: course.image ? `url(${course.image})` : 'none',
                         backgroundSize: 'cover',
@@ -519,7 +523,7 @@ const Courses = () => {
                           justifyContent: 'center',
                           opacity: 0,
                           transition: 'opacity 0.3s ease',
-                          fontSize: '3rem',
+                          fontSize: 'clamp(2rem, 6vw, 3rem)',
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.opacity = '1';
@@ -533,15 +537,16 @@ const Courses = () => {
                         {/* Level Badge */}
                         <div style={{
                           position: 'absolute',
-                          top: '1rem',
-                          right: '1rem',
+                          top: 'clamp(0.75rem, 2vw, 1rem)',
+                          right: 'clamp(0.75rem, 2vw, 1rem)',
                           background: getLevelColor(course.level),
                           color: 'white',
-                          padding: '0.4rem 0.8rem',
+                          padding: 'clamp(0.3rem, 1vw, 0.4rem) clamp(0.6rem, 1.5vw, 0.8rem)',
                           borderRadius: '20px',
-                          fontSize: '0.75rem',
+                          fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)',
                           fontWeight: 'bold',
                           textTransform: 'uppercase',
+                          whiteSpace: 'nowrap',
                         }}>
                           {course.level}
                         </div>
@@ -549,7 +554,7 @@ const Courses = () => {
 
                       {/* Course Content */}
                       <div style={{
-                        padding: '1.5rem',
+                        padding: 'clamp(1rem, 2vw, 1.5rem)',
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
@@ -559,20 +564,21 @@ const Courses = () => {
                           display: 'inline-block',
                           background: 'rgba(0, 102, 204, 0.1)',
                           color: '#0066cc',
-                          padding: '0.4rem 0.9rem',
+                          padding: 'clamp(0.3rem, 1vw, 0.4rem) clamp(0.6rem, 1.5vw, 0.9rem)',
                           borderRadius: '20px',
-                          fontSize: '0.75rem',
+                          fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)',
                           fontWeight: 'bold',
-                          marginBottom: '0.8rem',
+                          marginBottom: 'clamp(0.5rem, 1.5vw, 0.8rem)',
                           width: 'fit-content',
+                          whiteSpace: 'nowrap',
                         }}>
                           {getCategoryIcon(course.category)} {course.category}
                         </div>
 
                         {/* Title */}
                         <h3 style={{
-                          margin: '0.5rem 0',
-                          fontSize: '1.2rem',
+                          margin: 'clamp(0.3rem, 1vw, 0.5rem) 0',
+                          fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
                           fontWeight: 'bold',
                           color: '#1f2937',
                           lineHeight: '1.4',
@@ -582,8 +588,8 @@ const Courses = () => {
 
                         {/* Description */}
                         <p style={{
-                          margin: '0.7rem 0 1rem 0',
-                          fontSize: '0.85rem',
+                          margin: 'clamp(0.5rem, 1.5vw, 0.7rem) 0 clamp(0.75rem, 2vw, 1rem) 0',
+                          fontSize: 'clamp(0.75rem, 1.8vw, 0.85rem)',
                           color: '#6b7280',
                           lineHeight: '1.5',
                           flex: 1,
@@ -595,15 +601,15 @@ const Courses = () => {
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: '1fr 1fr',
-                          gap: '1rem',
-                          marginBottom: '1rem',
-                          paddingBottom: '1rem',
+                          gap: 'clamp(0.75rem, 2vw, 1rem)',
+                          marginBottom: 'clamp(0.75rem, 2vw, 1rem)',
+                          paddingBottom: 'clamp(0.75rem, 2vw, 1rem)',
                           borderBottom: '1px solid #e5e7eb',
                         }}>
                           <div>
                             <p style={{
                               margin: '0 0 0.3rem 0',
-                              fontSize: '0.75rem',
+                              fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)',
                               color: '#9ca3af',
                               fontWeight: '600',
                               textTransform: 'uppercase',
@@ -612,7 +618,7 @@ const Courses = () => {
                             </p>
                             <p style={{
                               margin: 0,
-                              fontSize: '0.95rem',
+                              fontSize: 'clamp(0.85rem, 2vw, 0.95rem)',
                               fontWeight: 'bold',
                               color: '#1f2937',
                             }}>
@@ -622,7 +628,7 @@ const Courses = () => {
                           <div>
                             <p style={{
                               margin: '0 0 0.3rem 0',
-                              fontSize: '0.75rem',
+                              fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)',
                               color: '#9ca3af',
                               fontWeight: '600',
                               textTransform: 'uppercase',
@@ -631,7 +637,7 @@ const Courses = () => {
                             </p>
                             <p style={{
                               margin: 0,
-                              fontSize: '0.95rem',
+                              fontSize: 'clamp(0.85rem, 2vw, 0.95rem)',
                               fontWeight: 'bold',
                               color: '#1f2937',
                             }}>
@@ -642,7 +648,7 @@ const Courses = () => {
 
                         {/* Enrollment Progress Bar */}
                         <div style={{
-                          marginBottom: '1rem',
+                          marginBottom: 'clamp(0.75rem, 2vw, 1rem)',
                         }}>
                           <div style={{
                             width: '100%',
@@ -660,7 +666,7 @@ const Courses = () => {
                           </div>
                           <p style={{
                             margin: '0.4rem 0 0 0',
-                            fontSize: '0.75rem',
+                            fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)',
                             color: '#9ca3af',
                           }}>
                             {Math.round(enrollmentRate)}% Full
@@ -672,11 +678,12 @@ const Courses = () => {
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'center',
-                          gap: '0.8rem',
+                          gap: 'clamp(0.5rem, 1.5vw, 0.8rem)',
+                          flexWrap: 'wrap',
                         }}>
                           <p style={{
                             margin: 0,
-                            fontSize: '1.4rem',
+                            fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)',
                             fontWeight: 'bold',
                             background: 'linear-gradient(135deg, #0066cc, #00b4d8)',
                             WebkitBackgroundClip: 'text',
@@ -686,16 +693,20 @@ const Courses = () => {
                             ₦{course.price?.toLocaleString()}
                           </p>
                           <button style={{
-                            padding: '0.7rem 1.2rem',
+                            padding: 'clamp(0.5rem, 1.5vw, 0.7rem) clamp(0.9rem, 2vw, 1.2rem)',
                             background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
                             color: 'white',
                             border: 'none',
                             borderRadius: '10px',
                             fontWeight: '600',
-                            fontSize: '0.9rem',
+                            fontSize: 'clamp(0.8rem, 1.8vw, 0.9rem)',
                             cursor: 'pointer',
                             transition: 'all 0.3s ease',
                             whiteSpace: 'nowrap',
+                            minHeight: '40px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.transform = 'scale(1.08)';
@@ -717,22 +728,22 @@ const Courses = () => {
 
             {/* Footer Stats */}
             <div style={{
-              marginTop: '4rem',
+              marginTop: 'clamp(2.5rem, 5vw, 4rem)',
               background: 'white',
               borderRadius: '18px',
-              padding: '2rem',
+              padding: 'clamp(1.5rem, 3vw, 2rem)',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
               textAlign: 'center',
             }}>
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '2rem',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
+                gap: 'clamp(1.5rem, 3vw, 2rem)',
               }}>
                 <div>
                   <p style={{
                     margin: '0 0 0.5rem 0',
-                    fontSize: '0.9rem',
+                    fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)',
                     color: '#6b7280',
                     textTransform: 'uppercase',
                     fontWeight: '600',
@@ -741,7 +752,7 @@ const Courses = () => {
                   </p>
                   <p style={{
                     margin: 0,
-                    fontSize: '2rem',
+                    fontSize: 'clamp(1.5rem, 3vw, 2rem)',
                     fontWeight: 'bold',
                     color: '#0066cc',
                   }}>
@@ -751,7 +762,7 @@ const Courses = () => {
                 <div>
                   <p style={{
                     margin: '0 0 0.5rem 0',
-                    fontSize: '0.9rem',
+                    fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)',
                     color: '#6b7280',
                     textTransform: 'uppercase',
                     fontWeight: '600',
@@ -760,7 +771,7 @@ const Courses = () => {
                   </p>
                   <p style={{
                     margin: 0,
-                    fontSize: '2rem',
+                    fontSize: 'clamp(1.5rem, 3vw, 2rem)',
                     fontWeight: 'bold',
                     color: '#00b4d8',
                   }}>
@@ -770,7 +781,7 @@ const Courses = () => {
                 <div>
                   <p style={{
                     margin: '0 0 0.5rem 0',
-                    fontSize: '0.9rem',
+                    fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)',
                     color: '#6b7280',
                     textTransform: 'uppercase',
                     fontWeight: '600',
@@ -779,7 +790,7 @@ const Courses = () => {
                   </p>
                   <p style={{
                     margin: 0,
-                    fontSize: '2rem',
+                    fontSize: 'clamp(1.5rem, 3vw, 2rem)',
                     fontWeight: 'bold',
                     color: '#0066cc',
                   }}>
