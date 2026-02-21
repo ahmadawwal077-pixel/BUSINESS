@@ -8,6 +8,7 @@ import React, {
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { courseAPI, liveClassAPI } from "../services/api";
+import alertService from "../utils/alertService";
 import AssignmentManager from "../components/AssignmentManager";
 
 const AdminDashboard = () => {
@@ -303,10 +304,19 @@ const AdminDashboard = () => {
 	};
 
 	const handleDeleteCourse = async (courseId) => {
-		if (window.confirm("Are you sure you want to delete this course?")) {
+		const result = await alertService.confirm(
+			"Delete Course?",
+			"Are you sure you want to delete this course? This action cannot be undone.",
+			"Yes, Delete It",
+		);
+
+		if (result.isConfirmed) {
 			try {
-				const response = await courseAPI.deleteCourse(courseId);
-				showMessage("success", "Course deleted successfully!");
+				await courseAPI.deleteCourse(courseId);
+				alertService.success(
+					"Course Deleted",
+					"The course has been successfully removed.",
+				);
 
 				// Broadcast course deletion event to all tabs/windows
 				localStorage.setItem(
@@ -319,7 +329,10 @@ const AdminDashboard = () => {
 
 				fetchCourses();
 			} catch (error) {
-				showMessage("error", "Failed to delete course");
+				alertService.error(
+					"Delete Failed",
+					"Failed to delete course. Please try again.",
+				);
 			}
 		}
 	};

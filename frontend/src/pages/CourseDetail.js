@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { courseAPI } from "../services/api";
+import { courseAPI, paymentAPI } from "../services/api";
+import alertService from "../utils/alertService";
 
 const CourseDetail = () => {
 	const { id } = useParams();
@@ -42,38 +43,54 @@ const CourseDetail = () => {
 
 	const handleEnroll = async () => {
 		if (!user) {
-			navigate("/login");
+			navigate("/login", { state: { from: window.location.pathname } });
 			return;
 		}
 
 		setEnrolling(true);
 		try {
+			console.log("Enrolling in course:", id);
 			const response = await courseAPI.enrollCourse(id);
-			const enrollmentIdRes =
-				response.data.enrollment._id || response.data.enrollment.id;
+			console.log("Enrollment response:", response.data);
+
+			const enrollmentData = response.data.enrollment;
+			const enrollmentIdRes = enrollmentData?._id || enrollmentData?.id;
+
+			if (!enrollmentIdRes) {
+				throw new Error("Failed to get enrollment ID from server");
+			}
+
 			setEnrollmentId(enrollmentIdRes);
 
 			// Initialize payment for this enrollment via Paystack
-			const paymentInit = await (
-				await import("../services/api")
-			).paymentAPI.createPaymentIntent({
+			console.log("Creating payment intent for enrollment:", enrollmentIdRes);
+			const paymentInit = await paymentAPI.createPaymentIntent({
 				amount: course.price || 0,
 				enrollmentId: enrollmentIdRes,
 				email: user.email,
 				fullName: user.name || user.email,
 			});
 
+			console.log("Payment initialization response:", paymentInit.data);
+
 			const { authorization_url } = paymentInit.data;
 			if (authorization_url) {
 				// Open Paystack payment page
 				window.open(authorization_url, "_blank");
-				alert("Payment window opened. Complete payment to finish enrollment.");
+				alertService.info(
+					"Payment Window Opened",
+					"Please complete payment in the new window to finish enrollment.",
+				);
 			} else {
 				setPaymentModalOpen(true);
 			}
 		} catch (error) {
 			console.error("Error enrolling:", error);
-			alert(error.response?.data?.message || "Error enrolling in course");
+			alertService.error(
+				"Enrollment Failed",
+				error.response?.data?.message ||
+					"Something went wrong while enrolling in this course.",
+			);
 		} finally {
 			setEnrolling(false);
 		}
@@ -87,7 +104,10 @@ const CourseDetail = () => {
 			// For now, we'll just confirm the payment locally
 			await courseAPI.confirmEnrollmentPayment(enrollmentId);
 
-			alert("Payment successful! You are now enrolled in the course.");
+			alertService.success(
+				"Enrollment Successful!",
+				"You are now enrolled in the course. Happy learning!",
+			);
 			setPaymentModalOpen(false);
 			setEnrolled(true);
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { consultationAPI } from "../services/api";
+import alertService from "../utils/alertService";
 
 const STATUS_COLORS = {
 	new: { bg: "#dbeafe", color: "#1e40af", label: "🆕 New" },
@@ -67,7 +68,12 @@ const AdminConsultations = () => {
 	};
 
 	const handleDelete = async (id) => {
-		if (!window.confirm("Delete this consultation request?")) return;
+		const result = await alertService.confirm(
+			"Delete Request?",
+			"Are you sure you want to delete this consultation request?",
+			"Yes, Delete It",
+		);
+		if (!result.isConfirmed) return;
 		try {
 			await consultationAPI.deleteConsultationRequest(id);
 			showMsg("success", "Request deleted.");

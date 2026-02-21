@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { blogAPI } from "../services/api";
+import alertService from "../utils/alertService";
 import {
 	Plus,
 	PencilSimple,
@@ -167,13 +168,13 @@ const AdminBlog = () => {
 	};
 
 	const handleDelete = async (blogId) => {
-		if (
-			!window.confirm(
-				"Are you sure you want to delete this blog post? This action cannot be undone.",
-			)
-		) {
-			return;
-		}
+		const result = await alertService.confirm(
+			"Delete Article?",
+			"Are you sure you want to delete this blog post? This action cannot be undone.",
+			"Yes, Delete It",
+		);
+
+		if (!result.isConfirmed) return;
 
 		try {
 			setActionLoading(true);

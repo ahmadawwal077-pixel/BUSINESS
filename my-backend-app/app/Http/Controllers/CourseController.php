@@ -95,7 +95,16 @@ class CourseController extends Controller
         $course = Course::find($courseId);
 
         // Check if already enrolled
-        if (CourseEnrollment::where('course_id', $courseId)->where('student_id', $userId)->exists()) {
+        $existingEnrollment = CourseEnrollment::where('course_id', $courseId)->where('student_id', $userId)->first();
+        if ($existingEnrollment) {
+            if ($existingEnrollment->paymentStatus === 'pending') {
+                $enrollmentData = $existingEnrollment->toArray();
+                $enrollmentData['_id'] = $existingEnrollment->id;
+                return response()->json([
+                    'message' => 'Pending enrollment found. Please proceed with payment.',
+                    'enrollment' => $enrollmentData
+                ], 200);
+            }
             return response()->json(['message' => 'Already enrolled in this course'], 400);
         }
 
