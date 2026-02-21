@@ -125,6 +125,46 @@ function App() {
 										</ProtectedRoute>
 									}
 								/>
+								<Route
+									path="/courses"
+									element={
+										<ProtectedRoute>
+											<DashboardLayout>
+												<Courses />
+											</DashboardLayout>
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/course/:id"
+									element={
+										<ProtectedRoute>
+											<DashboardLayout>
+												<CourseDetail />
+											</DashboardLayout>
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/blog"
+									element={
+										<ProtectedRoute>
+											<DashboardLayout>
+												<Blog />
+											</DashboardLayout>
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/blog/:slug"
+									element={
+										<ProtectedRoute>
+											<DashboardLayout>
+												<BlogDetail />
+											</DashboardLayout>
+										</ProtectedRoute>
+									}
+								/>
 
 								{/* Public Routes with Navbar/Footer */}
 								<Route

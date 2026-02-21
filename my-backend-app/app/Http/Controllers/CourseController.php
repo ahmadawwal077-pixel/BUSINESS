@@ -37,7 +37,12 @@ class CourseController extends Controller
     // Get all courses
     public function index(Request $request)
     {
-        $query = Course::with('instructor:id,name,email')->where('status', 'active');
+        $query = Course::with('instructor:id,name,email');
+
+        // Non-admins only see active courses by default
+        if (!$request->user()?->isAdmin) {
+            $query->where('status', 'active');
+        }
 
         if ($request->has('category')) {
             $query->where('category', $request->category);
@@ -49,10 +54,14 @@ class CourseController extends Controller
 
         $courses = $query->latest()->get();
 
-        // Transform to include _id for frontend parity
+        // Transform to include _id for frontend parity and enrolledStudents count
         $transformed = $courses->map(function (\App\Models\Course $course) {
             $data = $course->toArray();
             $data['_id'] = $course->id;
+            // Recalculate enrolledStudents if it seems out of sync
+            $data['enrolledStudents'] = \App\Models\CourseEnrollment::where('course_id', $course->id)
+                ->where('paymentStatus', 'completed')
+                ->count();
             return $data;
         });
 
@@ -68,7 +77,10 @@ class CourseController extends Controller
             return response()->json(['message' => 'Course not found'], 404);
         }
 
-        return response()->json($course);
+        $data = $course->toArray();
+        $data['_id'] = $course->id;
+
+        return response()->json($data);
     }
 
     // Enroll student in course
@@ -96,9 +108,12 @@ class CourseController extends Controller
             'paymentStatus' => 'pending',
         ]);
 
+        $enrollmentData = $enrollment->toArray();
+        $enrollmentData['_id'] = $enrollment->id;
+
         return response()->json([
             'message' => 'Enrollment created. Please proceed with payment.',
-            'enrollment' => $enrollment
+            'enrollment' => $enrollmentData
         ], 201);
     }
 

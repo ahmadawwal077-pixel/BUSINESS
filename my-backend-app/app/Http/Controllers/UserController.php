@@ -18,6 +18,12 @@ class UserController extends Controller
             ->latest()
             ->get();
 
-        return response()->json($users);
+        $transformed = $users->map(function (\App\Models\User $user) {
+            $data = $user->toArray();
+            $data['_id'] = $user->id;
+            return $data;
+        });
+
+        return response()->json($transformed);
     }
 }

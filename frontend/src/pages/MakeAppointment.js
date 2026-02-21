@@ -1,713 +1,647 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  Calendar,
-  CreditCard,
-  User,
-  Lock,
-  X,
-  CheckCircle,
-  ListChecks,
-  Hourglass,
-  ShieldCheck,
-  Lightbulb,
-  EnvelopeSimple,
-} from 'phosphor-react';
-import { appointmentAPI, paymentAPI } from '../services/api';
+	Calendar,
+	CreditCard,
+	User,
+	X,
+	CheckCircle,
+	CaretRight,
+	CaretLeft,
+	Info,
+	Clock,
+	BookOpen,
+} from "phosphor-react";
+import { appointmentAPI, paymentAPI, courseAPI } from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 
 const MakeAppointment = () => {
-  const [formData, setFormData] = useState({
-    service: '',
-    appointmentDate: '',
-    timeSlot: '',
-    description: '',
-    userEmail: '',
-  });
-  const [step, setStep] = useState('form'); // 'form' or 'payment'
-  const [appointmentData, setAppointmentData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [cardError, setCardError] = useState('');
-  const [cardData, setCardData] = useState({
-    cardholderName: '',
-  });
+	const { user } = useContext(AuthContext);
+	const navigate = useNavigate();
+	const [formData, setFormData] = useState({
+		service: "",
+		appointmentDate: "",
+		timeSlot: "",
+		description: "",
+		userEmail: user?.email || "",
+		courseId: "",
+	});
 
-  const services = [
-    'Strategic Planning',
-    'Business Development',
-    'Market Analysis',
-    'Organizational Design',
-    'Digital Transformation',
-    'Change Management',
-  ];
+	const [currentStep, setCurrentStep] = useState(1);
+	const [enrolledCourses, setEnrolledCourses] = useState([]);
+	const [appointmentData, setAppointmentData] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState("");
+	const [cardError, setCardError] = useState("");
 
-  const timeSlots = [
-    '09:00 AM',
-    '10:00 AM',
-    '11:00 AM',
-    '02:00 PM',
-    '03:00 PM',
-    '04:00 PM',
-  ];
+	const services = [
+		{ name: "Strategic Planning", price: 199.99, icon: "📈" },
+		{ name: "Business Development", price: 179.99, icon: "🚀" },
+		{ name: "Market Analysis", price: 149.99, icon: "📊" },
+		{ name: "Organizational Design", price: 189.99, icon: "🏢" },
+		{ name: "Digital Transformation", price: 229.99, icon: "💻" },
+		{ name: "Change Management", price: 169.99, icon: "🔄" },
+	];
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+	const timeSlots = [
+		"09:00 AM",
+		"10:00 AM",
+		"11:00 AM",
+		"02:00 PM",
+		"03:00 PM",
+		"04:00 PM",
+	];
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    setLoading(true);
+	useEffect(() => {
+		const fetchCourses = async () => {
+			try {
+				const res = await courseAPI.getMyEnrolledCourses();
+				setEnrolledCourses(res.data || []);
+			} catch (err) {
+				console.error("Error fetching enrolled courses:", err);
+			}
+		};
+		if (user) fetchCourses();
+	}, [user]);
 
-    try {
-      const createdAppointment = await appointmentAPI.createAppointment(formData);
-      const appointmentWithEmail = {
-        ...createdAppointment.data.appointment,
-        userEmail: formData.userEmail || createdAppointment.data.appointment.userEmail,
-      };
-      setAppointmentData(appointmentWithEmail);
-      setStep('payment');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error creating appointment');
-    } finally {
-      setLoading(false);
-    }
-  };
+	const handleChange = (e) => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
 
-  const handlePayment = async (e) => {
-    e.preventDefault();
-    setCardError('');
-    setLoading(true);
+	const handleNextStep = () => {
+		if (currentStep === 1 && !formData.service) {
+			setError("Please select a service");
+			return;
+		}
+		setError("");
+		setCurrentStep(currentStep + 1);
+	};
 
-    try {
-      // Validate email
-      if (!appointmentData.userEmail) {
-        setCardError('Email is required for payment');
-        setLoading(false);
-        return;
-      }
+	const handlePrevStep = () => {
+		setCurrentStep(currentStep - 1);
+	};
 
-      const amount = getServicePrice(appointmentData.service);
+	const handleSubmitAppointment = async (e) => {
+		e.preventDefault();
+		if (!formData.appointmentDate || !formData.timeSlot) {
+			setError("Please select both date and time slot");
+			return;
+		}
+		setError("");
+		setLoading(true);
 
-      // Create Paystack payment
-      const paymentResponse = await paymentAPI.createPaymentIntent({
-        amount,
-        appointmentId: appointmentData._id,
-        email: appointmentData.userEmail,
-        fullName: cardData.cardholderName || 'Customer',
-      });
+		try {
+			const createdAppointment =
+				await appointmentAPI.createAppointment(formData);
+			setAppointmentData(createdAppointment.data.appointment);
+			setCurrentStep(3);
+		} catch (err) {
+			setError(err.response?.data?.message || "Error creating appointment");
+		} finally {
+			setLoading(false);
+		}
+	};
 
-      // Redirect to Paystack payment page
-      if (paymentResponse.authorization_url) {
-        window.location.href = paymentResponse.authorization_url;
-      } else {
-        setCardError('Failed to initialize payment');
-      }
-    } catch (err) {
-      setCardError(err.response?.data?.message || 'Payment initialization failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+	const handlePayment = async (e) => {
+		e.preventDefault();
+		setCardError("");
+		setLoading(true);
 
-  const getServicePrice = (service) => {
-    const prices = {
-      'Strategic Planning': 199.99,
-      'Business Development': 179.99,
-      'Market Analysis': 149.99,
-      'Organizational Design': 189.99,
-      'Digital Transformation': 229.99,
-      'Change Management': 169.99,
-    };
-    return prices[service] || 199.99;
-  };
+		try {
+			const service = services.find((s) => s.name === appointmentData.service);
+			const amount = service ? service.price : 199.99;
 
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      padding: '3rem 2rem',
-    }}>
-      <div style={{
-        maxWidth: '700px',
-        margin: '0 auto',
-      }}>
-        {/* Header */}
-        <div style={{
-          background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
-          borderRadius: '20px',
-          padding: '3rem 2rem',
-          color: 'white',
-          marginBottom: '3rem',
-          boxShadow: '0 10px 40px rgba(0, 102, 204, 0.2)',
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>
-            {step === 'form' ? <Calendar size={56} weight="fill" /> : <CreditCard size={56} weight="fill" />}
-          </div>
-          <h1 style={{
-            margin: '0 0 0.5rem 0',
-            fontSize: '2.2rem',
-            fontWeight: 'bold',
-          }}>
-            {step === 'form' ? 'Book Your Consultation' : 'Complete Payment'}
-          </h1>
-          <p style={{
-            margin: 0,
-            fontSize: '1.05rem',
-            opacity: 0.95,
-          }}>
-            {step === 'form' 
-              ? 'Schedule a personalized session with our expert consultants'
-              : `Pay ₦${(getServicePrice(appointmentData?.service || 'Strategic Planning') * 1500).toLocaleString()} to secure your appointment`}
-          </p>
-        </div>
+			const paymentResponse = await paymentAPI.createPaymentIntent({
+				amount,
+				appointmentId: appointmentData.id || appointmentData._id,
+				email: user?.email || formData.userEmail,
+				fullName: user?.name || "Customer",
+			});
 
-        {/* Form Card */}
-        <div style={{
-          background: 'white',
-          borderRadius: '20px',
-          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
-          padding: '2.5rem',
-          overflow: 'hidden',
-        }}>
-          {/* Messages */}
-          {step === 'form' && error && (
-            <div style={{
-              background: 'linear-gradient(135deg, #f87171 0%, #dc2626 100%)',
-              color: 'white',
-              padding: '1rem 1.25rem',
-              borderRadius: '12px',
-              marginBottom: '1.5rem',
-              fontSize: '0.95rem',
-              fontWeight: '500',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-            }}>
-              <X size={20} weight="bold" style={{ flexShrink: 0 }} />
-              {error}
-            </div>
-          )}
+			if (paymentResponse.authorization_url) {
+				window.location.href = paymentResponse.authorization_url;
+			} else {
+				setCardError("Failed to initialize payment");
+			}
+		} catch (err) {
+			setCardError(
+				err.response?.data?.message || "Payment initialization failed",
+			);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-          {step === 'payment' && cardError && (
-            <div style={{
-              background: 'linear-gradient(135deg, #f87171 0%, #dc2626 100%)',
-              color: 'white',
-              padding: '1rem 1.25rem',
-              borderRadius: '12px',
-              marginBottom: '1.5rem',
-              fontSize: '0.95rem',
-              fontWeight: '500',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-            }}>
-              <X size={20} weight="bold" style={{ flexShrink: 0 }} />
-              {cardError}
-            </div>
-          )}
+	const stepStyles = {
+		container: {
+			maxWidth: "900px",
+			margin: "0 auto",
+			animation: "fadeIn 0.5s ease",
+		},
+		stepIndicator: {
+			display: "flex",
+			justifyContent: "center",
+			marginBottom: "3rem",
+			gap: "1rem",
+		},
+		indicator: (active) => ({
+			width: "40px",
+			height: "40px",
+			borderRadius: "50%",
+			display: "flex",
+			alignItems: "center",
+			justifyContent: "center",
+			background: active ? "#0066cc" : "#e2e8f0",
+			color: active ? "white" : "#64748b",
+			fontWeight: "bold",
+			transition: "all 0.3s ease",
+		}),
+		card: {
+			background: "white",
+			borderRadius: "24px",
+			padding: "3rem",
+			boxShadow: "0 4px 30px rgba(0, 0, 0, 0.05)",
+			border: "1px solid #f1f5f9",
+		},
+	};
 
-          {success && (
-            <div style={{
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: 'white',
-              padding: '1rem 1.25rem',
-              borderRadius: '12px',
-              marginBottom: '1.5rem',
-              fontSize: '0.95rem',
-              fontWeight: '500',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-            }}>
-              <CheckCircle size={20} weight="fill" style={{ flexShrink: 0 }} />
-              {success}
-            </div>
-          )}
+	return (
+		<div style={stepStyles.container}>
+			{/* Steps Indicator */}
+			<div style={stepStyles.stepIndicator}>
+				{[1, 2, 3].map((s) => (
+					<div key={s} style={{ display: "flex", alignItems: "center" }}>
+						<div style={stepStyles.indicator(currentStep >= s)}>
+							{s === 3 && currentStep === 3 ? <CheckCircle size={20} /> : s}
+						</div>
+						{s < 3 && (
+							<div
+								style={{
+									width: "40px",
+									h: "2px",
+									background: currentStep > s ? "#0066cc" : "#e2e8f0",
+									margin: "0 0.5rem",
+								}}
+							/>
+						)}
+					</div>
+				))}
+			</div>
 
-          {/* FORM STEP */}
-          {step === 'form' && (
-            <form onSubmit={handleSubmit}>
-              {/* Email Input */}
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{
-                  marginBottom: '0.75rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  fontSize: '0.95rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}>
-                  <EnvelopeSimple size={18} weight="bold" />
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  name="userEmail"
-                  value={formData.userEmail}
-                  onChange={handleChange}
-                  placeholder="your.email@example.com"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.95rem 1.25rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.3s ease',
-                    boxSizing: 'border-box',
-                    color: '#333',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#0066cc';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
-              </div>
+			<div style={stepStyles.card}>
+				{error && (
+					<div
+						style={{
+							background: "#fef2f2",
+							border: "1px solid #fee2e2",
+							color: "#dc2626",
+							padding: "1rem",
+							borderRadius: "12px",
+							marginBottom: "2rem",
+							display: "flex",
+							alignItems: "center",
+							gap: "0.75rem",
+						}}>
+						<X size={20} weight="bold" />
+						{error}
+					</div>
+				)}
 
-              {/* Service Selection */}
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{
-                  marginBottom: '0.75rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  fontSize: '0.95rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}>
-                </label>
-                <select
-                  name="service"
-                  value={formData.service}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.95rem 1.25rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.3s ease',
-                    boxSizing: 'border-box',
-                    backgroundColor: 'white',
-                    color: formData.service ? '#333' : '#9ca3af',
-                    cursor: 'pointer',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#0066cc';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                >
-                  <option value="">-- Choose a service --</option>
-                  {services.map((service) => (
-                    <option key={service} value={service}>
-                      {service}
-                    </option>
-                  ))}
-                </select>
-              </div>
+				{/* Step 1: Select Service */}
+				{currentStep === 1 && (
+					<div>
+						<h2
+							style={{
+								fontSize: "1.8rem",
+								fontWeight: "800",
+								color: "#1e293b",
+								marginBottom: "0.5rem",
+							}}>
+							Select Service
+						</h2>
+						<p style={{ color: "#64748b", marginBottom: "2rem" }}>
+							Which area of expertise do you need help with?
+						</p>
 
-              {/* Date Selection */}
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{
-                  marginBottom: '0.75rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  fontSize: '0.95rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}>
-                </label>
-                <input
-                  type="date"
-                  name="appointmentDate"
-                  value={formData.appointmentDate}
-                  onChange={handleChange}
-                  required
-                  min={new Date().toISOString().split('T')[0]}
-                  style={{
-                    width: '100%',
-                    padding: '0.95rem 1.25rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.3s ease',
-                    boxSizing: 'border-box',
-                    color: '#333',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#0066cc';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
-              </div>
+						<div
+							style={{
+								display: "grid",
+								gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+								gap: "1.5rem",
+							}}>
+							{services.map((s) => (
+								<div
+									key={s.name}
+									onClick={() => setFormData({ ...formData, service: s.name })}
+									style={{
+										padding: "1.5rem",
+										borderRadius: "16px",
+										border: `2px solid ${formData.service === s.name ? "#0066cc" : "#f1f5f9"}`,
+										background:
+											formData.service === s.name ? "#eff6ff" : "white",
+										cursor: "pointer",
+										transition: "all 0.2s ease",
+										textAlign: "center",
+									}}
+									onMouseEnter={(e) => {
+										if (formData.service !== s.name)
+											e.currentTarget.style.borderColor = "#cbd5e1";
+									}}
+									onMouseLeave={(e) => {
+										if (formData.service !== s.name)
+											e.currentTarget.style.borderColor = "#f1f5f9";
+									}}>
+									<div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
+										{s.icon}
+									</div>
+									<h3
+										style={{
+											fontSize: "1.1rem",
+											fontWeight: "700",
+											marginBottom: "0.5rem",
+											color: "#1e293b",
+										}}>
+										{s.name}
+									</h3>
+									<p style={{ fontWeight: "600", color: "#0066cc" }}>
+										₦{(s.price * 1500).toLocaleString()}
+									</p>
+								</div>
+							))}
+						</div>
 
-              {/* Time Slot Selection */}
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{
-                  marginBottom: '0.75rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  fontSize: '0.95rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}>
-                </label>
-                <select
-                  name="timeSlot"
-                  value={formData.timeSlot}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.95rem 1.25rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.3s ease',
-                    boxSizing: 'border-box',
-                    backgroundColor: 'white',
-                    color: formData.timeSlot ? '#333' : '#9ca3af',
-                    cursor: 'pointer',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#0066cc';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                >
-                  <option value="">-- Select a time --</option>
-                  {timeSlots.map((time) => (
-                    <option key={time} value={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
-              </div>
+						<div
+							style={{
+								marginTop: "3rem",
+								display: "flex",
+								justifyContent: "flex-end",
+							}}>
+							<button
+								onClick={handleNextStep}
+								style={{
+									padding: "1rem 2.5rem",
+									background: "#0066cc",
+									color: "white",
+									border: "none",
+									borderRadius: "12px",
+									fontWeight: "700",
+									cursor: "pointer",
+									display: "flex",
+									alignItems: "center",
+									gap: "0.5rem",
+								}}>
+								Continue <CaretRight size={20} />
+							</button>
+						</div>
+					</div>
+				)}
 
-              {/* Description */}
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{
-                  marginBottom: '0.75rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  fontSize: '0.95rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}>
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Tell us about your business goals, challenges, or specific needs..."
-                  style={{
-                    width: '100%',
-                    padding: '0.95rem 1.25rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.3s ease',
-                    boxSizing: 'border-box',
-                    minHeight: '120px',
-                    resize: 'vertical',
-                    color: '#333',
-                    lineHeight: '1.6',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#0066cc';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
-              </div>
+				{/* Step 2: Details */}
+				{currentStep === 2 && (
+					<form onSubmit={handleSubmitAppointment}>
+						<h2
+							style={{
+								fontSize: "1.8rem",
+								fontWeight: "800",
+								color: "#1e293b",
+								marginBottom: "0.5rem",
+							}}>
+							Appointment Details
+						</h2>
+						<p style={{ color: "#64748b", marginBottom: "2rem" }}>
+							Provide more information about your consultation needs.
+						</p>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  background: loading ? '#cbd5e1' : 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: loading ? 'none' : '0 8px 20px rgba(0, 102, 204, 0.3)',
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading) {
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 12px 30px rgba(0, 102, 204, 0.4)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading) {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 8px 20px rgba(0, 102, 204, 0.3)';
-                  }
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  {loading ? <Hourglass size={20} weight="bold" /> : <CreditCard size={20} weight="bold" />}
-                  {loading ? 'Preparing Payment...' : 'Proceed to Payment'}
-                </div>
-              </button>
-            </form>
-          )}
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								gap: "1.5rem",
+							}}>
+							{/* Course Selection */}
+							<div>
+								<label
+									style={{
+										display: "block",
+										marginBottom: "0.5rem",
+										fontWeight: "600",
+										color: "#475569",
+									}}>
+									<BookOpen
+										size={18}
+										style={{ verticalAlign: "middle", marginRight: "0.5rem" }}
+									/>
+									Related Course (Optional)
+								</label>
+								<select
+									name="courseId"
+									value={formData.courseId}
+									onChange={handleChange}
+									style={{
+										width: "100%",
+										padding: "1rem",
+										borderRadius: "12px",
+										border: "1px solid #e2e8f0",
+										background: "#f8fafc",
+									}}>
+									<option value="">-- Select a course if applicable --</option>
+									{enrolledCourses.map((enr) => (
+										<option key={enr._id} value={enr.course?._id}>
+											{enr.course?.title}
+										</option>
+									))}
+								</select>
+							</div>
 
-          {/* PAYMENT STEP */}
-          {step === 'payment' && appointmentData && (
-            <form onSubmit={handlePayment}>
-              {/* Order Summary */}
-              <div style={{
-                background: 'linear-gradient(135deg, rgba(0, 102, 204, 0.1) 0%, rgba(0, 180, 216, 0.1) 100%)',
-                padding: '1.5rem',
-                borderRadius: '12px',
-                marginBottom: '2rem',
-                border: '1px solid #0066cc33',
-              }}>
-                <h3 style={{ margin: '0 0 1rem 0', color: '#1f2937', fontSize: '1.05rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <ListChecks size={20} weight="bold" />
-                  Order Summary
-                </h3>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                  <span style={{ color: '#6b7280', fontSize: '0.95rem' }}>Service:</span>
-                  <span style={{ fontWeight: '600', color: '#1f2937' }}>{appointmentData.service}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                  <span style={{ color: '#6b7280', fontSize: '0.95rem' }}>Date:</span>
-                  <span style={{ fontWeight: '600', color: '#1f2937' }}>
-                    {new Date(appointmentData.appointmentDate).toLocaleDateString('en-US')}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #0066cc33', paddingTop: '1rem', marginTop: '1rem' }}>
-                  <span style={{ fontWeight: '600', color: '#1f2937', fontSize: '1.05rem' }}>Total:</span>
-                  <span style={{ fontWeight: '700', color: '#0066cc', fontSize: '1.3rem' }}>
-                    ₦{(getServicePrice(appointmentData.service) * 1500).toLocaleString()}
-                  </span>
-                </div>
-              </div>
+							<div
+								style={{
+									display: "grid",
+									gridTemplateColumns: "1fr 1fr",
+									gap: "1.5rem",
+								}}>
+								<div>
+									<label
+										style={{
+											display: "block",
+											marginBottom: "0.5rem",
+											fontWeight: "600",
+											color: "#475569",
+										}}>
+										<Calendar
+											size={18}
+											style={{ verticalAlign: "middle", marginRight: "0.5rem" }}
+										/>
+										Preferred Date
+									</label>
+									<input
+										type="date"
+										name="appointmentDate"
+										required
+										value={formData.appointmentDate}
+										onChange={handleChange}
+										style={{
+											width: "100%",
+											padding: "1rem",
+											borderRadius: "12px",
+											border: "1px solid #e2e8f0",
+											background: "#f8fafc",
+										}}
+									/>
+								</div>
+								<div>
+									<label
+										style={{
+											display: "block",
+											marginBottom: "0.5rem",
+											fontWeight: "600",
+											color: "#475569",
+										}}>
+										<Clock
+											size={18}
+											style={{ verticalAlign: "middle", marginRight: "0.5rem" }}
+										/>
+										Time Slot
+									</label>
+									<select
+										name="timeSlot"
+										required
+										value={formData.timeSlot}
+										onChange={handleChange}
+										style={{
+											width: "100%",
+											padding: "1rem",
+											borderRadius: "12px",
+											border: "1px solid #e2e8f0",
+											background: "#f8fafc",
+										}}>
+										<option value="">Select Time</option>
+										{timeSlots.map((t) => (
+											<option key={t} value={t}>
+												{t}
+											</option>
+										))}
+									</select>
+								</div>
+							</div>
 
-              {/* Email Input */}
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{
-                  marginBottom: '0.75rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  fontSize: '0.95rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}>
-                  <EnvelopeSimple size={18} weight="bold" />
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  value={cardData.cardholderName || ''}
-                  onChange={(e) => setCardData({ ...cardData, cardholderName: e.target.value })}
-                  placeholder="your.email@example.com"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.95rem 1.25rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.3s ease',
-                    boxSizing: 'border-box',
-                    color: '#333',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#0066cc';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
-              </div>
+							<div>
+								<label
+									style={{
+										display: "block",
+										marginBottom: "0.5rem",
+										fontWeight: "600",
+										color: "#475569",
+									}}>
+									<Info
+										size={18}
+										style={{ verticalAlign: "middle", marginRight: "0.5rem" }}
+									/>
+									Description / Topic
+								</label>
+								<textarea
+									name="description"
+									rows="4"
+									placeholder="What would you like to discuss?"
+									value={formData.description}
+									onChange={handleChange}
+									style={{
+										width: "100%",
+										padding: "1rem",
+										borderRadius: "12px",
+										border: "1px solid #e2e8f0",
+										background: "#f8fafc",
+										resize: "none",
+									}}
+								/>
+							</div>
+						</div>
 
-              {/* Payment Method Info */}
-              <div style={{
-                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%)',
-                padding: '1.5rem',
-                borderRadius: '12px',
-                marginBottom: '2rem',
-                border: '1px solid #3b82f633',
-              }}>
-                <h4 style={{ margin: '0 0 1rem 0', color: '#1f2937', fontSize: '1rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <CreditCard size={20} weight="bold" />
-                  Payment Method
-                </h4>
-                <p style={{ margin: '0.5rem 0', color: '#4b5563', fontSize: '0.95rem', lineHeight: '1.6' }}>
-                  <strong>Secure Payment via Paystack</strong>
-                </p>
-                <p style={{ margin: '0.5rem 0', color: '#4b5563', fontSize: '0.9rem', lineHeight: '1.6' }}>
-                  We accept: <CreditCard size={16} weight="bold" style={{ display: 'inline', marginRight: '0.25rem' }} /> Card, <User size={16} weight="bold" style={{ display: 'inline', marginRight: '0.25rem' }} /> Bank Transfer, <Lock size={16} weight="bold" style={{ display: 'inline', marginRight: '0.25rem' }} /> USSD
-                </p>
-              </div>
+						<div
+							style={{
+								marginTop: "3rem",
+								display: "flex",
+								justifyContent: "space-between",
+							}}>
+							<button
+								type="button"
+								onClick={handlePrevStep}
+								style={{
+									padding: "1rem 2rem",
+									background: "white",
+									border: "1px solid #e2e8f0",
+									borderRadius: "12px",
+									fontWeight: "600",
+									cursor: "pointer",
+									display: "flex",
+									alignItems: "center",
+									gap: "0.5rem",
+								}}>
+								<CaretLeft size={20} /> Back
+							</button>
+							<button
+								type="submit"
+								disabled={loading}
+								style={{
+									padding: "1rem 2.5rem",
+									background: "#0066cc",
+									color: "white",
+									border: "none",
+									borderRadius: "12px",
+									fontWeight: "700",
+									cursor: "pointer",
+									display: "flex",
+									alignItems: "center",
+									gap: "0.5rem",
+									opacity: loading ? 0.7 : 1,
+								}}>
+								{loading ? "Please wait..." : "Proceed to Payment"}{" "}
+								<CaretRight size={20} />
+							</button>
+						</div>
+					</form>
+				)}
 
-              {/* Buttons */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep('form');
-                    setCardError('');
-                  }}
-                  disabled={loading}
-                  style={{
-                    padding: '1rem',
-                    background: 'white',
-                    color: '#0066cc',
-                    border: '2px solid #0066cc',
-                    borderRadius: '12px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!loading) {
-                      e.target.style.background = '#f0f9ff';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!loading) {
-                      e.target.style.background = 'white';
-                    }
-                  }}
-                >
-                  ← Back
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  style={{
-                    padding: '1rem',
-                    background: loading ? '#cbd5e1' : 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '12px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.3s ease',
-                    boxShadow: loading ? 'none' : '0 8px 20px rgba(0, 102, 204, 0.3)',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!loading) {
-                      e.target.style.transform = 'translateY(-2px)';
-                      e.target.style.boxShadow = '0 12px 30px rgba(0, 102, 204, 0.4)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!loading) {
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = '0 8px 20px rgba(0, 102, 204, 0.3)';
-                    }
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    {loading ? <Hourglass size={20} weight="bold" /> : <ShieldCheck size={20} weight="bold" />}
-                    {loading ? 'Processing...' : 'Pay with Paystack'}
-                  </div>
-                </button>
-              </div>
-            </form>
-          )}
+				{/* Step 3: Payment */}
+				{currentStep === 3 && (
+					<div style={{ textAlign: "center" }}>
+						<div
+							style={{
+								width: "80px",
+								height: "80px",
+								background: "#eff6ff",
+								borderRadius: "20px",
+								display: "flex",
+								alignItems: "center",
+								justify: "center",
+								margin: "0 auto 1.5rem",
+								color: "#0066cc",
+							}}>
+							<CreditCard size={40} weight="fill" />
+						</div>
+						<h2
+							style={{
+								fontSize: "1.8rem",
+								fontWeight: "800",
+								color: "#1e293b",
+								marginBottom: "1rem",
+							}}>
+							Complete Payment
+						</h2>
 
-          {/* Info Box */}
-          {step === 'form' && (
-            <div style={{
-              marginTop: '2rem',
-              padding: '1.5rem',
-              background: 'rgba(0, 102, 204, 0.05)',
-              borderLeft: '4px solid #0066cc',
-              borderRadius: '8px',
-            }}>
-              <p style={{
-                margin: '0.5rem 0',
-                color: '#1f2937',
-                fontSize: '0.9rem',
-                lineHeight: '1.6',
-              }}>
-                <Lightbulb size={16} weight="fill" style={{ display: 'inline', marginRight: '0.5rem' }} />
-                <strong>Pro Tip:</strong> After payment, our consultants will contact you within 24 hours to confirm your appointment and discuss your specific needs.
-              </p>
-            </div>
-          )}
+						<div
+							style={{
+								background: "#f8fafc",
+								padding: "2rem",
+								borderRadius: "20px",
+								marginBottom: "2rem",
+								textAlign: "left",
+							}}>
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "space-between",
+									marginBottom: "1rem",
+									paddingBottom: "1rem",
+									borderBottom: "1px solid #e2e8f0",
+								}}>
+								<span style={{ color: "#64748b" }}>Service</span>
+								<span style={{ fontWeight: "700" }}>
+									{appointmentData?.service}
+								</span>
+							</div>
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "space-between",
+									marginBottom: "1rem",
+									paddingBottom: "1rem",
+									borderBottom: "1px solid #e2e8f0",
+								}}>
+								<span style={{ color: "#64748b" }}>Scheduled For</span>
+								<span style={{ fontWeight: "700" }}>
+									{new Date(
+										appointmentData?.appointmentDate,
+									).toLocaleDateString()}{" "}
+									at {appointmentData?.timeSlot}
+								</span>
+							</div>
+							<div style={{ display: "flex", justifyContent: "space-between" }}>
+								<span style={{ color: "#64748b", fontSize: "1.2rem" }}>
+									Total Amount
+								</span>
+								<span
+									style={{
+										fontSize: "1.5rem",
+										fontWeight: "900",
+										color: "#0066cc",
+									}}>
+									₦
+									{(
+										services.find((s) => s.name === appointmentData?.service)
+											?.price * 1500 || 0
+									).toLocaleString()}
+								</span>
+							</div>
+						</div>
 
-          {step === 'payment' && (
-            <div style={{
-              marginTop: '2rem',
-              padding: '1.5rem',
-              background: 'rgba(16, 185, 129, 0.05)',
-              borderLeft: '4px solid #10b981',
-              borderRadius: '8px',
-            }}>
-              <p style={{
-                margin: '0.5rem 0',
-                color: '#1f2937',
-                fontSize: '0.9rem',
-                lineHeight: '1.6',
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.5rem',
-              }}>
-                <Lock size={18} weight="fill" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span><strong>Secure Payment:</strong> Your payment is processed securely through Paystack, Nigeria's leading payment gateway. Your card details are never stored on our servers.</span>
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+						{cardError && (
+							<div
+								style={{
+									color: "#dc2626",
+									marginBottom: "1.5rem",
+									background: "#fef2f2",
+									padding: "1rem",
+									borderRadius: "12px",
+								}}>
+								{cardError}
+							</div>
+						)}
+
+						<button
+							onClick={handlePayment}
+							disabled={loading}
+							style={{
+								width: "100%",
+								padding: "1.25rem",
+								background: "linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)",
+								color: "white",
+								border: "none",
+								borderRadius: "12px",
+								fontWeight: "800",
+								fontSize: "1.1rem",
+								cursor: "pointer",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								gap: "0.75rem",
+								boxShadow: "0 10px 25px rgba(0, 102, 204, 0.3)",
+								opacity: loading ? 0.7 : 1,
+							}}>
+							{loading
+								? "Initializing Paystack..."
+								: "Secure Checkout with Paystack"}
+						</button>
+
+						<p
+							style={{
+								marginTop: "1.5rem",
+								color: "#64748b",
+								fontSize: "0.85rem",
+							}}>
+							Secure payment powered by Paystack. Your session is protected.
+						</p>
+					</div>
+				)}
+			</div>
+
+			<style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+		</div>
+	);
 };
 
 export default MakeAppointment;

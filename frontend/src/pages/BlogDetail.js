@@ -1,41 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { blogAPI } from '../services/api';
+import React, { useState, useEffect, useContext } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { blogAPI } from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 import {
-  DesktopTower,
-  TrendUp,
-  ArrowClockwise,
-  MagnifyingGlass,
-  Users,
-  Gear,
-} from 'phosphor-react';
+	DesktopTower,
+	TrendUp,
+	ArrowClockwise,
+	MagnifyingGlass,
+	Users,
+	Gear,
+} from "phosphor-react";
 
 const iconsMap = {
-  DesktopTower,
-  TrendUp,
-  ArrowClockwise,
-  MagnifyingGlass,
-  Users,
-  Gear,
+	DesktopTower,
+	TrendUp,
+	ArrowClockwise,
+	MagnifyingGlass,
+	Users,
+	Gear,
 };
 
 const BlogDetail = () => {
-  const { slug } = useParams();
-  const navigate = useNavigate();
-  const [blog, setBlog] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+	const { user } = useContext(AuthContext);
+	const isDashboard = !!user;
+	const { slug } = useParams();
+	const navigate = useNavigate();
+	const [blog, setBlog] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const sampleBlogs = {
-      'digital-transformation-future': {
-        title: 'The Future of Digital Transformation',
-        author: { name: 'Sarah Johnson' },
-        category: 'Digital Strategy',
-        createdAt: '2024-01-20',
-        featuredImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
-        excerpt: 'Explore how digital transformation is reshaping industries and what businesses need to know to stay competitive.',
-        content: `
+	useEffect(() => {
+		const sampleBlogs = {
+			"digital-transformation-future": {
+				title: "The Future of Digital Transformation",
+				author: { name: "Sarah Johnson" },
+				category: "Digital Strategy",
+				createdAt: "2024-01-20",
+				featuredImage:
+					"https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
+				excerpt:
+					"Explore how digital transformation is reshaping industries and what businesses need to know to stay competitive.",
+				content: `
         <h2>Understanding Digital Transformation</h2>
         <p>Digital transformation is no longer a luxury—it's a necessity for businesses that want to remain competitive in today's rapidly evolving marketplace. Organizations across all industries are embracing digital technologies to streamline operations, enhance customer experiences, and drive innovation.</p>
 
@@ -63,16 +68,18 @@ const BlogDetail = () => {
 
         <p>Digital transformation is not a destination but a continuous journey. The most successful organizations are those that view it as an ongoing process of evolution and improvement, always seeking new ways to leverage technology to create value for their customers and stakeholders.</p>
       `,
-        color: '#0066cc',
-      },
-      'strategic-planning-growth': {
-        title: 'Strategic Planning for Growth',
-        author: { name: 'Michael Chen' },
-        category: 'Strategy',
-        createdAt: '2024-01-18',
-        featuredImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
-        excerpt: 'Learn essential strategies for planning and executing sustainable business growth in competitive markets.',
-        content: `
+				color: "#0066cc",
+			},
+			"strategic-planning-growth": {
+				title: "Strategic Planning for Growth",
+				author: { name: "Michael Chen" },
+				category: "Strategy",
+				createdAt: "2024-01-18",
+				featuredImage:
+					"https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
+				excerpt:
+					"Learn essential strategies for planning and executing sustainable business growth in competitive markets.",
+				content: `
         <h2>Strategic Planning for Sustainable Growth</h2>
         <p>Strategic planning is the foundation for sustainable business growth. It provides direction, aligns stakeholders, and creates a roadmap for achieving organizational objectives. In this article, we'll explore the key elements of effective strategic planning.</p>
 
@@ -104,16 +111,18 @@ const BlogDetail = () => {
 
         <p>Successful growth is achieved through careful planning, disciplined execution, and continuous learning. Organizations that invest in strategic planning are better equipped to navigate uncertainty and capitalize on opportunities.</p>
       `,
-        color: '#00b4d8',
-      },
-      'change-management-best-practices': {
-        title: 'Change Management Best Practices',
-        author: { name: 'Emma Williams' },
-        category: 'Management',
-        createdAt: '2024-01-15',
-        featuredImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop',
-        excerpt: 'Discover proven methodologies for managing organizational change and ensuring successful implementation.',
-        content: `
+				color: "#00b4d8",
+			},
+			"change-management-best-practices": {
+				title: "Change Management Best Practices",
+				author: { name: "Emma Williams" },
+				category: "Management",
+				createdAt: "2024-01-15",
+				featuredImage:
+					"https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
+				excerpt:
+					"Discover proven methodologies for managing organizational change and ensuring successful implementation.",
+				content: `
         <h2>Managing Organizational Change Effectively</h2>
         <p>Change is inevitable in modern organizations. Whether driven by market conditions, technology adoption, or strategic initiatives, successful change management is critical for organizational success. This article explores best practices for managing change effectively.</p>
 
@@ -150,296 +159,437 @@ const BlogDetail = () => {
 
         <p>Successful change management requires a disciplined approach, strong leadership, and genuine engagement with employees. Organizations that master change management are better positioned for continuous improvement and competitive advantage.</p>
       `,
-        color: '#0096c7',
-      },
-    };
+				color: "#0096c7",
+			},
+		};
 
-    const fetchBlog = async () => {
-      try {
-        setLoading(true);
-        // Try to fetch from API first
-        try {
-          const response = await blogAPI.getBlogBySlug(slug);
-          setBlog(response.data);
-        } catch (apiError) {
-          // Fall back to sample data
-          if (sampleBlogs[slug]) {
-            setBlog(sampleBlogs[slug]);
-          } else {
-            setError('Blog post not found');
-          }
-        }
-      } catch (err) {
-        setError('Error loading blog post');
-        console.error('Error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+		const fetchBlog = async () => {
+			try {
+				setLoading(true);
+				// Try to fetch from API first
+				try {
+					const response = await blogAPI.getBlogBySlug(slug);
+					setBlog(response.data);
+				} catch (apiError) {
+					// Fall back to sample data
+					if (sampleBlogs[slug]) {
+						setBlog(sampleBlogs[slug]);
+					} else {
+						setError("Blog post not found");
+					}
+				}
+			} catch (err) {
+				setError("Error loading blog post");
+				console.error("Error:", err);
+			} finally {
+				setLoading(false);
+			}
+		};
 
-    fetchBlog();
-  }, [slug]);
+		fetchBlog();
+	}, [slug]);
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="container">
-          <p style={{ fontSize: '1.2rem', color: '#666' }}>Loading blog post...</p>
-        </div>
-      </div>
-    );
-  }
+	if (loading) {
+		return (
+			<div
+				style={{
+					minHeight: "60vh",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				}}>
+				<div className="container">
+					<p style={{ fontSize: "1.2rem", color: "#666" }}>
+						Loading blog post...
+					</p>
+				</div>
+			</div>
+		);
+	}
 
-  if (error || !blog) {
-    return (
-      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="container" style={{ textAlign: 'center' }}>
-          <h2 style={{ color: '#0066cc', marginBottom: '1rem' }}>Post Not Found</h2>
-          <p style={{ fontSize: '1.1rem', color: '#666', marginBottom: '2rem' }}>
-            Sorry, we couldn't find the blog post you're looking for.
-          </p>
-          <Link
-            to="/blog"
-            style={{
-              display: 'inline-block',
-              background: '#0066cc',
-              color: 'white',
-              padding: '0.9rem 2rem',
-              borderRadius: '6px',
-              textDecoration: 'none',
-              fontWeight: '600',
-            }}
-          >
-            Back to Blog
-          </Link>
-        </div>
-      </div>
-    );
-  }
+	if (error || !blog) {
+		return (
+			<div
+				style={{
+					minHeight: "60vh",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				}}>
+				<div className="container" style={{ textAlign: "center" }}>
+					<h2 style={{ color: "#0066cc", marginBottom: "1rem" }}>
+						Post Not Found
+					</h2>
+					<p
+						style={{ fontSize: "1.1rem", color: "#666", marginBottom: "2rem" }}>
+						Sorry, we couldn't find the blog post you're looking for.
+					</p>
+					<Link
+						to="/blog"
+						style={{
+							display: "inline-block",
+							background: "#0066cc",
+							color: "white",
+							padding: "0.9rem 2rem",
+							borderRadius: "6px",
+							textDecoration: "none",
+							fontWeight: "600",
+						}}>
+						Back to Blog
+					</Link>
+				</div>
+			</div>
+		);
+	}
 
-  return (
-    <div>
-      {/* Hero Section */}
-      <section
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(0, 102, 204, 0.85) 0%, rgba(0, 82, 163, 0.85) 100%), url("${blog.featuredImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop'}")`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-          color: 'white',
-          padding: '6rem 0',
-          textAlign: 'center',
-          minHeight: '500px',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
-        <div className="container">
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              background: blog.color || '#0066cc',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-            }}>
-              {(() => {
-                const iconValue = blog.icon;
-                let IconComp = typeof iconValue === 'string' ? iconsMap[iconValue] : iconValue;
-                if (!IconComp) IconComp = TrendUp;
+	return (
+		<div>
+			{/* Hero Section */}
+			{isDashboard ? (
+				<div
+					style={{
+						background: "white",
+						borderRadius: "20px",
+						padding: "2.5rem",
+						marginBottom: "2.5rem",
+						boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-between",
+						borderLeft: `8px solid ${blog.color || "#7c3aed"}`,
+					}}>
+					<div>
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								gap: "0.75rem",
+								marginBottom: "0.5rem",
+							}}>
+							<span
+								style={{
+									background: "rgba(124, 58, 237, 0.1)",
+									color: "#7c3aed",
+									padding: "0.3rem 0.8rem",
+									borderRadius: "25px",
+									fontWeight: "600",
+									fontSize: "0.8rem",
+								}}>
+								{blog.category}
+							</span>
+						</div>
+						<h1
+							style={{
+								margin: 0,
+								fontSize: "2rem",
+								color: "#1e293b",
+								fontWeight: "800",
+							}}>
+							{blog.title}
+						</h1>
+						<p
+							style={{
+								margin: "0.5rem 0 0 0",
+								color: "#64748b",
+								fontSize: "0.95rem",
+							}}>
+							By <strong>{blog.author?.name || "Admin"}</strong> •{" "}
+							{new Date(blog.createdAt).toLocaleDateString()}
+						</p>
+					</div>
+				</div>
+			) : (
+				<section
+					style={{
+						backgroundImage: `linear-gradient(135deg, rgba(0, 102, 204, 0.85) 0%, rgba(0, 82, 163, 0.85) 100%), url("${blog.featuredImage || "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop"}")`,
+						backgroundSize: "cover",
+						backgroundPosition: "center",
+						backgroundAttachment: "fixed",
+						color: "white",
+						padding: "6rem 0",
+						textAlign: "center",
+						minHeight: "500px",
+						display: "flex",
+						alignItems: "center",
+					}}>
+					<div className="container">
+						<div
+							style={{
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "0.75rem",
+								marginBottom: "1rem",
+							}}>
+							<div
+								style={{
+									width: "48px",
+									height: "48px",
+									borderRadius: "50%",
+									background: blog.color || "#0066cc",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+									color: "white",
+								}}>
+								{(() => {
+									const iconValue = blog.icon;
+									let IconComp =
+										typeof iconValue === "string"
+											? iconsMap[iconValue]
+											: iconValue;
+									if (!IconComp) IconComp = TrendUp;
 
-                if (typeof IconComp === 'function' || (typeof IconComp === 'object' && IconComp !== null)) {
-                  return React.createElement(IconComp, { size: 22, weight: 'bold', color: 'white' });
-                }
+									if (
+										typeof IconComp === "function" ||
+										(typeof IconComp === "object" && IconComp !== null)
+									) {
+										return React.createElement(IconComp, {
+											size: 22,
+											weight: "bold",
+											color: "white",
+										});
+									}
 
-                return <span style={{ fontSize: '1.2rem' }}>🔖</span>;
-              })()}
-            </div>
+									return <span style={{ fontSize: "1.2rem" }}>🔖</span>;
+								})()}
+							</div>
 
-            <span
-              style={{
-                background: 'rgba(255,255,255,0.12)',
-                color: 'white',
-                padding: '0.5rem 1rem',
-                borderRadius: '25px',
-                fontWeight: '600',
-                fontSize: '0.9rem',
-              }}
-            >
-              {blog.category}
-            </span>
-          </div>
-          <h1 style={{ fontSize: '3.5rem', marginBottom: '1.5rem', fontWeight: 'bold', letterSpacing: '1px' }}>
-            {blog.title}
-          </h1>
-          <div style={{ fontSize: '1.1rem', opacity: '0.95' }}>
-            By <strong>{blog.author?.name || 'Admin'}</strong> • {new Date(blog.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-          </div>
-        </div>
-      </section>
+							<span
+								style={{
+									background: "rgba(255,255,255,0.12)",
+									color: "white",
+									padding: "0.5rem 1rem",
+									borderRadius: "25px",
+									fontWeight: "600",
+									fontSize: "0.9rem",
+								}}>
+								{blog.category}
+							</span>
+						</div>
+						<h1
+							style={{
+								fontSize: "3.5rem",
+								marginBottom: "1.5rem",
+								fontWeight: "bold",
+								letterSpacing: "1px",
+							}}>
+							{blog.title}
+						</h1>
+						<div style={{ fontSize: "1.1rem", opacity: "0.95" }}>
+							By <strong>{blog.author?.name || "Admin"}</strong> •{" "}
+							{new Date(blog.createdAt).toLocaleDateString("en-US", {
+								year: "numeric",
+								month: "long",
+								day: "numeric",
+							})}
+						</div>
+					</div>
+				</section>
+			)}
 
-      {/* Content Section */}
-      <section style={{ backgroundColor: 'white', padding: '5rem 0' }}>
-        <div className="container">
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            {/* Featured Image */}
-            <img
-              src={blog.featuredImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop'}
-              alt={blog.title}
-              style={{
-                width: '100%',
-                height: 'auto',
-                maxHeight: '500px',
-                objectFit: 'cover',
-                borderRadius: '12px',
-                marginBottom: '3rem',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-              }}
-            />
+			{/* Content Section */}
+			<section style={{ backgroundColor: "white", padding: "5rem 0" }}>
+				<div className="container">
+					<div style={{ maxWidth: "900px", margin: "0 auto" }}>
+						{/* Featured Image */}
+						<img
+							src={
+								blog.featuredImage ||
+								"https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop"
+							}
+							alt={blog.title}
+							style={{
+								width: "100%",
+								height: "auto",
+								maxHeight: "500px",
+								objectFit: "cover",
+								borderRadius: "12px",
+								marginBottom: "3rem",
+								boxShadow: "0 8px 24px rgba(0, 0, 0, 0.1)",
+							}}
+						/>
 
-            {/* Blog Content */}
-            <div
-              style={{
-                fontSize: '1.05rem',
-                lineHeight: '1.85',
-                color: '#333',
-              }}
-              dangerouslySetInnerHTML={{
-                __html: blog.content || blog.excerpt,
-              }}
-            />
+						{/* Blog Content */}
+						<div
+							style={{
+								fontSize: "1.05rem",
+								lineHeight: "1.85",
+								color: "#333",
+							}}
+							dangerouslySetInnerHTML={{
+								__html: blog.content || blog.excerpt,
+							}}
+						/>
 
-            {/* Divider */}
-            <div style={{ borderTop: '2px solid #eee', margin: '3rem 0', paddingTop: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div
-                  style={{
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    background: '#0066cc',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '1.8rem',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  {(blog.author?.name || 'A')[0]}
-                </div>
-                <div>
-                  <h4 style={{ color: '#0066cc', marginBottom: '0.25rem', fontSize: '1.2rem' }}>
-                    {blog.author?.name || 'Admin'}
-                  </h4>
-                  <p style={{ color: '#666', margin: '0', fontSize: '0.95rem' }}>
-                    Expert consultant and thought leader in business strategy
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+						{/* Divider */}
+						<div
+							style={{
+								borderTop: "2px solid #eee",
+								margin: "3rem 0",
+								paddingTop: "2rem",
+							}}>
+							<div
+								style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+								<div
+									style={{
+										width: "60px",
+										height: "60px",
+										borderRadius: "50%",
+										background: "#0066cc",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										color: "white",
+										fontSize: "1.8rem",
+										fontWeight: "bold",
+									}}>
+									{(blog.author?.name || "A")[0]}
+								</div>
+								<div>
+									<h4
+										style={{
+											color: "#0066cc",
+											marginBottom: "0.25rem",
+											fontSize: "1.2rem",
+										}}>
+										{blog.author?.name || "Admin"}
+									</h4>
+									<p
+										style={{ color: "#666", margin: "0", fontSize: "0.95rem" }}>
+										Expert consultant and thought leader in business strategy
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
 
-      {/* Related Articles / CTA Section */}
-      <section style={{ backgroundColor: '#f8f9fa', padding: '5rem 0' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '1rem', fontSize: '2.5rem' }}>Continue Reading</h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>Explore more insights from our blog</p>
-          </div>
+			{/* Related Articles / CTA Section */}
+			<section style={{ backgroundColor: "#f8f9fa", padding: "5rem 0" }}>
+				<div className="container">
+					<div style={{ textAlign: "center", marginBottom: "3rem" }}>
+						<h2
+							style={{
+								color: "#0066cc",
+								marginBottom: "1rem",
+								fontSize: "2.5rem",
+							}}>
+							Continue Reading
+						</h2>
+						<p style={{ fontSize: "1.1rem", color: "#666" }}>
+							Explore more insights from our blog
+						</p>
+					</div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-            {[
-              {
-                title: 'The Future of Digital Transformation',
-                category: 'Digital Strategy',
-                slug: 'digital-transformation-future',
-                icon: '💻',
-              },
-              {
-                title: 'Strategic Planning for Growth',
-                category: 'Strategy',
-                slug: 'strategic-planning-growth',
-                icon: '📈',
-              },
-              {
-                title: 'Change Management Best Practices',
-                category: 'Management',
-                slug: 'change-management-best-practices',
-                icon: '🔄',
-              },
-            ]
-              .filter((item) => item.slug !== slug)
-              .map((item) => (
-                <Link
-                  key={item.slug}
-                  to={`/blog/${item.slug}`}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                >
-                  <div
-                    style={{
-                      background: 'white',
-                      borderRadius: '12px',
-                      padding: '2rem',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-                      transition: 'all 0.3s ease',
-                      cursor: 'pointer',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-8px)';
-                      e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.15)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
-                    }}
-                  >
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{item.icon}</div>
-                    <h4 style={{ color: '#0066cc', marginBottom: '0.5rem' }}>{item.title}</h4>
-                    <p style={{ color: '#999', fontSize: '0.9rem', marginBottom: '1rem' }}>{item.category}</p>
-                    <span style={{ color: '#0066cc', fontWeight: '600', display: 'flex', alignItems: 'center' }}>
-                      Read More →
-                    </span>
-                  </div>
-                </Link>
-              ))}
-          </div>
+					<div
+						style={{
+							display: "grid",
+							gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+							gap: "2rem",
+						}}>
+						{[
+							{
+								title: "The Future of Digital Transformation",
+								category: "Digital Strategy",
+								slug: "digital-transformation-future",
+								icon: "💻",
+							},
+							{
+								title: "Strategic Planning for Growth",
+								category: "Strategy",
+								slug: "strategic-planning-growth",
+								icon: "📈",
+							},
+							{
+								title: "Change Management Best Practices",
+								category: "Management",
+								slug: "change-management-best-practices",
+								icon: "🔄",
+							},
+						]
+							.filter((item) => item.slug !== slug)
+							.map((item) => (
+								<Link
+									key={item.slug}
+									to={`/blog/${item.slug}`}
+									style={{ textDecoration: "none", color: "inherit" }}>
+									<div
+										style={{
+											background: "white",
+											borderRadius: "12px",
+											padding: "2rem",
+											boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+											transition: "all 0.3s ease",
+											cursor: "pointer",
+										}}
+										onMouseEnter={(e) => {
+											e.currentTarget.style.transform = "translateY(-8px)";
+											e.currentTarget.style.boxShadow =
+												"0 12px 24px rgba(0, 0, 0, 0.15)";
+										}}
+										onMouseLeave={(e) => {
+											e.currentTarget.style.transform = "translateY(0)";
+											e.currentTarget.style.boxShadow =
+												"0 4px 12px rgba(0, 0, 0, 0.08)";
+										}}>
+										<div style={{ fontSize: "3rem", marginBottom: "1rem" }}>
+											{item.icon}
+										</div>
+										<h4 style={{ color: "#0066cc", marginBottom: "0.5rem" }}>
+											{item.title}
+										</h4>
+										<p
+											style={{
+												color: "#999",
+												fontSize: "0.9rem",
+												marginBottom: "1rem",
+											}}>
+											{item.category}
+										</p>
+										<span
+											style={{
+												color: "#0066cc",
+												fontWeight: "600",
+												display: "flex",
+												alignItems: "center",
+											}}>
+											Read More →
+										</span>
+									</div>
+								</Link>
+							))}
+					</div>
 
-          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-            <Link
-              to="/blog"
-              style={{
-                display: 'inline-block',
-                background: 'white',
-                border: '2px solid #0066cc',
-                color: '#0066cc',
-                padding: '0.9rem 2rem',
-                borderRadius: '6px',
-                fontWeight: '600',
-                textDecoration: 'none',
-                transition: 'all 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = '#0066cc';
-                e.target.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = 'white';
-                e.target.style.color = '#0066cc';
-              }}
-            >
-              ← Back to All Articles
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+					<div style={{ textAlign: "center", marginTop: "3rem" }}>
+						<Link
+							to="/blog"
+							style={{
+								display: "inline-block",
+								background: "white",
+								border: "2px solid #0066cc",
+								color: "#0066cc",
+								padding: "0.9rem 2rem",
+								borderRadius: "6px",
+								fontWeight: "600",
+								textDecoration: "none",
+								transition: "all 0.3s ease",
+							}}
+							onMouseEnter={(e) => {
+								e.target.style.background = "#0066cc";
+								e.target.style.color = "white";
+							}}
+							onMouseLeave={(e) => {
+								e.target.style.background = "white";
+								e.target.style.color = "#0066cc";
+							}}>
+							← Back to All Articles
+						</Link>
+					</div>
+				</div>
+			</section>
+		</div>
+	);
 };
 
 export default BlogDetail;

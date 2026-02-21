@@ -45,7 +45,12 @@ class AssignmentController extends Controller
     public function indexByCourse($courseId)
     {
         $assignments = Assignment::where('course_id', $courseId)->latest()->get();
-        return response()->json($assignments);
+        $transformed = $assignments->map(function (\App\Models\Assignment $a) {
+            $data = $a->toArray();
+            $data['_id'] = $a->id;
+            return $data;
+        });
+        return response()->json($transformed);
     }
 
     // Get assignment by ID

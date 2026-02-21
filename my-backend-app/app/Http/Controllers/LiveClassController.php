@@ -9,6 +9,27 @@ use Illuminate\Http\Request;
 
 class LiveClassController extends Controller
 {
+    // Get all upcoming classes (Admin/Instructor)
+    public function index(Request $request)
+    {
+        $upcoming = LiveClass::with('course:id,title')
+            ->where('scheduledAt', '>=', now()->subHours(2)) // Show recently started too
+            ->orderBy('scheduledAt')
+            ->get();
+
+        $transformed = $upcoming->map(function (\App\Models\LiveClass $cls) {
+            $data = $cls->toArray();
+            $data['_id'] = $cls->id;
+            if ($cls->course) {
+                $data['courseName'] = $cls->course->title;
+                $data['course']['_id'] = $cls->course->id;
+            }
+            return $data;
+        });
+
+        return response()->json($transformed);
+    }
+
     // Schedule live class
     public function store(Request $request, $courseId)
     {
@@ -36,7 +57,12 @@ class LiveClassController extends Controller
     public function indexByCourse($courseId)
     {
         $classes = LiveClass::where('course_id', $courseId)->orderBy('scheduledAt')->get();
-        return response()->json($classes);
+        $transformed = $classes->map(function (\App\Models\LiveClass $cls) {
+            $data = $cls->toArray();
+            $data['_id'] = $cls->id;
+            return $data;
+        });
+        return response()->json($transformed);
     }
 
     // Upcoming classes for student
@@ -53,7 +79,16 @@ class LiveClassController extends Controller
             ->limit(10)
             ->get();
 
-        return response()->json($upcoming);
+        $transformed = $upcoming->map(function (\App\Models\LiveClass $cls) {
+            $data = $cls->toArray();
+            $data['_id'] = $cls->id;
+            if ($cls->course) {
+                $data['course']['_id'] = $cls->course->id;
+            }
+            return $data;
+        });
+
+        return response()->json($transformed);
     }
 
     // Delete live class

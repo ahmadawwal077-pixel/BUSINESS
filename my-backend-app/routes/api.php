@@ -124,6 +124,7 @@ Route::prefix('consultations')->group(function () {
 // Live Class stand-alone routes
 Route::prefix('live')->middleware('auth:sanctum')->group(function () {
     Route::get('/upcoming', [LiveClassController::class, 'upcoming']);
+    Route::get('/all', [LiveClassController::class, 'index']);
     Route::get('/course/{courseId}', [LiveClassController::class, 'indexByCourse']);
     Route::post('/course/{courseId}', [LiveClassController::class, 'store']);
     Route::delete('/{id}', [LiveClassController::class, 'destroy']);
