@@ -18,6 +18,9 @@ exports.createPaymentIntent = async (req, res) => {
     console.log('Creating Paystack transaction:', { amount, email, appointmentId, enrollmentId });
 
     // Create Paystack transaction
+    // Prefer explicit BACKEND_URL for Paystack server-side redirect; fallback to request host
+    const backendBase = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
+    const callbackUrl = `${backendBase.replace(/\/$/, '')}/api/payments/verify-return`;
     const response = await axios.post(
       `${PAYSTACK_API}/transaction/initialize`,
       {
@@ -29,6 +32,7 @@ exports.createPaymentIntent = async (req, res) => {
           userId: req.userId,
           fullName,
         },
+        callback_url: callbackUrl,
       },
       {
         headers: {
@@ -246,5 +250,98 @@ exports.getAllPayments = async (req, res) => {
     res.json(payments);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Public endpoint: verify Paystack reference (useful when Paystack redirects to backend)
+exports.verifyReturn = async (req, res) => {
+  try {
+    const { reference, paymentId } = req.query;
+
+    if (!reference) {
+      return res.status(400).json({ message: 'Reference is required' });
+    }
+
+    // Verify with Paystack
+    const response = await axios.get(`${PAYSTACK_API}/transaction/verify/${reference}`, {
+      headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` },
+    });
+
+    if (!response.data.status) {
+      const redirectUrl = `${process.env.FRONTEND_URL.replace(/\/$/, '')}/payments/result?status=failed&message=verification_failed`;
+      return res.redirect(302, redirectUrl);
+    }
+
+    const paymentData = response.data.data;
+    if (paymentData.status === 'success') {
+      let payment;
+      if (paymentId) {
+        payment = await Payment.findByIdAndUpdate(
+          paymentId,
+          {
+            status: 'completed',
+            paystackPaymentRef: reference,
+            paymentMethod: 'paystack',
+            verifiedAt: new Date(),
+          },
+          { new: true }
+        );
+      } else {
+        payment = await Payment.findOneAndUpdate(
+          { paystackPaymentRef: reference },
+          {
+            status: 'completed',
+            paymentMethod: 'paystack',
+            verifiedAt: new Date(),
+          },
+          { new: true }
+        );
+      }
+
+      // If payment is tied to an enrollment, activate it
+      let courseId = null;
+      if (payment && payment.enrollment) {
+        const CourseEnrollment = require('../models/CourseEnrollment');
+        const Course = require('../models/Course');
+        const enrollment = await CourseEnrollment.findById(payment.enrollment);
+        if (enrollment) {
+          enrollment.paymentStatus = 'completed';
+          enrollment.paymentDate = new Date();
+          enrollment.status = 'active';
+          await enrollment.save();
+
+          const course = await Course.findById(enrollment.course);
+          if (course) {
+            course.enrolledStudents = (course.enrolledStudents || 0) + 1;
+            await course.save();
+            courseId = course._id.toString();
+          }
+        }
+      }
+      // Redirect back to frontend with success -> dashboard + message enrolled
+      const frontendBase = process.env.FRONTEND_URL.replace(/\/$/, '');
+      const redirectSuccess = `${frontendBase}/dashboard?message=enrolled${courseId ? `&courseId=${courseId}` : ''}`;
+      return res.redirect(302, redirectSuccess);
+    }
+
+    // Not success -> redirect back to course page and allow retry
+    const frontendBase = process.env.FRONTEND_URL.replace(/\/$/, '');
+    // Try to fetch courseId from payment (if present)
+    let failedCourseId = null;
+    try {
+      const paymentRecord = await Payment.findOne({ paystackPaymentRef: reference }).populate('enrollment');
+      if (paymentRecord && paymentRecord.enrollment && paymentRecord.enrollment.course) {
+        failedCourseId = paymentRecord.enrollment.course.toString();
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    const redirectFail = failedCourseId ? `${frontendBase}/courses/${failedCourseId}?message=payment_failed` : `${frontendBase}/courses?message=payment_failed`;
+    return res.redirect(302, redirectFail);
+  } catch (error) {
+    console.error('Verify return error:', error.response?.data || error.message);
+    const redirectUrl = `${process.env.FRONTEND_URL.replace(/\/$/, '')}/payments/result?status=error&message=${encodeURIComponent(error.message)}`;
+    return res.redirect(302, redirectUrl);
   }
 };

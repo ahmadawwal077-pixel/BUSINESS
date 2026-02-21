@@ -24,7 +24,7 @@ const AdminDashboard = () => {
     maxStudents: '',
     startDate: '',
     endDate: '',
-    scheduleDays: '',
+    scheduleDays: [],
     scheduleStartTime: '09:00',
     scheduleEndTime: '11:00',
   });
@@ -82,6 +82,20 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   }, []);
+
+  // Auto-calculate end date when start date or duration changes
+  useEffect(() => {
+    if (courseForm.startDate && courseForm.duration) {
+      const startDate = new Date(courseForm.startDate);
+      const durationWeeks = parseInt(courseForm.duration) || 0;
+      if (durationWeeks > 0) {
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + durationWeeks * 7);
+        const endDateString = endDate.toISOString().split('T')[0];
+        setCourseForm(prev => ({ ...prev, endDate: endDateString }));
+      }
+    }
+  }, [courseForm.startDate, courseForm.duration]);
 
   const fetchStudents = useCallback(async () => {
     try {
@@ -166,7 +180,7 @@ const AdminDashboard = () => {
         startDate: new Date(courseForm.startDate),
         endDate: new Date(courseForm.endDate),
         schedule: {
-          days: courseForm.scheduleDays ? courseForm.scheduleDays.split(',').map(d => d.trim()) : ['Monday', 'Wednesday'],
+          days: Array.isArray(courseForm.scheduleDays) && courseForm.scheduleDays.length > 0 ? courseForm.scheduleDays : ['Monday', 'Wednesday'],
           startTime: courseForm.scheduleStartTime || '09:00',
           endTime: courseForm.scheduleEndTime || '11:00',
         },
@@ -209,7 +223,7 @@ const AdminDashboard = () => {
         startDate: new Date(courseForm.startDate),
         endDate: new Date(courseForm.endDate),
         schedule: {
-          days: courseForm.scheduleDays ? courseForm.scheduleDays.split(',').map(d => d.trim()) : ['Monday', 'Wednesday'],
+          days: Array.isArray(courseForm.scheduleDays) && courseForm.scheduleDays.length > 0 ? courseForm.scheduleDays : ['Monday', 'Wednesday'],
           startTime: courseForm.scheduleStartTime || '09:00',
           endTime: courseForm.scheduleEndTime || '11:00',
         },
@@ -257,7 +271,7 @@ const AdminDashboard = () => {
       maxStudents: course.maxStudents,
       startDate: course.startDate?.split('T')[0] || '',
       endDate: course.endDate?.split('T')[0] || '',
-      scheduleDays: course.schedule?.days?.join(', ') || 'Monday, Wednesday',
+      scheduleDays: Array.isArray(course.schedule?.days) ? course.schedule.days : (course.schedule?.days ? [course.schedule.days] : ['Monday', 'Wednesday']),
       scheduleStartTime: course.schedule?.startTime || '09:00',
       scheduleEndTime: course.schedule?.endTime || '11:00',
     });
@@ -275,7 +289,7 @@ const AdminDashboard = () => {
       maxStudents: '',
       startDate: '',
       endDate: '',
-      scheduleDays: '',
+      scheduleDays: [],
       scheduleStartTime: '09:00',
       scheduleEndTime: '11:00',
     });
@@ -1492,22 +1506,48 @@ const AdminDashboard = () => {
                     fontWeight: '600',
                     color: '#1f2937',
                   }}>
-                    Schedule Days (comma-separated)
+                    Schedule Days *
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Monday, Wednesday, Friday"
-                    value={courseForm.scheduleDays}
-                    onChange={(e) => setCourseForm({ ...courseForm, scheduleDays: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '0.8rem',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '0.9rem',
-                      boxSizing: 'border-box',
-                    }}
-                  />
+                  <div style={{
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    padding: '0.8rem',
+                    background: '#f9fafb',
+                  }}>
+                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                      <label key={day} style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginBottom: '0.5rem',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                      }}>
+                        <input
+                          type="checkbox"
+                          checked={courseForm.scheduleDays.includes(day)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setCourseForm({ ...courseForm, scheduleDays: [...courseForm.scheduleDays, day] });
+                            } else {
+                              setCourseForm({ ...courseForm, scheduleDays: courseForm.scheduleDays.filter(d => d !== day) });
+                            }
+                          }}
+                          style={{
+                            marginRight: '0.5rem',
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px',
+                          }}
+                        />
+                        {day}
+                      </label>
+                    ))}
+                  </div>
+                  {courseForm.scheduleDays.length === 0 && (
+                    <div style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.25rem' }}>
+                      Select at least one day
+                    </div>
+                  )}
                 </div>
 
                 <div>

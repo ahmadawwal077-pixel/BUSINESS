@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { courseAPI } from '../services/api';
 import AssignmentPopup from '../components/AssignmentPopup';
@@ -7,6 +7,7 @@ import AssignmentPopup from '../components/AssignmentPopup';
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [stats, setStats] = useState({
     activeCourses: 0,
     completedCourses: 0,
@@ -17,8 +18,28 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [paymentMessage, setPaymentMessage] = useState('');
+  const [showCongratulationModal, setShowCongratulationModal] = useState(false);
 
-  // Extracted fetch function so it can be called from event listeners too
+  // Check for payment status in URL parameters
+  useEffect(() => {
+    const status = searchParams.get('status');
+    const message = searchParams.get('message');
+    
+    if (status === 'success') {
+      setPaymentStatus('success');
+      setPaymentMessage(message || 'Congratulations! Your enrollment is now active!');
+      setShowCongratulationModal(true);
+      
+      // Clear the URL parameters
+      setSearchParams({});
+    } else if (status === 'failed') {
+      setPaymentStatus('failed');
+      setPaymentMessage(message || 'Payment failed. Please try again.');
+    }
+  }, [searchParams, setSearchParams]);
+
   const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
@@ -31,9 +52,12 @@ const Dashboard = () => {
       const coursesRes = await courseAPI.getMyEnrolledCourses();
       const enrollments = coursesRes.data || [];
 
+      // Filter out invalid enrollments that have no course or malformed data
+      const filteredEnrollments = enrollments.filter(e => e && e.course && (e.course._id || typeof e.course === 'string'));
+
       // For each enrollment fetch student-specific course details (assignments with marks + attendance)
       // also fetch course live-classes so enrolled students can see scheduled classes
-      const detailed = await Promise.all(enrollments.map(async (enr) => {
+      const detailed = await Promise.all(filteredEnrollments.map(async (enr) => {
         try {
           const [detailRes, liveRes] = await Promise.all([
             courseAPI.getStudentCourseDetail(enr.course._id),
@@ -51,8 +75,11 @@ const Dashboard = () => {
       }));
 
       // Filter out deleted courses
-      const validCourses = detailed.filter(course => !course.deleted);
+      const validCourses = detailed.filter(course => !course.deleted && course.course);
       setEnrolledCourses(validCourses);
+
+      // Ensure activeCourses count reflects actual valid enrollments
+      setStats(prev => ({ ...(statsRes.data || {}), activeCourses: validCourses.length }));
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -235,6 +262,127 @@ const Dashboard = () => {
 
   return (
     <>
+      {/* Congratulation Modal on Payment Success */}
+      {showCongratulationModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 2000,
+          padding: '1rem',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '20px',
+            padding: '3rem',
+            maxWidth: '500px',
+            width: '100%',
+            boxShadow: '0 25px 60px rgba(0, 0, 0, 0.4)',
+            textAlign: 'center',
+            animation: 'scaleIn 0.4s ease-out',
+          }}>
+            {/* Animated Checkmark */}
+            <div style={{
+              fontSize: '4rem',
+              marginBottom: '1.5rem',
+              animation: 'bounce 0.6s ease-out 0.3s both',
+            }}>
+              ✅
+            </div>
+            
+            <h2 style={{
+              margin: '0 0 1rem 0',
+              fontSize: '1.8rem',
+              fontWeight: 'bold',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
+              Congratulations! 🎉
+            </h2>
+            
+            <p style={{
+              margin: '0 0 2rem 0',
+              fontSize: '1.1rem',
+              color: '#6b7280',
+              lineHeight: '1.7',
+            }}>
+              {paymentMessage}
+            </p>
+            
+            <div style={{
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+              padding: '1.5rem',
+              borderRadius: '12px',
+              marginBottom: '2rem',
+              fontSize: '0.95rem',
+              lineHeight: '1.8',
+            }}>
+              <p style={{ margin: '0 0 0.5rem 0', fontWeight: '600' }}>
+                ✓ Enrollment activated successfully
+              </p>
+              <p style={{ margin: 0 }}>
+                You now have full access to all course materials, assignments, and live classes. Start learning now!
+              </p>
+            </div>
+            
+            <button
+              onClick={() => {
+                setShowCongratulationModal(false);
+                window.location.reload();
+              }}
+              style={{
+                width: '100%',
+                padding: '1rem',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                fontWeight: '600',
+                fontSize: '1rem',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
+              }}
+            >
+              Continue to Dashboard
+            </button>
+          </div>
+          
+          <style>{`
+            @keyframes scaleIn {
+              from {
+                opacity: 0;
+                transform: scale(0.8);
+              }
+              to {
+                opacity: 1;
+                transform: scale(1);
+              }
+            }
+            @keyframes bounce {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(-20px); }
+            }
+          `}</style>
+        </div>
+      )}
+
       <div style={{
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
@@ -301,6 +449,59 @@ const Dashboard = () => {
             </button>
           </div>
         </div>
+
+        {/* Payment Failure Alert */}
+        {paymentStatus === 'failed' && (
+          <div style={{
+            maxWidth: '1400px',
+            margin: '0 auto',
+            marginBottom: '2rem',
+            background: '#fee2e2',
+            border: '2px solid #fca5a5',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '1rem',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+              <div style={{ fontSize: '1.8rem' }}>❌</div>
+              <div>
+                <p style={{ margin: '0 0 0.3rem 0', fontWeight: '600', color: '#991b1b' }}>
+                  Payment Failed
+                </p>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: '#7f1d1d' }}>
+                  {paymentMessage}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setPaymentStatus(null);
+                setPaymentMessage('');
+              }}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#fee2e2',
+                border: '1px solid #fca5a5',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                color: '#991b1b',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#fca5a5';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#fee2e2';
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         {/* Course Stats Section */}
         <div style={{

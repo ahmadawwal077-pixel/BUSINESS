@@ -153,7 +153,16 @@ exports.enrollCourse = async (req, res) => {
     // Check if already enrolled
     const existingEnrollment = await CourseEnrollment.findOne({ course: courseId, student: req.userId });
     if (existingEnrollment) {
-      return res.status(400).json({ message: 'Already enrolled in this course' });
+      // If enrollment was completed and active, user is truly enrolled
+      if (existingEnrollment.paymentStatus === 'completed' && existingEnrollment.status === 'active') {
+        return res.status(400).json({ message: 'Already enrolled in this course' });
+      }
+
+      // If payment is pending or previously failed, return the enrollment so frontend can resume payment
+      return res.status(200).json({
+        message: 'Existing enrollment found. Complete payment to activate your enrollment.',
+        enrollment: existingEnrollment
+      });
     }
 
     // Check if course is full
@@ -166,6 +175,7 @@ exports.enrollCourse = async (req, res) => {
       course: courseId,
       student: req.userId,
       paymentStatus: 'pending',
+      status: 'pending',
     });
 
     await enrollment.save();

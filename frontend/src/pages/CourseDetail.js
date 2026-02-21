@@ -14,6 +14,7 @@ const CourseDetail = () => {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('paystack');
   const [enrollmentId, setEnrollmentId] = useState(null);
+  const [paymentWindowOpen, setPaymentWindowOpen] = useState(false);
 
   useEffect(() => {
     fetchCourse();
@@ -58,9 +59,9 @@ const CourseDetail = () => {
 
       const { authorization_url } = paymentInit.data;
       if (authorization_url) {
-        // Open Paystack payment page
+        // Show payment window modal and open Paystack payment page
+        setPaymentWindowOpen(true);
         window.open(authorization_url, '_blank');
-        alert('Payment window opened. Complete payment to finish enrollment.');
       } else {
         setPaymentModalOpen(true);
       }
@@ -649,6 +650,115 @@ const CourseDetail = () => {
                 Confirm Payment
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Window Modal */}
+      {paymentWindowOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 2000,
+          padding: '1rem',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '15px',
+            padding: '3rem',
+            maxWidth: '450px',
+            width: '100%',
+            boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3)',
+            textAlign: 'center',
+          }}>
+            <div style={{
+              fontSize: '3rem',
+              marginBottom: '1rem',
+            }}>
+              💳
+            </div>
+            <h2 style={{
+              margin: '0 0 1rem 0',
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              color: '#1f2937',
+            }}>
+              Payment Window Opened
+            </h2>
+            <p style={{
+              margin: '0 0 1.5rem 0',
+              fontSize: '1rem',
+              color: '#6b7280',
+              lineHeight: '1.6',
+            }}>
+              A payment window has opened in a new tab. Please complete your payment there to finish the enrollment.
+            </p>
+            <div style={{
+              background: '#f0f9ff',
+              border: '2px solid #0066cc',
+              borderRadius: '10px',
+              padding: '1rem',
+              marginBottom: '1.5rem',
+            }}>
+              <p style={{
+                margin: '0 0 0.5rem 0',
+                fontSize: '0.85rem',
+                color: '#6b7280',
+                fontWeight: '600',
+                textTransform: 'uppercase',
+              }}>
+                Course Amount
+              </p>
+              <p style={{
+                margin: 0,
+                fontSize: '1.8rem',
+                fontWeight: 'bold',
+                color: '#0066cc',
+              }}>
+                ₦{course?.price?.toLocaleString()}
+              </p>
+            </div>
+            <div style={{
+              background: '#fef3c7',
+              border: '1px solid #fcd34d',
+              borderRadius: '8px',
+              padding: '0.8rem',
+              marginBottom: '1.5rem',
+              fontSize: '0.85rem',
+              color: '#78350f',
+            }}>
+              ⏱️ After completing payment, you'll be automatically redirected to your dashboard with the confirmation.
+            </div>
+            <button
+              onClick={() => setPaymentWindowOpen(false)}
+              style={{
+                width: '100%',
+                padding: '0.8rem',
+                background: '#e5e7eb',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                color: '#374151',
+                transition: 'all 0.3s ease',
+                fontSize: '0.95rem',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#d1d5db';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#e5e7eb';
+              }}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
