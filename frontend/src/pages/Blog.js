@@ -125,6 +125,26 @@ const Blog = () => {
 		"Operations",
 	];
 
+	// Helper: format a blog date safely (handles both created_at and createdAt)
+	const formatDate = (blog) => {
+		const raw = blog?.created_at || blog?.createdAt;
+		if (!raw) return "";
+		const d = new Date(raw);
+		if (isNaN(d)) return "";
+		return d.toLocaleDateString("en-US", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		});
+	};
+
+	// Helper: get author name (handles string or {name} object)
+	const getAuthor = (blog) => {
+		if (!blog?.author) return "Admin";
+		if (typeof blog.author === "string") return blog.author;
+		return blog.author?.name || "Admin";
+	};
+
 	const filteredBlogs =
 		selectedCategory === "All"
 			? blogs
@@ -480,10 +500,10 @@ const Blog = () => {
 															alignItems: "center",
 														}}>
 														<small style={{ color: "#999" }}>
-															By <strong>{blog.author?.name || "Admin"}</strong>
+															By <strong>{getAuthor(blog)}</strong>
 														</small>
 														<small style={{ color: "#999" }}>
-															{new Date(blog.createdAt).toLocaleDateString()}
+															{formatDate(blog)}
 														</small>
 													</div>
 													<div style={{ marginTop: "0.75rem" }}>

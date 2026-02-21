@@ -64,6 +64,26 @@ const AdminBlog = () => {
 		"Operations",
 	];
 
+	// Helper: format a blog date safely (handles both created_at and createdAt)
+	const formatDate = (blog) => {
+		const raw = blog?.created_at || blog?.createdAt;
+		if (!raw) return "";
+		const d = new Date(raw);
+		if (isNaN(d)) return "";
+		return d.toLocaleDateString("en-US", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		});
+	};
+
+	// Helper: get author name (handles string or {name} object)
+	const getAuthor = (blog) => {
+		if (!blog?.author) return "Admin";
+		if (typeof blog.author === "string") return blog.author;
+		return blog.author?.name || "Admin";
+	};
+
 	const iconOptions = [
 		{ value: "DesktopTower", label: "Technology" },
 		{ value: "TrendUp", label: "Growth" },
@@ -135,7 +155,7 @@ const AdminBlog = () => {
 			excerpt: blog.excerpt || "",
 			content: blog.content || "",
 			category: blog.category || "Strategy",
-			author: blog.author?.name || blog.author || user?.name || "",
+			author: getAuthor(blog) || user?.name || "",
 			slug: blog.slug || "",
 			featuredImage: blog.featuredImage || "",
 			color: blog.color || "#0066cc",
@@ -691,7 +711,7 @@ const AdminBlog = () => {
 																	fontSize: "0.8rem",
 																	color: "#94a3b8",
 																}}>
-																By {blog.author?.name || "Administrator"}
+																By {getAuthor(blog)}
 															</p>
 														</div>
 													</div>
@@ -741,7 +761,7 @@ const AdminBlog = () => {
 														color: "#64748b",
 														fontSize: "0.875rem",
 													}}>
-													{new Date(blog.createdAt).toLocaleDateString()}
+													{formatDate(blog)}
 												</td>
 												<td
 													style={{

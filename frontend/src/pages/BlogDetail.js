@@ -29,6 +29,26 @@ const BlogDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
+	// Helper: format a blog date safely (handles both created_at and createdAt)
+	const formatDate = (blog) => {
+		const raw = blog?.created_at || blog?.createdAt;
+		if (!raw) return "";
+		const d = new Date(raw);
+		if (isNaN(d)) return "";
+		return d.toLocaleDateString("en-US", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		});
+	};
+
+	// Helper: get author name (handles string or {name} object)
+	const getAuthor = (blog) => {
+		if (!blog?.author) return "Admin";
+		if (typeof blog.author === "string") return blog.author;
+		return blog.author?.name || "Admin";
+	};
+
 	useEffect(() => {
 		const sampleBlogs = {
 			"digital-transformation-future": {
@@ -293,8 +313,7 @@ const BlogDetail = () => {
 								color: "#64748b",
 								fontSize: "0.95rem",
 							}}>
-							By <strong>{blog.author?.name || "Admin"}</strong> •{" "}
-							{new Date(blog.createdAt).toLocaleDateString()}
+							By <strong>{getAuthor(blog)}</strong> • {formatDate(blog)}
 						</p>
 					</div>
 				</div>
@@ -376,12 +395,7 @@ const BlogDetail = () => {
 							{blog.title}
 						</h1>
 						<div style={{ fontSize: "1.1rem", opacity: "0.95" }}>
-							By <strong>{blog.author?.name || "Admin"}</strong> •{" "}
-							{new Date(blog.createdAt).toLocaleDateString("en-US", {
-								year: "numeric",
-								month: "long",
-								day: "numeric",
-							})}
+							By <strong>{getAuthor(blog)}</strong> • {formatDate(blog)}
 						</div>
 					</div>
 				</section>
@@ -452,7 +466,7 @@ const BlogDetail = () => {
 											marginBottom: "0.25rem",
 											fontSize: "1.2rem",
 										}}>
-										{blog.author?.name || "Admin"}
+										{getAuthor(blog)}
 									</h4>
 									<p
 										style={{ color: "#666", margin: "0", fontSize: "0.95rem" }}>
