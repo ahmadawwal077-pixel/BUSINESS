@@ -28,6 +28,7 @@ import AdminBlog from "./pages/AdminBlog";
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminConsultations from "./pages/AdminConsultations";
 import StudentPreviousGrades from "./pages/StudentPreviousGrades";
 
 // Styles
@@ -121,6 +122,16 @@ function App() {
 										<ProtectedRoute>
 											<DashboardLayout>
 												<AdminDashboard />
+											</DashboardLayout>
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/admin/consultations"
+									element={
+										<ProtectedRoute>
+											<DashboardLayout>
+												<AdminConsultations />
 											</DashboardLayout>
 										</ProtectedRoute>
 									}

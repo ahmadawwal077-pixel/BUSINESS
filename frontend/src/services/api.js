@@ -116,6 +116,11 @@ export const consultationAPI = {
 	deleteConsultationRequest: (id) => apiClient.delete(`/consultations/${id}`),
 };
 
+// Contact Form API
+export const contactAPI = {
+	sendMessage: (data) => apiClient.post("/contact/send", data),
+};
+
 // Payment API
 export const paymentAPI = {
 	createPaymentIntent: (data) =>

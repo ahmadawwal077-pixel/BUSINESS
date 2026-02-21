@@ -7,11 +7,15 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LiveClassController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+// Contact Form Route (public)
+Route::post('contact/send', [ContactController::class, 'send']);
 
 // Auth Routes
 Route::prefix('auth')->group(function () {
