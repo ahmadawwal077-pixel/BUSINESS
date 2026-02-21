@@ -8,6 +8,7 @@ const Courses = () => {
 	const { user } = useContext(AuthContext);
 	const location = useLocation();
 	const [courses, setCourses] = useState([]);
+	const [myCourses, setMyCourses] = useState([]);
 	const [filteredCourses, setFilteredCourses] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedCategory, setSelectedCategory] = useState("");
@@ -15,6 +16,14 @@ const Courses = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [sortBy, setSortBy] = useState("newest");
 	const [viewMode, setViewMode] = useState("grid");
+	const [activeTab, setActiveTab] = useState("catalog");
+
+	// Auto-switch to my-courses if user has enrollments
+	useEffect(() => {
+		if (myCourses.length > 0) {
+			setActiveTab("my-courses");
+		}
+	}, [myCourses.length]);
 
 	// Check if we are in dashboard context
 	const isDashboard = !!user;
@@ -31,56 +40,33 @@ const Courses = () => {
 
 	useEffect(() => {
 		fetchCourses();
-	}, []);
+		if (isDashboard) {
+			fetchMyCourses();
+		}
+	}, [isDashboard]);
 
 	const fetchCourses = async () => {
 		try {
 			const response = await courseAPI.getAllCourses();
 			setCourses(response.data || []);
 			setFilteredCourses(response.data || []);
-			setLoading(false);
 		} catch (error) {
 			console.error("Error fetching courses:", error);
-			setLoading(false);
+		} finally {
+			if (!isDashboard) setLoading(false);
 		}
 	};
 
-	/* FILTERS DISABLED - original filtering logic preserved below for easy restore:
-  useEffect(() => {
-    let filtered = courses;
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(course =>
-        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Category filter
-    if (selectedCategory) {
-      filtered = filtered.filter(course => course.category === selectedCategory);
-    }
-
-    // Level filter
-    if (selectedLevel) {
-      filtered = filtered.filter(course => course.level === selectedLevel);
-    }
-
-    // Sorting
-    if (sortBy === 'newest') {
-      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    } else if (sortBy === 'price-low') {
-      filtered.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price-high') {
-      filtered.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'popular') {
-      filtered.sort((a, b) => b.enrolledStudents - a.enrolledStudents);
-    }
-
-    setFilteredCourses(filtered);
-  }, [selectedCategory, selectedLevel, courses, searchTerm, sortBy]);
-  */
+	const fetchMyCourses = async () => {
+		try {
+			const response = await courseAPI.getMyEnrolledCourses();
+			setMyCourses(response.data || []);
+		} catch (error) {
+			console.error("Error fetching my courses:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	// Show all courses while filters are disabled
 	useEffect(() => {
@@ -153,118 +139,24 @@ const Courses = () => {
 				padding: "0",
 			}}>
 			{/* Header Section */}
-			{isDashboard ? (
-				<div
-					style={{
-						background: "white",
-						borderRadius: "24px",
-						padding: "2rem",
-						marginBottom: "2.5rem",
-						boxShadow: "0 10px 30px rgba(0, 0, 0, 0.03)",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-between",
-						border: "1px solid #f1f5f9",
-						position: "relative",
-						overflow: "hidden",
-					}}>
-					<div
-						style={{
-							position: "absolute",
-							top: 0,
-							right: 0,
-							width: "300px",
-							height: "100%",
-							background:
-								"linear-gradient(90deg, transparent 0%, rgba(0, 102, 204, 0.03) 100%)",
-							pointerEvents: "none",
-						}}
-					/>
-					<div style={{ position: "relative", zIndex: 1 }}>
-						<h1
-							style={{
-								margin: 0,
-								fontSize: "1.75rem",
-								color: "#1e293b",
-								fontWeight: "800",
-								letterSpacing: "-0.02em",
-							}}>
-							Available Courses 📚
-						</h1>
-						<p
-							style={{
-								margin: "0.5rem 0 0 0",
-								color: "#64748b",
-								fontSize: "1rem",
-								maxWidth: "600px",
-							}}>
-							Expand your knowledge with our curated professional courses.
-						</p>
-					</div>
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "1rem",
-							position: "relative",
-							zIndex: 1,
-						}}>
-						<div
-							style={{
-								background: "#f8fafc",
-								padding: "0.6rem 1.2rem",
-								borderRadius: "12px",
-								border: "1px solid #e2e8f0",
-								color: "#475569",
-								fontWeight: "600",
-								fontSize: "0.9rem",
-							}}>
-							<span style={{ color: "#0066cc" }}>{filteredCourses.length}</span>{" "}
-							Courses
-						</div>
-						{user?.isAdmin && (
-							<Link
-								to="/admin/dashboard"
-								style={{
-									padding: "0.75rem 1.25rem",
-									background: "#0066cc",
-									color: "white",
-									borderRadius: "12px",
-									textDecoration: "none",
-									fontWeight: "600",
-									fontSize: "0.9rem",
-									display: "flex",
-									alignItems: "center",
-									gap: "0.5rem",
-									boxShadow: "0 4px 12px rgba(0, 102, 204, 0.2)",
-									transition: "all 0.3s ease",
-								}}
-								onMouseEnter={(e) => {
-									e.currentTarget.style.transform = "translateY(-2px)";
-									e.currentTarget.style.boxShadow =
-										"0 6px 16px rgba(0, 102, 204, 0.3)";
-								}}
-								onMouseLeave={(e) => {
-									e.currentTarget.style.transform = "translateY(0)";
-									e.currentTarget.style.boxShadow =
-										"0 4px 12px rgba(0, 102, 204, 0.2)";
-								}}>
-								<Gear size={18} weight="bold" />
-								Admin Panel
-							</Link>
-						)}
-					</div>
-				</div>
-			) : (
-				<div
-					style={{
-						background: "linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)",
-						padding: "4rem 2rem",
-						textAlign: "center",
-						color: "white",
-						position: "relative",
-						overflow: "hidden",
-					}}>
+			<div
+				style={{
+					background: isDashboard
+						? "white"
+						: "linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)",
+					padding: isDashboard ? "2rem 2.5rem" : "6rem 2rem",
+					marginBottom: isDashboard ? "2rem" : "0",
+					boxShadow: isDashboard ? "0 10px 30px rgba(0, 0, 0, 0.03)" : "none",
+					textAlign: isDashboard ? "left" : "center",
+					color: isDashboard ? "#1e293b" : "white",
+					display: isDashboard ? "flex" : "block",
+					alignItems: "center",
+					justifyContent: "space-between",
+					borderBottom: isDashboard ? "1px solid #f1f5f9" : "none",
+					position: "relative",
+					overflow: "hidden",
+				}}>
+				{!isDashboard && (
 					<div
 						style={{
 							position: "absolute",
@@ -272,446 +164,172 @@ const Courses = () => {
 							left: 0,
 							right: 0,
 							bottom: 0,
-							opacity: 0.1,
+							opacity: 0.15,
 							backgroundImage:
-								"radial-gradient(circle at 20% 50%, white, transparent 50%)",
+								"radial-gradient(circle at 20% 50%, white, transparent 50%), radial-gradient(circle at 80% 80%, white, transparent 50%)",
 							pointerEvents: "none",
 						}}
 					/>
+				)}
 
+				<div
+					style={{
+						position: "relative",
+						zIndex: 1,
+						maxWidth: isDashboard ? "none" : "800px",
+						margin: isDashboard ? "0" : "0 auto",
+					}}>
+					<h1
+						style={{
+							margin: 0,
+							fontSize: isDashboard ? "2rem" : "3.5rem",
+							fontWeight: "900",
+							letterSpacing: "-0.04em",
+						}}>
+						{isDashboard ? "Courses Hub 🎓" : "Master New Skills 🚀"}
+					</h1>
+					<p
+						style={{
+							margin: "0.5rem 0 0 0",
+							fontSize: isDashboard ? "1rem" : "1.2rem",
+							fontWeight: "500",
+							opacity: isDashboard ? 0.7 : 0.9,
+							lineHeight: "1.6",
+						}}>
+						{isDashboard
+							? "Manage your learning journey and explore new content."
+							: "Transform your career with industry-leading courses from expert instructors."}
+					</p>
+				</div>
+
+				{isDashboard && (
 					<div
 						style={{
-							maxWidth: "1400px",
-							margin: "0 auto",
+							display: "flex",
+							background: "#f1f5f9",
+							padding: "0.4rem",
+							borderRadius: "14px",
+							gap: "0.4rem",
 							position: "relative",
 							zIndex: 1,
 						}}>
-						<h1
-							style={{
-								margin: "0 0 0.5rem 0",
-								fontSize: "3rem",
-								fontWeight: "bold",
-								textShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-							}}>
-							Explore Professional Courses 📚
-						</h1>
-						<p
-							style={{
-								margin: "0 0 1.5rem 0",
-								fontSize: "1.2rem",
-								opacity: 0.95,
-								maxWidth: "600px",
-								marginLeft: "auto",
-								marginRight: "auto",
-							}}>
-							Master new skills from industry experts. Start learning today and
-							transform your career!
-						</p>
-						<div
-							style={{
-								background: "rgba(255, 255, 255, 0.15)",
-								backdropFilter: "blur(10px)",
-								padding: "0.5rem 1rem",
-								borderRadius: "50px",
-								display: "inline-block",
-								border: "1px solid rgba(255, 255, 255, 0.3)",
-							}}>
-							<span style={{ fontSize: "1rem" }}>🎯</span>{" "}
-							{filteredCourses.length} courses available |{" "}
-							{courses.reduce((sum, c) => sum + (c.enrolledStudents || 0), 0)}{" "}
-							students enrolled
-						</div>
-					</div>
-				</div>
-			)}
-
-			{/* Main Content */}
-			<div
-				style={{
-					maxWidth: "1400px",
-					margin: "0 auto",
-					padding: "2rem",
-				}}>
-				{/* Search and Controls - temporarily hidden (filters disabled) */}
-				{false && (
-					<div
-						style={{
-							background: "white",
-							borderRadius: "18px",
-							padding: "2rem",
-							marginBottom: "2rem",
-							boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-							display: "grid",
-							gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-							gap: "1.5rem",
-							alignItems: "end",
-						}}>
-						{/* Search Bar */}
-						<div>
-							<label
-								style={{
-									display: "block",
-									marginBottom: "0.5rem",
-									fontWeight: "600",
-									color: "#1f2937",
-									fontSize: "0.9rem",
-								}}>
-								🔍 Search Courses
-							</label>
-							<input
-								type="text"
-								placeholder="Search by title or keyword..."
-								value={searchTerm}
-								onChange={(e) => setSearchTerm(e.target.value)}
-								style={{
-									width: "100%",
-									padding: "0.8rem 1rem",
-									borderRadius: "10px",
-									border: "2px solid #e5e7eb",
-									fontSize: "0.95rem",
-									transition: "all 0.3s ease",
-									boxSizing: "border-box",
-								}}
-								onFocus={(e) => {
-									e.target.style.borderColor = "#0066cc";
-									e.target.style.boxShadow = "0 0 0 3px rgba(0, 102, 204, 0.1)";
-								}}
-								onBlur={(e) => {
-									e.target.style.borderColor = "#e5e7eb";
-									e.target.style.boxShadow = "none";
-								}}
-							/>
-						</div>
-
-						{/* Category Filter */}
-						<div>
-							<label
-								style={{
-									display: "block",
-									marginBottom: "0.5rem",
-									fontWeight: "600",
-									color: "#1f2937",
-									fontSize: "0.9rem",
-								}}>
-								📂 Category
-							</label>
-							<select
-								value={selectedCategory}
-								onChange={(e) => setSelectedCategory(e.target.value)}
-								style={{
-									width: "100%",
-									padding: "0.8rem 1rem",
-									borderRadius: "10px",
-									border: "2px solid #e5e7eb",
-									fontSize: "0.95rem",
-									cursor: "pointer",
-									backgroundColor: "white",
-									transition: "all 0.3s ease",
-								}}
-								onFocus={(e) => {
-									e.target.style.borderColor = "#0066cc";
-								}}
-								onBlur={(e) => {
-									e.target.style.borderColor = "#e5e7eb";
-								}}>
-								<option value="">All Categories</option>
-								{categories.map((cat) => (
-									<option key={cat} value={cat}>
-										{getCategoryIcon(cat)} {cat}
-									</option>
-								))}
-							</select>
-						</div>
-
-						{/* Level Filter */}
-						<div>
-							<label
-								style={{
-									display: "block",
-									marginBottom: "0.5rem",
-									fontWeight: "600",
-									color: "#1f2937",
-									fontSize: "0.9rem",
-								}}>
-								🎯 Level
-							</label>
-							<select
-								value={selectedLevel}
-								onChange={(e) => setSelectedLevel(e.target.value)}
-								style={{
-									width: "100%",
-									padding: "0.8rem 1rem",
-									borderRadius: "10px",
-									border: "2px solid #e5e7eb",
-									fontSize: "0.95rem",
-									cursor: "pointer",
-									backgroundColor: "white",
-									transition: "all 0.3s ease",
-								}}
-								onFocus={(e) => {
-									e.target.style.borderColor = "#0066cc";
-								}}
-								onBlur={(e) => {
-									e.target.style.borderColor = "#e5e7eb";
-								}}>
-								<option value="">All Levels</option>
-								{levels.map((level) => (
-									<option key={level} value={level}>
-										{level}
-									</option>
-								))}
-							</select>
-						</div>
-
-						{/* Sort Filter */}
-						<div>
-							<label
-								style={{
-									display: "block",
-									marginBottom: "0.5rem",
-									fontWeight: "600",
-									color: "#1f2937",
-									fontSize: "0.9rem",
-								}}>
-								⬇️ Sort By
-							</label>
-							<select
-								value={sortBy}
-								onChange={(e) => setSortBy(e.target.value)}
-								style={{
-									width: "100%",
-									padding: "0.8rem 1rem",
-									borderRadius: "10px",
-									border: "2px solid #e5e7eb",
-									fontSize: "0.95rem",
-									cursor: "pointer",
-									backgroundColor: "white",
-									transition: "all 0.3s ease",
-								}}
-								onFocus={(e) => {
-									e.target.style.borderColor = "#0066cc";
-								}}
-								onBlur={(e) => {
-									e.target.style.borderColor = "#e5e7eb";
-								}}>
-								<option value="newest">Newest First</option>
-								<option value="popular">Most Popular</option>
-								<option value="price-low">Price: Low to High</option>
-								<option value="price-high">Price: High to Low</option>
-							</select>
-						</div>
-
-						{/* Clear Filters Button */}
 						<button
-							onClick={() => {
-								setSelectedCategory("");
-								setSelectedLevel("");
-								setSearchTerm("");
-								setSortBy("newest");
-							}}
+							onClick={() => setActiveTab("my-courses")}
 							style={{
-								padding: "0.8rem 1.5rem",
-								background: "#f3f4f6",
-								border: "2px solid #e5e7eb",
+								padding: "0.7rem 1.4rem",
 								borderRadius: "10px",
+								border: "none",
 								cursor: "pointer",
-								fontWeight: "600",
-								color: "#374151",
+								fontWeight: "700",
+								fontSize: "0.85rem",
 								transition: "all 0.3s ease",
-								fontSize: "0.95rem",
-							}}
-							onMouseEnter={(e) => {
-								e.target.style.background = "#e5e7eb";
-							}}
-							onMouseLeave={(e) => {
-								e.target.style.background = "#f3f4f6";
+								background:
+									activeTab === "my-courses" ? "white" : "transparent",
+								color: activeTab === "my-courses" ? "#0066cc" : "#64748b",
+								boxShadow:
+									activeTab === "my-courses"
+										? "0 4px 12px rgba(0,0,0,0.05)"
+										: "none",
 							}}>
-							✕ Clear All
+							My Learning ({myCourses.length})
+						</button>
+						<button
+							onClick={() => setActiveTab("catalog")}
+							style={{
+								padding: "0.7rem 1.4rem",
+								borderRadius: "10px",
+								border: "none",
+								cursor: "pointer",
+								fontWeight: "700",
+								fontSize: "0.85rem",
+								transition: "all 0.3s ease",
+								background: activeTab === "catalog" ? "white" : "transparent",
+								color: activeTab === "catalog" ? "#0066cc" : "#64748b",
+								boxShadow:
+									activeTab === "catalog"
+										? "0 4px 12px rgba(0,0,0,0.05)"
+										: "none",
+							}}>
+							Catalog
 						</button>
 					</div>
 				)}
+			</div>
 
-				{/* Results Section */}
-				<div
-					style={{
-						marginBottom: "2rem",
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-						flexWrap: "wrap",
-						gap: "1rem",
-					}}>
-					<h2
-						style={{
-							margin: 0,
-							fontSize: "1.6rem",
-							fontWeight: "bold",
-							color: "#1f2937",
-						}}>
-						{filteredCourses.length}{" "}
-						{filteredCourses.length === 1 ? "Course" : "Courses"} Found
-					</h2>
-				</div>
-
-				{/* No Results */}
-				{filteredCourses.length === 0 ? (
-					<div
-						style={{
-							background: "white",
-							borderRadius: "18px",
-							padding: "4rem 2rem",
-							textAlign: "center",
-							boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-						}}>
-						<div
-							style={{
-								fontSize: "4rem",
-								marginBottom: "1rem",
-							}}>
-							🔍
-						</div>
-						<p
-							style={{
-								fontSize: "1.2rem",
-								color: "#6b7280",
-								marginBottom: "0.5rem",
-							}}>
-							No courses match your search criteria
-						</p>
-						<p
-							style={{
-								fontSize: "0.95rem",
-								color: "#9ca3af",
-							}}>
-							Try adjusting your filters or search term
-						</p>
-					</div>
-				) : (
-					<>
-						{/* Courses Grid */}
-						<div
-							style={{
-								display: "grid",
-								gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-								gap: "2rem",
-							}}>
-							{filteredCourses.map((course) => {
-								const enrollmentRate =
-									(course.enrolledStudents / course.maxStudents) * 100;
-								const isAlmostFull = enrollmentRate >= 80;
-
-								return (
+			{/* Main Content Area */}
+			<div style={{ maxWidth: "1400px", margin: "0 auto", padding: "2rem" }}>
+				{/* My Courses Tab */}
+				{isDashboard && activeTab === "my-courses" && (
+					<div style={{ animation: "fadeIn 0.5s ease" }}>
+						{myCourses.length > 0 ? (
+							<div
+								style={{
+									display: "grid",
+									gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+									gap: "2.5rem",
+								}}>
+								{myCourses.map((enrollment) => (
 									<Link
-										key={course._id}
-										to={`/course/${course._id}`}
+										key={enrollment._id}
+										to={`/course/${enrollment.course?._id}`}
 										style={{ textDecoration: "none" }}>
 										<div
 											style={{
 												background: "white",
-												borderRadius: "20px",
+												borderRadius: "24px",
 												overflow: "hidden",
-												boxShadow: isDashboard
-													? "0 4px 15px rgba(0, 0, 0, 0.04)"
-													: "0 4px 20px rgba(0, 0, 0, 0.08)",
-												transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+												boxShadow: "0 4px 15px rgba(0, 0, 0, 0.04)",
+												border: "1px solid #f1f5f9",
 												height: "100%",
-												cursor: "pointer",
 												display: "flex",
 												flexDirection: "column",
-												position: "relative",
-												border: "1px solid #f1f5f9",
+												transition: "all 0.3s ease",
 											}}
 											onMouseEnter={(e) => {
-												e.currentTarget.style.transform = "translateY(-8px)";
+												e.currentTarget.style.transform = "translateY(-5px)";
 												e.currentTarget.style.boxShadow =
-													"0 15px 35px rgba(0, 102, 204, 0.15)";
-												e.currentTarget.style.borderColor = "#0066cc";
-												e.currentTarget.style.background = "#ffffff";
+													"0 20px 40px rgba(0, 102, 204, 0.12)";
 											}}
 											onMouseLeave={(e) => {
 												e.currentTarget.style.transform = "translateY(0)";
-												e.currentTarget.style.boxShadow = isDashboard
-													? "0 4px 15px rgba(0, 0, 0, 0.04)"
-													: "0 4px 20px rgba(0, 0, 0, 0.08)";
-												e.currentTarget.style.borderColor = "#f1f5f9";
+												e.currentTarget.style.boxShadow =
+													"0 4px 15px rgba(0, 0, 0, 0.04)";
 											}}>
-											{/* Featured Badge */}
-											{isAlmostFull && (
-												<div
-													style={{
-														position: "absolute",
-														top: "1rem",
-														left: "1rem",
-														background: "#ff6b6b",
-														color: "white",
-														padding: "0.4rem 0.8rem",
-														borderRadius: "20px",
-														fontSize: "0.75rem",
-														fontWeight: "bold",
-														zIndex: 10,
-													}}>
-													⚡ Almost Full
-												</div>
-											)}
-
-											{/* Course Image */}
 											<div
 												style={{
-													height: "200px",
+													height: "180px",
 													background:
-														"linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)",
-													backgroundImage: course.image
-														? `url(${course.image})`
-														: "none",
-													backgroundSize: "cover",
-													backgroundPosition: "center",
+														"linear-gradient(135deg, #0f172a 0%, #334155 100%)",
 													position: "relative",
-													overflow: "hidden",
+													padding: "1.5rem",
+													display: "flex",
+													flexDirection: "column",
+													justifyContent: "flex-end",
 												}}>
 												<div
 													style={{
 														position: "absolute",
-														top: 0,
-														right: 0,
-														bottom: 0,
-														left: 0,
-														background:
-															"linear-gradient(135deg, rgba(0, 102, 204, 0.7) 0%, rgba(0, 180, 216, 0.7) 100%)",
-														display: "flex",
-														alignItems: "center",
-														justifyContent: "center",
-														opacity: 0,
-														transition: "opacity 0.3s ease",
-														fontSize: "3rem",
-													}}
-													onMouseEnter={(e) => {
-														e.currentTarget.style.opacity = "1";
-													}}
-													onMouseLeave={(e) => {
-														e.currentTarget.style.opacity = "0";
-													}}>
-													{getCategoryIcon(course.category)}
-												</div>
-
-												{/* Level Badge */}
-												<div
-													style={{
-														position: "absolute",
-														top: "1rem",
-														right: "1rem",
-														background: getLevelColor(course.level),
+														top: "1.5rem",
+														right: "1.5rem",
+														background: "#10b981",
 														color: "white",
 														padding: "0.4rem 0.8rem",
-														borderRadius: "20px",
-														fontSize: "0.75rem",
-														fontWeight: "bold",
-														textTransform: "uppercase",
+														borderRadius: "30px",
+														fontSize: "0.7rem",
+														fontWeight: "800",
 													}}>
-													{course.level}
+													ENROLLED
 												</div>
+												<h3
+													style={{
+														margin: 0,
+														color: "white",
+														fontSize: "1.4rem",
+														fontWeight: "800",
+													}}>
+													{enrollment.course?.title}
+												</h3>
 											</div>
-
-											{/* Course Content */}
 											<div
 												style={{
 													padding: "1.5rem",
@@ -719,272 +337,314 @@ const Courses = () => {
 													display: "flex",
 													flexDirection: "column",
 												}}>
-												{/* Category Badge */}
-												<div
-													style={{
-														display: "inline-block",
-														background: "rgba(0, 102, 204, 0.1)",
-														color: "#0066cc",
-														padding: "0.4rem 0.9rem",
-														borderRadius: "20px",
-														fontSize: "0.75rem",
-														fontWeight: "bold",
-														marginBottom: "0.8rem",
-														width: "fit-content",
-													}}>
-													{getCategoryIcon(course.category)} {course.category}
-												</div>
-
-												{/* Title */}
-												<h3
-													style={{
-														margin: "0.5rem 0",
-														fontSize: "1.2rem",
-														fontWeight: "bold",
-														color: "#1f2937",
-														lineHeight: "1.4",
-													}}>
-													{course.title}
-												</h3>
-
-												{/* Description */}
 												<p
 													style={{
-														margin: "0.7rem 0 1rem 0",
-														fontSize: "0.85rem",
-														color: "#6b7280",
-														lineHeight: "1.5",
-														flex: 1,
+														margin: "0 0 1.5rem 0",
+														color: "#64748b",
+														fontSize: "0.9rem",
 													}}>
-													{course.description?.substring(0, 100)}...
+													Last accessed:{" "}
+													{new Date(
+														enrollment.enrollmentDate,
+													).toLocaleDateString()}
 												</p>
-
-												{/* Course Meta */}
 												<div
 													style={{
-														display: "grid",
-														gridTemplateColumns: "1fr 1fr",
-														gap: "1rem",
-														marginBottom: "1rem",
-														paddingBottom: "1rem",
-														borderBottom: "1px solid #e5e7eb",
-													}}>
-													<div>
-														<p
-															style={{
-																margin: "0 0 0.3rem 0",
-																fontSize: "0.75rem",
-																color: "#9ca3af",
-																fontWeight: "600",
-																textTransform: "uppercase",
-															}}>
-															⏱️ Duration
-														</p>
-														<p
-															style={{
-																margin: 0,
-																fontSize: "0.95rem",
-																fontWeight: "bold",
-																color: "#1f2937",
-															}}>
-															{course.duration} weeks
-														</p>
-													</div>
-													<div>
-														<p
-															style={{
-																margin: "0 0 0.3rem 0",
-																fontSize: "0.75rem",
-																color: "#9ca3af",
-																fontWeight: "600",
-																textTransform: "uppercase",
-															}}>
-															👥 Enrolled
-														</p>
-														<p
-															style={{
-																margin: 0,
-																fontSize: "0.95rem",
-																fontWeight: "bold",
-																color: "#1f2937",
-															}}>
-															{course.enrolledStudents}/{course.maxStudents}
-														</p>
-													</div>
-												</div>
-
-												{/* Enrollment Progress Bar */}
-												<div
-													style={{
-														marginBottom: "1rem",
+														background: "#f1f5f9",
+														height: "8px",
+														borderRadius: "10px",
+														overflow: "hidden",
+														marginBottom: "1.5rem",
 													}}>
 													<div
 														style={{
-															width: "100%",
-															height: "6px",
-															background: "#e5e7eb",
-															borderRadius: "3px",
-															overflow: "hidden",
-														}}>
-														<div
-															style={{
-																height: "100%",
-																background:
-																	enrollmentRate >= 80
-																		? "#ff6b6b"
-																		: "linear-gradient(90deg, #0066cc, #00b4d8)",
-																width: `${Math.min(enrollmentRate, 100)}%`,
-																transition: "width 0.3s ease",
-															}}
-														/>
-													</div>
-													<p
-														style={{
-															margin: "0.4rem 0 0 0",
-															fontSize: "0.75rem",
-															color: "#9ca3af",
-														}}>
-														{Math.round(enrollmentRate)}% Full
-													</p>
+															background:
+																"linear-gradient(90deg, #0066cc, #00b4d8)",
+															height: "100%",
+															width: "20%",
+														}}></div>
 												</div>
-
-												{/* Footer */}
 												<div
 													style={{
 														display: "flex",
 														justifyContent: "space-between",
 														alignItems: "center",
-														gap: "0.8rem",
 													}}>
-													<p
+													<span
 														style={{
-															margin: 0,
-															fontSize: "1.4rem",
-															fontWeight: "bold",
-															background:
-																"linear-gradient(135deg, #0066cc, #00b4d8)",
-															WebkitBackgroundClip: "text",
-															WebkitTextFillColor: "transparent",
-															backgroundClip: "text",
-														}}>
-														₦{course.price?.toLocaleString()}
-													</p>
-													<button
-														style={{
-															padding: "0.7rem 1.2rem",
-															background:
-																"linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)",
-															color: "white",
-															border: "none",
-															borderRadius: "10px",
+															fontSize: "0.85rem",
 															fontWeight: "600",
-															fontSize: "0.9rem",
-															cursor: "pointer",
-															transition: "all 0.3s ease",
-															whiteSpace: "nowrap",
-														}}
-														onMouseEnter={(e) => {
-															e.currentTarget.style.transform = "scale(1.08)";
-															e.currentTarget.style.opacity = "0.9";
-														}}
-														onMouseLeave={(e) => {
-															e.currentTarget.style.transform = "scale(1)";
-															e.currentTarget.style.opacity = "1";
+															color: "#0066cc",
 														}}>
-														Enroll Now
-													</button>
+														20% Complete
+													</span>
+													<span style={{ fontWeight: "700", color: "#0066cc" }}>
+														Resume →
+													</span>
 												</div>
 											</div>
 										</div>
 									</Link>
-								);
-							})}
-						</div>
+								))}
+							</div>
+						) : (
+							<div
+								style={{
+									background: "white",
+									borderRadius: "30px",
+									padding: "5rem 2rem",
+									textAlign: "center",
+									border: "1px solid #f1f5f9",
+								}}>
+								<div style={{ fontSize: "4rem", marginBottom: "1rem" }}>🎓</div>
+								<h3
+									style={{
+										fontSize: "1.5rem",
+										fontWeight: "800",
+										color: "#1e293b",
+									}}>
+									Start your journey
+								</h3>
+								<p style={{ color: "#64748b", marginBottom: "2rem" }}>
+									Explore our catalog to find your first course!
+								</p>
+								<button
+									onClick={() => setActiveTab("catalog")}
+									style={{
+										padding: "1rem 2rem",
+										background: "#0066cc",
+										color: "white",
+										borderRadius: "12px",
+										border: "none",
+										fontWeight: "700",
+										cursor: "pointer",
+									}}>
+									Explore Catalog
+								</button>
+							</div>
+						)}
+					</div>
+				)}
 
-						{/* Footer Stats */}
+				{/* Course Catalog Tab (Also default for non-logged in) */}
+				{(activeTab === "catalog" || !isDashboard) && (
+					<div style={{ animation: "fadeIn 0.5s ease" }}>
 						<div
 							style={{
-								marginTop: "4rem",
-								background: "white",
-								borderRadius: "18px",
-								padding: "2rem",
-								boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-								textAlign: "center",
+								display: "flex",
+								alignItems: "center",
+								gap: "1rem",
+								marginBottom: "2.5rem",
 							}}>
+							<h2
+								style={{
+									margin: 0,
+									fontSize: "2rem",
+									fontWeight: "900",
+									color: "#1e293b",
+								}}>
+								Course Discovery
+							</h2>
+							<div
+								style={{
+									background: "#0066cc",
+									height: "4px",
+									flex: 1,
+									borderRadius: "2px",
+									opacity: 0.1,
+								}}></div>
+							<span
+								style={{
+									background: "#f1f5f9",
+									padding: "0.5rem 1rem",
+									borderRadius: "50px",
+									color: "#64748b",
+									fontWeight: "700",
+									fontSize: "0.85rem",
+								}}>
+								{filteredCourses.length} COURSES
+							</span>
+						</div>
+
+						{filteredCourses.length === 0 ? (
+							<div style={{ textAlign: "center", padding: "5rem" }}>
+								<div style={{ fontSize: "4rem" }}>🔍</div>
+								<p style={{ color: "#64748b" }}>
+									No courses found at the moment.
+								</p>
+							</div>
+						) : (
 							<div
 								style={{
 									display: "grid",
-									gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-									gap: "2rem",
+									gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+									gap: "2.5rem",
 								}}>
-								<div>
-									<p
-										style={{
-											margin: "0 0 0.5rem 0",
-											fontSize: "0.9rem",
-											color: "#6b7280",
-											textTransform: "uppercase",
-											fontWeight: "600",
-										}}>
-										Total Courses
-									</p>
-									<p
-										style={{
-											margin: 0,
-											fontSize: "2rem",
-											fontWeight: "bold",
-											color: "#0066cc",
-										}}>
-										{courses.length}
-									</p>
-								</div>
-								<div>
-									<p
-										style={{
-											margin: "0 0 0.5rem 0",
-											fontSize: "0.9rem",
-											color: "#6b7280",
-											textTransform: "uppercase",
-											fontWeight: "600",
-										}}>
-										Students Enrolled
-									</p>
-									<p
-										style={{
-											margin: 0,
-											fontSize: "2rem",
-											fontWeight: "bold",
-											color: "#00b4d8",
-										}}>
-										{courses.reduce((sum, c) => sum + c.enrolledStudents, 0)}+
-									</p>
-								</div>
-								<div>
-									<p
-										style={{
-											margin: "0 0 0.5rem 0",
-											fontSize: "0.9rem",
-											color: "#6b7280",
-											textTransform: "uppercase",
-											fontWeight: "600",
-										}}>
-										Expert Instructors
-									</p>
-									<p
-										style={{
-											margin: 0,
-											fontSize: "2rem",
-											fontWeight: "bold",
-											color: "#0066cc",
-										}}>
-										{new Set(courses.map((c) => c.instructor)).size}+
-									</p>
-								</div>
+								{filteredCourses.map((course) => {
+									const enrollmentRate =
+										(course.enrolledStudents / course.maxStudents) * 100;
+									const isEnrolled =
+										isDashboard &&
+										myCourses.some((enr) => enr.course?._id === course._id);
+
+									return (
+										<Link
+											key={course._id}
+											to={`/course/${course._id}`}
+											style={{ textDecoration: "none" }}>
+											<div
+												style={{
+													background: "white",
+													borderRadius: "24px",
+													overflow: "hidden",
+													boxShadow: "0 4px 15px rgba(0, 0, 0, 0.04)",
+													transition: "all 0.3s ease",
+													height: "100%",
+													display: "flex",
+													flexDirection: "column",
+													border: "1px solid #f1f5f9",
+												}}
+												onMouseEnter={(e) => {
+													e.currentTarget.style.transform = "translateY(-5px)";
+													e.currentTarget.style.borderColor = "#0066cc";
+												}}
+												onMouseLeave={(e) => {
+													e.currentTarget.style.transform = "translateY(0)";
+													e.currentTarget.style.borderColor = "#f1f5f9";
+												}}>
+												<div
+													style={{
+														height: "200px",
+														background: course.image
+															? `url(${course.image})`
+															: "linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)",
+														backgroundSize: "cover",
+														backgroundPosition: "center",
+														position: "relative",
+													}}>
+													{isEnrolled && (
+														<div
+															style={{
+																position: "absolute",
+																top: 0,
+																left: 0,
+																right: 0,
+																bottom: 0,
+																background: "rgba(0, 102, 204, 0.8)",
+																display: "flex",
+																alignItems: "center",
+																justifyContent: "center",
+																color: "white",
+																fontWeight: "900",
+																fontSize: "0.9rem",
+															}}>
+															OWNED ⚡ CONTINUE
+														</div>
+													)}
+													<div
+														style={{
+															position: "absolute",
+															top: "1rem",
+															right: "1rem",
+															background: getLevelColor(course.level),
+															color: "white",
+															padding: "0.3rem 0.7rem",
+															borderRadius: "20px",
+															fontSize: "0.7rem",
+															fontWeight: "bold",
+														}}>
+														{course.level}
+													</div>
+												</div>
+
+												<div
+													style={{
+														padding: "1.5rem",
+														flex: 1,
+														display: "flex",
+														flexDirection: "column",
+													}}>
+													<h3
+														style={{
+															margin: "0 0 0.5rem 0",
+															fontSize: "1.2rem",
+															color: "#1e293b",
+															fontWeight: "800",
+														}}>
+														{course.title}
+													</h3>
+													<p
+														style={{
+															margin: "0 0 1.5rem 0",
+															color: "#64748b",
+															fontSize: "0.85rem",
+															flex: 1,
+														}}>
+														{course.description?.substring(0, 90)}...
+													</p>
+
+													<div
+														style={{
+															display: "flex",
+															justifyContent: "space-between",
+															marginBottom: "1rem",
+														}}>
+														<span
+															style={{ fontSize: "0.8rem", color: "#64748b" }}>
+															⏱️ {course.duration} weeks
+														</span>
+														<span
+															style={{ fontSize: "0.8rem", color: "#64748b" }}>
+															👥 {course.enrolledStudents} students
+														</span>
+													</div>
+
+													<div
+														style={{
+															display: "flex",
+															justifyContent: "space-between",
+															alignItems: "center",
+															borderTop: "1px solid #f1f5f9",
+															paddingTop: "1rem",
+														}}>
+														<span
+															style={{
+																fontSize: "1.3rem",
+																fontWeight: "900",
+																color: "#0066cc",
+															}}>
+															₦{course.price?.toLocaleString()}
+														</span>
+														<button
+															style={{
+																padding: "0.6rem 1.2rem",
+																background: "#0066cc",
+																color: "white",
+																border: "none",
+																borderRadius: "10px",
+																fontWeight: "700",
+																fontSize: "0.85rem",
+																cursor: "pointer",
+															}}>
+															Enroll Now
+														</button>
+													</div>
+												</div>
+											</div>
+										</Link>
+									);
+								})}
 							</div>
-						</div>
-					</>
+						)}
+					</div>
 				)}
 			</div>
+			<style>{`
+				@keyframes fadeIn {
+					from { opacity: 0; transform: translateY(10px); }
+					to { opacity: 1; transform: translateY(0); }
+				}
+			`}</style>
 		</div>
 	);
 };

@@ -161,26 +161,28 @@ function App() {
 														path="/reset-password/:token"
 														element={<ResetPassword />}
 													/>
-													<Route
-														path="/courses"
-														element={
-															<CourseRouter>
-																<Courses />
-															</CourseRouter>
-														}
-													/>
-													<Route
-														path="/course/:id"
-														element={
-															<CourseRouter>
-																<CourseDetail />
-															</CourseRouter>
-														}
-													/>
 												</Routes>
 											</main>
 											<Footer />
 										</div>
+									}
+								/>
+
+								{/* Course Routes with specialized conditional layout */}
+								<Route
+									path="/courses"
+									element={
+										<CourseRouter>
+											<Courses />
+										</CourseRouter>
+									}
+								/>
+								<Route
+									path="/course/:id"
+									element={
+										<CourseRouter>
+											<CourseDetail />
+										</CourseRouter>
 									}
 								/>
 							</Routes>
@@ -193,7 +195,7 @@ function App() {
 }
 
 // Helper component for conditional layout on courses
-function CourseRouter({ children }) {
+function CourseRouter({ children, showShell = true }) {
 	const { isAuthenticated, loading } = React.useContext(
 		require("./context/AuthContext").AuthContext,
 	);
@@ -204,7 +206,21 @@ function CourseRouter({ children }) {
 		return <DashboardLayout>{children}</DashboardLayout>;
 	}
 
-	return children;
+	if (!showShell) return children;
+
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				minHeight: "100vh",
+			}}>
+			<Navbar />
+			<AnalyticsConsent />
+			<main style={{ flex: 1 }}>{children}</main>
+			<Footer />
+		</div>
+	);
 }
 
 export default App;
