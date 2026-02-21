@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { courseAPI } from "../services/api";
 import { AuthContext } from "../context/AuthContext";
+import { Gear } from "phosphor-react";
 
 const Courses = () => {
 	const { user } = useContext(AuthContext);
@@ -201,6 +202,36 @@ const Courses = () => {
 							students enrolled
 						</div>
 					</div>
+					{user?.isAdmin && (
+						<Link
+							to="/admin/dashboard"
+							style={{
+								padding: "0.75rem 1.5rem",
+								background: "#0066cc",
+								color: "white",
+								borderRadius: "12px",
+								textDecoration: "none",
+								fontWeight: "600",
+								display: "flex",
+								alignItems: "center",
+								gap: "0.5rem",
+								boxShadow: "0 4px 12px rgba(0, 102, 204, 0.3)",
+								transition: "all 0.3s ease",
+							}}
+							onMouseEnter={(e) => {
+								e.currentTarget.style.transform = "translateY(-2px)";
+								e.currentTarget.style.boxShadow =
+									"0 6px 16px rgba(0, 102, 204, 0.4)";
+							}}
+							onMouseLeave={(e) => {
+								e.currentTarget.style.transform = "translateY(0)";
+								e.currentTarget.style.boxShadow =
+									"0 4px 12px rgba(0, 102, 204, 0.3)";
+							}}>
+							<Gear size={20} weight="bold" />
+							Manage Courses
+						</Link>
+					)}
 				</div>
 			) : (
 				<div

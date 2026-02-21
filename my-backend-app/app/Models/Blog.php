@@ -18,6 +18,8 @@ class Blog extends Model
         'author_id',
         'category',
         'tags',
+        'color',
+        'icon',
         'published',
     ];
 

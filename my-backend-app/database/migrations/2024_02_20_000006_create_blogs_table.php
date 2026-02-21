@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->text('content');
-            $table->text('excerpt');
-            $table->string('featuredImage')->nullable();
+            $table->longText('content');
+            $table->longText('excerpt');
+            $table->longText('featuredImage')->nullable();
             $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
             $table->string('category')->nullable();
+            $table->string('color')->nullable();
+            $table->string('icon')->nullable();
             $table->json('tags')->nullable();
             $table->boolean('published')->default(false);
             $table->timestamps();

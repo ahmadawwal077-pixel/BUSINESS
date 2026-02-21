@@ -10,6 +10,7 @@ import {
 	MagnifyingGlass,
 	Users,
 	Gear,
+	Plus,
 } from "phosphor-react";
 
 const iconsMap = {
@@ -186,6 +187,36 @@ const Blog = () => {
 							Insights, strategies, and best practices for business success.
 						</p>
 					</div>
+					{user?.isAdmin && (
+						<Link
+							to="/admin/blog"
+							style={{
+								padding: "0.75rem 1.5rem",
+								background: "#7c3aed",
+								color: "white",
+								borderRadius: "12px",
+								textDecoration: "none",
+								fontWeight: "600",
+								display: "flex",
+								alignItems: "center",
+								gap: "0.5rem",
+								boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)",
+								transition: "all 0.3s ease",
+							}}
+							onMouseEnter={(e) => {
+								e.currentTarget.style.transform = "translateY(-2px)";
+								e.currentTarget.style.boxShadow =
+									"0 6px 16px rgba(124, 58, 237, 0.4)";
+							}}
+							onMouseLeave={(e) => {
+								e.currentTarget.style.transform = "translateY(0)";
+								e.currentTarget.style.boxShadow =
+									"0 4px 12px rgba(124, 58, 237, 0.3)";
+							}}>
+							<Plus size={20} weight="bold" />
+							Manage Posts
+						</Link>
+					)}
 				</div>
 			) : (
 				<section

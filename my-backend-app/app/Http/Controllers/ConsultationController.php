@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ConsultationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\ConsultationConfirmationMailable;
 
 class ConsultationController extends Controller
 {
@@ -19,8 +20,8 @@ class ConsultationController extends Controller
 
         $consultationRequest = ConsultationRequest::create($request->all());
 
-        // Email sending logic would go here (Mailable class recommended)
-        // Mail::to($request->email)->send(new ConsultationConfirmation($consultationRequest));
+        // Send consultation confirmation email
+        Mail::to($request->email)->send(new ConsultationConfirmationMailable($consultationRequest));
 
         return response()->json([
             'message' => 'Consultation request submitted successfully.',
