@@ -161,10 +161,21 @@ function App() {
 														path="/reset-password/:token"
 														element={<ResetPassword />}
 													/>
-													<Route path="/courses" element={<Courses />} />
+													<Route
+														path="/courses"
+														element={
+															<CourseRouter>
+																<Courses />
+															</CourseRouter>
+														}
+													/>
 													<Route
 														path="/course/:id"
-														element={<CourseDetail />}
+														element={
+															<CourseRouter>
+																<CourseDetail />
+															</CourseRouter>
+														}
 													/>
 												</Routes>
 											</main>
@@ -179,6 +190,21 @@ function App() {
 			</AuthProvider>
 		</Router>
 	);
+}
+
+// Helper component for conditional layout on courses
+function CourseRouter({ children }) {
+	const { isAuthenticated, loading } = React.useContext(
+		require("./context/AuthContext").AuthContext,
+	);
+
+	if (loading) return null;
+
+	if (isAuthenticated) {
+		return <DashboardLayout>{children}</DashboardLayout>;
+	}
+
+	return children;
 }
 
 export default App;

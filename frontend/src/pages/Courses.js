@@ -157,81 +157,103 @@ const Courses = () => {
 				<div
 					style={{
 						background: "white",
-						borderRadius: "20px",
-						padding: "2.5rem",
+						borderRadius: "24px",
+						padding: "2rem",
 						marginBottom: "2.5rem",
-						boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
+						boxShadow: "0 10px 30px rgba(0, 0, 0, 0.03)",
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "space-between",
-						borderLeft: "8px solid #0066cc",
+						border: "1px solid #f1f5f9",
+						position: "relative",
+						overflow: "hidden",
 					}}>
-					<div>
+					<div
+						style={{
+							position: "absolute",
+							top: 0,
+							right: 0,
+							width: "300px",
+							height: "100%",
+							background:
+								"linear-gradient(90deg, transparent 0%, rgba(0, 102, 204, 0.03) 100%)",
+							pointerEvents: "none",
+						}}
+					/>
+					<div style={{ position: "relative", zIndex: 1 }}>
 						<h1
 							style={{
 								margin: 0,
-								fontSize: "2.2rem",
+								fontSize: "1.75rem",
 								color: "#1e293b",
 								fontWeight: "800",
+								letterSpacing: "-0.02em",
 							}}>
-							Explore Professional Courses 📚
+							Available Courses 📚
 						</h1>
 						<p
 							style={{
-								margin: "0.5rem 0 1rem 0",
+								margin: "0.5rem 0 0 0",
 								color: "#64748b",
-								fontSize: "1.1rem",
-								maxWidth: "800px",
+								fontSize: "1rem",
+								maxWidth: "600px",
 							}}>
-							Master new skills from industry experts. Start learning today and
-							transform your career!
+							Expand your knowledge with our curated professional courses.
 						</p>
+					</div>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "1rem",
+							position: "relative",
+							zIndex: 1,
+						}}>
 						<div
 							style={{
-								background: "rgba(0, 102, 204, 0.1)",
+								background: "#f8fafc",
 								padding: "0.6rem 1.2rem",
-								borderRadius: "50px",
-								display: "inline-block",
-								border: "1px solid rgba(0, 102, 204, 0.2)",
-								color: "#0066cc",
-								fontWeight: "600",
-							}}>
-							<span style={{ fontSize: "1rem" }}>🎯</span>{" "}
-							{filteredCourses.length} courses available |{" "}
-							{courses.reduce((sum, c) => sum + (c.enrolledStudents || 0), 0)}{" "}
-							students enrolled
-						</div>
-					</div>
-					{user?.isAdmin && (
-						<Link
-							to="/admin/dashboard"
-							style={{
-								padding: "0.75rem 1.5rem",
-								background: "#0066cc",
-								color: "white",
 								borderRadius: "12px",
-								textDecoration: "none",
+								border: "1px solid #e2e8f0",
+								color: "#475569",
 								fontWeight: "600",
-								display: "flex",
-								alignItems: "center",
-								gap: "0.5rem",
-								boxShadow: "0 4px 12px rgba(0, 102, 204, 0.3)",
-								transition: "all 0.3s ease",
-							}}
-							onMouseEnter={(e) => {
-								e.currentTarget.style.transform = "translateY(-2px)";
-								e.currentTarget.style.boxShadow =
-									"0 6px 16px rgba(0, 102, 204, 0.4)";
-							}}
-							onMouseLeave={(e) => {
-								e.currentTarget.style.transform = "translateY(0)";
-								e.currentTarget.style.boxShadow =
-									"0 4px 12px rgba(0, 102, 204, 0.3)";
+								fontSize: "0.9rem",
 							}}>
-							<Gear size={20} weight="bold" />
-							Manage Courses
-						</Link>
-					)}
+							<span style={{ color: "#0066cc" }}>{filteredCourses.length}</span>{" "}
+							Courses
+						</div>
+						{user?.isAdmin && (
+							<Link
+								to="/admin/dashboard"
+								style={{
+									padding: "0.75rem 1.25rem",
+									background: "#0066cc",
+									color: "white",
+									borderRadius: "12px",
+									textDecoration: "none",
+									fontWeight: "600",
+									fontSize: "0.9rem",
+									display: "flex",
+									alignItems: "center",
+									gap: "0.5rem",
+									boxShadow: "0 4px 12px rgba(0, 102, 204, 0.2)",
+									transition: "all 0.3s ease",
+								}}
+								onMouseEnter={(e) => {
+									e.currentTarget.style.transform = "translateY(-2px)";
+									e.currentTarget.style.boxShadow =
+										"0 6px 16px rgba(0, 102, 204, 0.3)";
+								}}
+								onMouseLeave={(e) => {
+									e.currentTarget.style.transform = "translateY(0)";
+									e.currentTarget.style.boxShadow =
+										"0 4px 12px rgba(0, 102, 204, 0.2)";
+								}}>
+								<Gear size={18} weight="bold" />
+								Admin Panel
+							</Link>
+						)}
+					</div>
 				</div>
 			) : (
 				<div
@@ -586,28 +608,32 @@ const Courses = () => {
 										<div
 											style={{
 												background: "white",
-												borderRadius: "18px",
+												borderRadius: "20px",
 												overflow: "hidden",
-												boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+												boxShadow: isDashboard
+													? "0 4px 15px rgba(0, 0, 0, 0.04)"
+													: "0 4px 20px rgba(0, 0, 0, 0.08)",
 												transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
 												height: "100%",
 												cursor: "pointer",
 												display: "flex",
 												flexDirection: "column",
 												position: "relative",
-												border: "2px solid transparent",
+												border: "1px solid #f1f5f9",
 											}}
 											onMouseEnter={(e) => {
-												e.currentTarget.style.transform = "translateY(-12px)";
+												e.currentTarget.style.transform = "translateY(-8px)";
 												e.currentTarget.style.boxShadow =
-													"0 20px 50px rgba(0, 102, 204, 0.25)";
+													"0 15px 35px rgba(0, 102, 204, 0.15)";
 												e.currentTarget.style.borderColor = "#0066cc";
+												e.currentTarget.style.background = "#ffffff";
 											}}
 											onMouseLeave={(e) => {
 												e.currentTarget.style.transform = "translateY(0)";
-												e.currentTarget.style.boxShadow =
-													"0 4px 20px rgba(0, 0, 0, 0.08)";
-												e.currentTarget.style.borderColor = "transparent";
+												e.currentTarget.style.boxShadow = isDashboard
+													? "0 4px 15px rgba(0, 0, 0, 0.04)"
+													: "0 4px 20px rgba(0, 0, 0, 0.08)";
+												e.currentTarget.style.borderColor = "#f1f5f9";
 											}}>
 											{/* Featured Badge */}
 											{isAlmostFull && (

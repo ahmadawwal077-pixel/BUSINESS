@@ -9,6 +9,8 @@ use App\Models\AssignmentSubmission;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EnrollmentConfirmationMailable;
 
 class CourseController extends Controller
 {
@@ -175,6 +177,9 @@ class CourseController extends Controller
 
         $course = Course::find($enrollment->course_id);
         $course->increment('enrolledStudents');
+
+        // Send enrollment confirmation email
+        Mail::to($enrollment->student->email)->send(new EnrollmentConfirmationMailable($enrollment->load(['student', 'course'])));
 
         return response()->json(['message' => 'Payment confirmed. You are now enrolled in the course!', 'enrollment' => $enrollment]);
     }

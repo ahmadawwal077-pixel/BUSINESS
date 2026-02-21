@@ -36,11 +36,15 @@ const DashboardLayout = ({ children }) => {
 			path: "/appointments",
 		},
 		{ icon: <CreditCard size={24} />, label: "Payments", path: "/payments" },
-		{ icon: <Notebook size={24} />, label: "Blog", path: "/blog" },
 		{ icon: <UserIcon size={24} />, label: "Profile", path: "/profile" },
 	];
 
 	if (user?.isAdmin) {
+		navItems.splice(4, 0, {
+			icon: <Notebook size={24} />,
+			label: "Blog",
+			path: "/blog",
+		});
 		navItems.push({
 			icon: <Gear size={24} />,
 			label: "Admin Panel",

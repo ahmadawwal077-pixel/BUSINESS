@@ -9,6 +9,8 @@ use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EnrollmentConfirmationMailable;
 
 class PaymentController extends Controller
 {
@@ -122,6 +124,9 @@ class PaymentController extends Controller
                     if ($course) {
                         $course->increment('enrolledStudents');
                     }
+
+                    // Send enrollment confirmation email
+                    Mail::to($enrollment->student->email)->send(new EnrollmentConfirmationMailable($enrollment->load(['student', 'course'])));
                 }
             }
 
@@ -134,7 +139,7 @@ class PaymentController extends Controller
     // Get user payments
     public function getUserPayments(Request $request)
     {
-        $payments = Payment::with('appointment')
+        $payments = Payment::with(['appointment', 'enrollment.course'])
             ->where('user_id', $request->user()->id)
             ->latest()
             ->get();
@@ -180,6 +185,9 @@ class PaymentController extends Controller
                         if ($course) {
                             $course->increment('enrolledStudents');
                         }
+
+                        // Send enrollment confirmation email
+                        Mail::to($enrollment->student->email)->send(new EnrollmentConfirmationMailable($enrollment->load(['student', 'course'])));
                     }
                 }
             }
