@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -35,11 +37,24 @@ class AuthController extends Controller
             'isEmailVerified' => false,
         ]);
 
+
+        // Send verification email (will be logged to storage/logs/laravel.log)
+        $verificationUrl = config('app.frontend_url', 'http://localhost:3000') . "/verify-email/" . $token;
+        Mail::html("
+            <h2>Welcome to our platform!</h2>
+            <p>Hi {$request->name},</p>
+            <p>Please verify your email address by clicking the link below:</p>
+            <a href='{$verificationUrl}'>Verify Email</a>
+            <p>Verification Token: {$token}</p>
+        ", function ($message) use ($request) {
+            $message->to($request->email)
+                ->subject('Email Verification - Business Consultation');
+        });
+
         return response()->json([
             'message' => 'User registered successfully. Please check your email to verify your account.',
             'requiresEmailVerification' => true,
             'emailSent' => true,
-            'debug_token' => $token // Remove in production
         ], 201);
     }
 
@@ -97,6 +112,8 @@ class AuthController extends Controller
     public function verifyEmail($token)
     {
         $tokenHash = hash('sha256', $token);
+
+
         $user = User::where('verification_token', $tokenHash)
             ->where('verification_token_expires', '>', now())
             ->first();
@@ -135,11 +152,21 @@ class AuthController extends Controller
             'reset_token_expires' => now()->addHour(),
         ]);
 
-        // In a real scenario, send email here. 
-        // We'll return the token for testing/dev purposes as a "functional" placeholder.
+        // Send reset email (will be logged)
+        $resetUrl = config('app.frontend_url', 'http://localhost:3000') . "/reset-password/" . $token;
+        Mail::html("
+            <h2>Password Reset Request</h2>
+            <p>Hi {$user->name},</p>
+            <p>You requested to reset your password. Click the link below to set a new password:</p>
+            <a href='{$resetUrl}'>Reset Password</a>
+            <p>Reset Token: {$token}</p>
+        ", function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Password Reset Request - Business Consultation');
+        });
+
         return response()->json([
             'message' => 'Password reset link sent to your email',
-            'debug_token' => $token // Remove in production
         ]);
     }
 

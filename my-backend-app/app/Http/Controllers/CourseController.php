@@ -49,7 +49,14 @@ class CourseController extends Controller
 
         $courses = $query->latest()->get();
 
-        return response()->json($courses);
+        // Transform to include _id for frontend parity
+        $transformed = $courses->map(function (\App\Models\Course $course) {
+            $data = $course->toArray();
+            $data['_id'] = $course->id;
+            return $data;
+        });
+
+        return response()->json($transformed);
     }
 
     // Get course by ID
@@ -100,11 +107,21 @@ class CourseController extends Controller
     {
         $enrollments = CourseEnrollment::with('course')
             ->where('student_id', $request->user()->id)
-            ->where('status', 'active')
+            ->where('paymentStatus', 'completed')
             ->latest('enrollmentDate')
             ->get();
 
-        return response()->json($enrollments);
+        // Transform to include _id for frontend parity
+        $transformed = $enrollments->map(function (\App\Models\CourseEnrollment $enr) {
+            $data = $enr->toArray();
+            $data['_id'] = $enr->id;
+            if ($enr->course) {
+                $data['course']['_id'] = $enr->course->id;
+            }
+            return $data;
+        });
+
+        return response()->json($transformed);
     }
 
     // Update course
@@ -185,7 +202,6 @@ class CourseController extends Controller
 
         $enrollment = CourseEnrollment::where('course_id', $courseId)
             ->where('student_id', $userId)
-            ->where('status', 'active')
             ->first();
 
         if (!$enrollment) return response()->json(['message' => 'Not enrolled in this course'], 403);
@@ -198,13 +214,16 @@ class CourseController extends Controller
                 ->first();
 
             return [
+                '_id' => $a->id,
                 'id' => $a->id,
                 'title' => $a->title,
                 'description' => $a->description,
                 'dueDate' => $a->dueDate,
                 'totalPoints' => $a->totalPoints,
+                'maxScore' => $a->totalPoints, // Frontend uses maxScore sometimes
                 'content' => $a->content,
                 'submission' => $submission ? [
+                    '_id' => $submission->id,
                     'status' => $submission->grading_status,
                     'score' => $submission->score,
                     'percentage' => $submission->percentage,
@@ -226,7 +245,11 @@ class CourseController extends Controller
         return response()->json([
             'assignments' => $assignmentDetails,
             'attendance' => [
-                'records' => $attendanceRecords,
+                'records' => $attendanceRecords->map(function ($r) {
+                    $d = $r->toArray();
+                    $d['_id'] = $r->id;
+                    return $d;
+                }),
                 'attendancePercentage' => $totalClasses > 0 ? round(($presentDays / $totalClasses) * 100, 2) : 0,
             ],
         ]);
@@ -302,10 +325,18 @@ class CourseController extends Controller
             ->where('dueDate', '>=', now())
             ->count();
 
+        // Calculate average grade
+        $submissions = AssignmentSubmission::where('student_id', $userId)
+            ->where('grading_status', 'graded')
+            ->get();
+
+        $averageGrade = $submissions->count() > 0 ? round($submissions->avg('percentage'), 2) : 0;
+
         return response()->json([
             'activeCourses' => $activeCourses,
             'completedCourses' => $completedCourses,
             'upcomingAssignments' => $upcomingAssignments,
+            'averageGrade' => $averageGrade,
             'totalEnrolled' => $enrollments->count(),
         ]);
     }

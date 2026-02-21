@@ -8,8 +8,13 @@ const VerifyEmail = () => {
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState('');
 
+  const hasCalled = React.useRef(false);
+
   useEffect(() => {
     const verifyEmail = async () => {
+      if (hasCalled.current) return;
+      hasCalled.current = true;
+      
       try {
         await authAPI.verifyEmail(token);
         setVerified(true);
