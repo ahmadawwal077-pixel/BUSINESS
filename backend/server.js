@@ -1,8 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
 const connectDB = require('./config/db');
 
 console.log('🚀 Starting Business Consultation API Server...');
@@ -257,64 +255,7 @@ app.get('/api/test/status', async (req, res) => {
 
 // ============ END TEST ENDPOINTS ============
 
-// ============ STATIC FILES & SPA ROUTING ============
-// Serve React frontend static files
-// Support both Vite (dist) and Create React App (build) output directories
-const distPath = path.join(__dirname, '../frontend/dist');
-const buildPath = path.join(__dirname, '../frontend/build');
-const frontendBuildPath = fs.existsSync(distPath) ? distPath : buildPath;
-
-if (fs.existsSync(frontendBuildPath)) {
-  console.log('📁 Serving frontend from:', frontendBuildPath);
-  
-  // Serve static assets (JS, CSS, images, etc.)
-  app.use(express.static(frontendBuildPath, {
-    maxAge: '1d', // Cache assets for 1 day
-    etag: false
-  }));
-  
-  // Handle React Router - serve index.html for all non-API routes
-  // This must come AFTER all API routes
-  app.get('*', (req, res) => {
-    // Don't serve index.html for API requests that don't exist
-    if (req.path.startsWith('/api/')) {
-      return res.status(404).json({ message: 'API route not found', path: req.path });
-    }
-    
-    // Serve index.html for all other routes (React Router handles client-side routing)
-    const indexPath = path.join(frontendBuildPath, 'index.html');
-    if (fs.existsSync(indexPath)) {
-      res.sendFile(indexPath, (err) => {
-        if (err) {
-          console.error('Error serving index.html:', err);
-          res.status(500).json({ message: 'Error loading application' });
-        }
-      });
-    } else {
-      res.status(404).json({ message: 'Frontend not built. Run: npm run build' });
-    }
-  });
-  
-  console.log('✅ React SPA routing configured (wildcard catch-all enabled)');
-} else {
-  console.warn('⚠️  Frontend build not found at:');
-  console.warn('    - ' + distPath);
-  console.warn('    - ' + buildPath);
-  console.warn('    Run "npm run build" in the frontend directory');
-  
-  // Fallback: serve a message in production
-  app.get('*', (req, res) => {
-    if (req.path.startsWith('/api/')) {
-      return res.status(404).json({ message: 'API route not found' });
-    }
-    res.status(500).json({ 
-      message: 'Frontend application not available',
-      hint: 'Build the frontend and ensure build or dist folder exists'
-    });
-  });
-}
-
-// ============ END STATIC FILES & SPA ROUTING ============
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('❌ Error:', err.message);
   res.status(500).json({ message: 'Internal server error' });
