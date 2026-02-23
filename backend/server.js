@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
 const connectDB = require('./config/db');
 
 console.log('🚀 Starting Business Consultation API Server...');
@@ -255,9 +257,40 @@ app.get('/api/test/status', async (req, res) => {
 
 // ============ END TEST ENDPOINTS ============
 
+// ============ STATIC FILES & SPA ROUTING ============
+// Serve Vite build (dist) or fallback to Create React App build (build)
+const viteDist = path.join(__dirname, '..', 'frontend', 'dist');
+const craBuild = path.join(__dirname, '..', 'frontend', 'build');
+const frontendPath = fs.existsSync(viteDist) ? viteDist : craBuild;
+
+if (fs.existsSync(frontendPath)) {
+  console.log('📁 Serving frontend from:', frontendPath);
+  app.use(express.static(frontendPath, { maxAge: '1d', etag: false }));
+
+  // IMPORTANT: keep API routes registered ABOVE this block so /api/* is handled by Express routes
+  app.get('*', (req, res, next) => {
+    // If this looks like an API request, do not serve index.html
+    if (req.path.startsWith('/api/')) return next();
+
+    const index = path.join(frontendPath, 'index.html');
+    if (fs.existsSync(index)) {
+      res.sendFile(index, (err) => {
+        if (err) {
+          console.error('Error sending index.html:', err);
+          next(err);
+        }
+      });
+    } else {
+      res.status(404).json({ message: 'Frontend build not found. Run `npm run build` in frontend.' });
+    }
+  });
+} else {
+  console.warn('⚠️  Frontend build not found at:', viteDist, 'or', craBuild);
+}
+
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('❌ Error:', err.message);
+  console.error('❌ Error:', err && err.message ? err.message : err);
   res.status(500).json({ message: 'Internal server error' });
 });
 
