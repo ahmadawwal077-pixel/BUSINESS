@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // Simple proxy for API requests so the static server can forward to backend
 // Usage: set API_TARGET to backend base (e.g. http://localhost:5000)
-const API_TARGET = process.env.API_TARGET || 'http://business-hkk7.onrender.com';
+const API_TARGET = process.env.API_TARGET || 'https://business-hkk7.onrender.com';
 
 app.use('/api', (req, res) => {
   try {
