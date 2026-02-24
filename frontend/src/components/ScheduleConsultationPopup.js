@@ -111,20 +111,25 @@ const ScheduleConsultationPopup = ({ isOpen, onClose }) => {
 
   // Form screen
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 10000,
-      padding: '20px',
-      backdropFilter: 'blur(2px)',
-    }}>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Schedule a consultation dialog"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 10000,
+        padding: '20px',
+        backdropFilter: 'blur(2px)',
+      }}
+    >
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -150,7 +155,7 @@ const ScheduleConsultationPopup = ({ isOpen, onClose }) => {
         background: 'white',
         borderRadius: '20px',
         width: '100%',
-        maxWidth: '600px',
+        maxWidth: '720px',
         maxHeight: '95vh',
         overflow: 'auto',
         boxShadow: '0 25px 50px rgba(0, 0, 0, 0.3)',
@@ -215,7 +220,7 @@ const ScheduleConsultationPopup = ({ isOpen, onClose }) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ padding: '40px' }}>
+        <form onSubmit={handleSubmit} style={{ padding: '32px' }}>
           {/* Error Message */}
           {error && (
             <div className={error ? 'error-shake' : ''} style={{
@@ -238,7 +243,7 @@ const ScheduleConsultationPopup = ({ isOpen, onClose }) => {
           )}
 
           {/* Row 1: Name & Email */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+          <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
             <div>
               <label className="form-label" style={{ display: 'block', marginBottom: '8px' }}>
                 Full Name <span className="form-required">*</span>
@@ -284,7 +289,7 @@ const ScheduleConsultationPopup = ({ isOpen, onClose }) => {
           </div>
 
           {/* Row 2: Phone & Company */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+          <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
             <div>
               <label className="form-label" style={{ display: 'block', marginBottom: '8px' }}>
                 Phone Number <span className="form-required">*</span>
@@ -359,7 +364,7 @@ const ScheduleConsultationPopup = ({ isOpen, onClose }) => {
           </div>
 
           {/* Row 4: Date & Time */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+          <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
             <div>
               <label className="form-label" style={{ display: 'block', marginBottom: '8px' }}>
                 Preferred Date
@@ -445,7 +450,7 @@ const ScheduleConsultationPopup = ({ isOpen, onClose }) => {
           </div>
 
           {/* Buttons */}
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="actions" style={{ display: 'flex', gap: '12px' }}>
             <button
               type="submit"
               disabled={loading}
@@ -528,8 +533,14 @@ const ScheduleConsultationPopup = ({ isOpen, onClose }) => {
           </div>
 
           <style>{`
-            @keyframes spin {
-              to { transform: rotate(360deg); }
+            @keyframes spin { to { transform: rotate(360deg); } }
+            @media (max-width: 640px) {
+              .two-col { grid-template-columns: 1fr !important; }
+              .form-container { border-radius: 12px !important; }
+              .form-container form { padding: 20px !important; }
+              .actions { flex-direction: column-reverse; }
+              .actions button { width: 100% !important; }
+              .form-container .top-header { padding: 28px 18px !important; }
             }
           `}</style>
         </form>

@@ -60,7 +60,10 @@ const Navbar = () => {
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
           }}>
-            <Logo className="navbar-logo" />
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <Logo className="navbar-logo logo-full" />
+              <Logo compact className="navbar-logo logo-compact" />
+            </span>
           </Link>
 
         {/* Desktop Menu */}

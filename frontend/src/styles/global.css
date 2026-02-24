@@ -246,3 +246,12 @@ textarea {
     padding: 2rem 0;
   }
 }
+
+/* Navbar logo responsive swap: show full wordmark on desktop and compact icon on mobile */
+.navbar-logo.logo-compact { display: none; }
+.navbar-logo.logo-full { display: inline-block; vertical-align: middle; }
+
+@media (max-width: 720px) {
+  .navbar-logo.logo-full { display: none !important; }
+  .navbar-logo.logo-compact { display: inline-block !important; width: 44px !important; height: 44px !important; }
+}

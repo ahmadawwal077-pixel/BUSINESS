@@ -1,9 +1,18 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const connectDB = require('./config/db');
 const path = require('path');
 const fs = require('fs');
-const connectDB = require('./config/db');
+
+// compression is optional at runtime; if missing, we continue without gzip
+let compression;
+try {
+  compression = require('compression');
+} catch (err) {
+  compression = null;
+  console.warn('⚠️ compression module not found — continuing without gzip. Run `npm i compression` in the backend folder to enable it.');
+}
 
 console.log('🚀 Starting Business Consultation API Server...');
 console.log('📊 Environment:', process.env.NODE_ENV || 'development');
@@ -85,22 +94,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// Compression (gzip) for responses — enable only when module is available
+if (compression) {
+  app.use(compression({ threshold: 0 }));
+} else {
+  console.warn('⚠️ Skipping gzip compression: compression module not available.');
+}
+
 // Preflight requests handler
 app.options('*', cors(corsOptions));
-
-// Global error handler to return JSON errors (improves browser visibility)
-app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err && err.message ? err.message : err);
-  if (process.env.NODE_ENV === 'development' && err && err.stack) {
-    console.error(err.stack);
-  }
-  const status = (err && err.status) || 500;
-  const response = { message: err.message || 'Internal server error' };
-  if (process.env.NODE_ENV === 'development' && err && err.stack) {
-    response.stack = err.stack;
-  }
-  res.status(status).json(response);
-});
 
 // Root route
 app.get('/', (req, res) => {
@@ -257,40 +259,69 @@ app.get('/api/test/status', async (req, res) => {
 
 // ============ END TEST ENDPOINTS ============
 
-// ============ STATIC FILES & SPA ROUTING ============
-// Serve Vite build (dist) or fallback to Create React App build (build)
-const viteDist = path.join(__dirname, '..', 'frontend', 'dist');
-const craBuild = path.join(__dirname, '..', 'frontend', 'build');
-const frontendPath = fs.existsSync(viteDist) ? viteDist : craBuild;
+// Serve frontend production assets (Vite `dist` or CRA `build`) for client-side routing
+// This block must come AFTER all /api routes are registered and BEFORE the final error handler.
+(() => {
+  const frontendCandidates = [
+    path.join(__dirname, '..', 'frontend', 'dist'),
+    path.join(__dirname, '..', 'frontend', 'build'),
+  ];
 
-if (fs.existsSync(frontendPath)) {
-  console.log('📁 Serving frontend from:', frontendPath);
-  app.use(express.static(frontendPath, { maxAge: '1d', etag: false }));
-
-  // IMPORTANT: keep API routes registered ABOVE this block so /api/* is handled by Express routes
-  app.get('*', (req, res, next) => {
-    // If this looks like an API request, do not serve index.html
-    if (req.path.startsWith('/api/')) return next();
-
-    const index = path.join(frontendPath, 'index.html');
-    if (fs.existsSync(index)) {
-      res.sendFile(index, (err) => {
-        if (err) {
-          console.error('Error sending index.html:', err);
-          next(err);
-        }
-      });
-    } else {
-      res.status(404).json({ message: 'Frontend build not found. Run `npm run build` in frontend.' });
+  const frontendPath = frontendCandidates.find(p => {
+    try {
+      return fs.existsSync(p) && fs.statSync(p).isDirectory();
+    } catch (e) {
+      return false;
     }
   });
-} else {
-  console.warn('⚠️  Frontend build not found at:', viteDist, 'or', craBuild);
-}
+
+  if (frontendPath) {
+    console.log('🌐 Serving frontend static from:', frontendPath);
+
+    // Serve static assets (no index fallthrough so we can control SPA routing)
+    app.use(express.static(frontendPath, {
+      index: false,
+      maxAge: '7d',
+      setHeaders: (res, filePath) => {
+        const ext = path.extname(filePath).toLowerCase();
+        // Don't cache HTML (we want clients to revalidate index.html)
+        if (ext === '.html') {
+          res.setHeader('Cache-Control', 'no-cache');
+        } else {
+          // Long cache for assets (JS/CSS/images).
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+      }
+    }));
+
+    // Catch-all: serve index.html for non-API GET requests (preserve API routes)
+    app.get('*', (req, res, next) => {
+      if (req.method !== 'GET') return next();
+      if (req.path.startsWith('/api')) return next();
+
+      const indexHtml = path.join(frontendPath, 'index.html');
+      if (fs.existsSync(indexHtml)) return res.sendFile(indexHtml);
+      return next();
+    });
+  } else {
+    console.log('⚠️  Frontend build not found (tried dist/build). Skipping static serving.');
+  }
+})();
+
+// Render / external platform readiness endpoint
+app.get('/healthz', (req, res) => {
+  try {
+    const mongoose = require('mongoose');
+    const ready = mongoose.connection.readyState === 1;
+    return res.status(ready ? 200 : 503).json({ ready, dbState: mongoose.connection.readyState });
+  } catch (err) {
+    return res.status(503).json({ ready: false, error: err.message });
+  }
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('❌ Error:', err && err.message ? err.message : err);
+  console.error('❌ Error:', err.message);
   res.status(500).json({ message: 'Internal server error' });
 });
 
