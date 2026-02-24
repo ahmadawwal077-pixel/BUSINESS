@@ -275,37 +275,47 @@ app.get('/api/test/status', async (req, res) => {
     }
   });
 
-  if (frontendPath) {
-    console.log('🌐 Serving frontend static from:', frontendPath);
-
-    // Serve static assets (no index fallthrough so we can control SPA routing)
-    app.use(express.static(frontendPath, {
-      index: false,
-      maxAge: '7d',
-      setHeaders: (res, filePath) => {
-        const ext = path.extname(filePath).toLowerCase();
-        // Don't cache HTML (we want clients to revalidate index.html)
-        if (ext === '.html') {
-          res.setHeader('Cache-Control', 'no-cache');
-        } else {
-          // Long cache for assets (JS/CSS/images).
-          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-        }
-      }
-    }));
-
-    // Catch-all: serve index.html for non-API GET requests (preserve API routes)
-    app.get('*', (req, res, next) => {
-      if (req.method !== 'GET') return next();
-      if (req.path.startsWith('/api')) return next();
-
-      const indexHtml = path.join(frontendPath, 'index.html');
-      if (fs.existsSync(indexHtml)) return res.sendFile(indexHtml);
-      return next();
-    });
-  } else {
+  if (!frontendPath) {
     console.log('⚠️  Frontend build not found (tried dist/build). Skipping static serving.');
+    return;
   }
+
+  console.log('🌐 Serving frontend static from:', frontendPath);
+
+  // Serve static assets
+  app.use(express.static(frontendPath, {
+    index: false,
+    maxAge: '7d',
+    setHeaders: (res, filePath) => {
+      const ext = path.extname(filePath).toLowerCase();
+      if (ext === '.html') {
+        // Always revalidate HTML
+        res.setHeader('Cache-Control', 'no-cache');
+      } else {
+        // Long cache for fingerprinted assets
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      }
+    }
+  }));
+
+  // SPA fallback: respond with index.html for any GET that is not an API call and
+  // does not look like a static file request (i.e., has no file extension)
+  app.get('*', (req, res, next) => {
+    if (req.method !== 'GET') return next();
+
+    // Preserve API routes
+    if (req.path.startsWith('/api')) return next();
+
+    // If the request is likely for a file (has an extension), let the static middleware handle it
+    if (path.extname(req.path)) return next();
+
+    const indexHtml = path.join(frontendPath, 'index.html');
+    if (fs.existsSync(indexHtml)) {
+      return res.sendFile(indexHtml);
+    }
+
+    next();
+  });
 })();
 
 // Render / external platform readiness endpoint
