@@ -1,6 +1,33 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Determine API base URL at runtime for custom domain handling.
+const defaultLocal = 'http://localhost:5000/api';
+const envApi = process.env.REACT_APP_API_URL;
+
+let API_URL = envApi || defaultLocal;
+
+// If running in a browser, allow a runtime mapping so the frontend served
+// from a custom domain (e.g. synctax360.com) can call the correct backend
+// without rebuilding. This helps when the frontend is deployed as a static
+// site to a custom domain while the backend is on a separate Render service.
+try {
+  if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+    const host = window.location.hostname.toLowerCase();
+
+    // Map your custom frontend domain(s) to the backend API URL
+    if (host === 'synctax360.com' || host === 'www.synctax360.com') {
+      API_URL = 'https://business-hkk7.onrender.com/api';
+    }
+
+    // If the frontend is served from the Render preview domain, you can
+    // also map it explicitly (optional):
+    if (host === 'frontend-0nbu.onrender.com') {
+      API_URL = 'https://business-hkk7.onrender.com/api';
+    }
+  }
+} catch (e) {
+  // ignore in non-browser environments
+}
 
 console.log('🔗 API Configuration:');
 console.log('   Environment:', process.env.NODE_ENV);
