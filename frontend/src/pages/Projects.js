@@ -72,42 +72,42 @@ const Projects = () => {
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
           color: 'white',
-          padding: '8rem 0',
+          padding: 'clamp(3rem, 8vw, 8rem) 0',
           textAlign: 'center',
-          minHeight: '600px',
+          minHeight: 'clamp(400px, 60vh, 600px)',
           display: 'flex',
           alignItems: 'center',
         }}
       >
         <div className="container">
-          <h1 style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: 'bold', letterSpacing: '1px' }}>
+          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', marginBottom: 'clamp(0.75rem, 2vw, 1rem)', fontWeight: 'bold', letterSpacing: '-0.5px' }}>
             Our Projects
           </h1>
-          <p style={{ fontSize: '1.4rem', marginBottom: '2rem', fontWeight: '300' }}>
+          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.4rem)', marginBottom: 'clamp(0.75rem, 1.5vw, 2rem)', fontWeight: '300', lineHeight: '1.6' }}>
             Success stories from our consulting engagements
           </p>
-          <p style={{ fontSize: '1.1rem', opacity: '0.95' }}>
+          <p style={{ fontSize: 'clamp(0.9rem, 1.8vw, 1.1rem)', opacity: '0.95', lineHeight: '1.6' }}>
             Delivering measurable impact across industries and markets
           </p>
         </div>
       </section>
 
       {/* Projects Grid Section */}
-      <section style={{ backgroundColor: '#f8f9fa', padding: '5rem 0' }}>
+      <section style={{ backgroundColor: '#f8f9fa', padding: 'clamp(2.5rem, 6vw, 5rem) 0' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '0.5rem', fontSize: '2.5rem' }}>Case Studies & Success Stories</h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>Real-world examples of our consulting impact</p>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)', maxWidth: '700px', margin: '0 auto clamp(2rem, 4vw, 3rem)' }}>
+            <h2 style={{ color: '#0066cc', marginBottom: '0.5rem', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 'bold' }}>Case Studies & Success Stories</h2>
+            <p style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)', color: '#666', lineHeight: '1.8' }}>Real-world examples of our consulting impact</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
             {projects.map((project, index) => (
               <div
                 key={index}
                 style={{
                   background: 'white',
                   borderRadius: '12px',
-                  padding: '2.5rem',
+                  padding: 'clamp(1.5rem, 2.5vw, 2.5rem)',
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
                   border: `3px solid ${project.color}`,
                   transition: 'all 0.3s ease',
@@ -123,31 +123,31 @@ const Projects = () => {
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
                 }}
               >
-                <div style={{ fontSize: '3.5rem', marginBottom: '1rem', color: project.color }}>
+                <div style={{ fontSize: 'clamp(2.5rem, 4vw, 3.5rem)', marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', color: project.color }}>
                   {React.createElement(project.icon, { size: 56, weight: 'bold' })}
                 </div>
-                <h3 style={{ color: project.color, marginBottom: '0.5rem', fontSize: '1.4rem', fontWeight: 'bold' }}>
+                <h3 style={{ color: project.color, marginBottom: '0.5rem', fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)', fontWeight: 'bold' }}>
                   {project.title}
                 </h3>
-                <p style={{ color: '#0066cc', fontWeight: '600', marginBottom: '1rem', fontSize: '0.95rem' }}>
+                <p style={{ color: '#0066cc', fontWeight: '600', marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', fontSize: 'clamp(0.9rem, 1.5vw, 0.95rem)' }}>
                   {project.client}
                 </p>
-                <p style={{ color: '#666', lineHeight: '1.7', marginBottom: '1.5rem', flex: '1' }}>
+                <p style={{ color: '#666', lineHeight: '1.8', marginBottom: 'clamp(1rem, 2vw, 1.5rem)', flex: '1', fontSize: 'clamp(0.9rem, 1.5vw, 1rem)' }}>
                   {project.description}
                 </p>
                 <div
                   style={{
                     background: '#f0f4ff',
                     borderLeft: `4px solid ${project.color}`,
-                    padding: '1rem',
+                    padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                     borderRadius: '6px',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
+                    gap: 'clamp(0.5rem, 1vw, 0.75rem)',
                   }}
                 >
                   <CheckCircle size={20} weight="fill" color={project.color} />
-                  <p style={{ color: project.color, fontWeight: 'bold', fontSize: '1.1rem', margin: '0' }}>
+                  <p style={{ color: project.color, fontWeight: 'bold', fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)', margin: '0' }}>
                     {project.result}
                   </p>
                 </div>
@@ -158,16 +158,16 @@ const Projects = () => {
       </section>
 
       {/* Impact Section */}
-      <section style={{ backgroundColor: 'white', padding: '5rem 0' }}>
+      <section style={{ backgroundColor: 'white', padding: 'clamp(2.5rem, 6vw, 5rem) 0' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '1rem', fontSize: '2.5rem' }}>Our Project Impact</h2>
-            <p style={{ fontSize: '1.1rem', color: '#666', maxWidth: '700px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)', maxWidth: '700px', margin: '0 auto clamp(2rem, 4vw, 3rem)' }}>
+            <h2 style={{ color: '#0066cc', marginBottom: '0.5rem', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 'bold' }}>Our Project Impact</h2>
+            <p style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)', color: '#666', lineHeight: '1.8' }}>
               Our projects consistently deliver exceptional results, improving client operations, profitability, and competitive positioning
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2rem', marginTop: '3rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 'clamp(1.5rem, 2.5vw, 2rem)', marginTop: 'clamp(2rem, 3vw, 3rem)' }}>
             {[
               { number: '6+', label: 'Case Studies', icon: '📁' },
               { number: '100M+', label: 'Value Created', icon: '💰' },
@@ -179,7 +179,7 @@ const Projects = () => {
                 style={{
                   background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
                   borderRadius: '12px',
-                  padding: '2rem',
+                  padding: 'clamp(1.25rem, 2.5vw, 2rem)',
                   textAlign: 'center',
                   border: '2px solid #e0e7ff',
                   transition: 'all 0.3s ease',
@@ -195,11 +195,11 @@ const Projects = () => {
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>{metric.icon}</div>
-                <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#0066cc', marginBottom: '0.5rem' }}>
+                <div style={{ fontSize: 'clamp(2rem, 3.5vw, 2.5rem)', marginBottom: 'clamp(0.5rem, 1vw, 0.75rem)' }}>{metric.icon}</div>
+                <div style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 'bold', color: '#0066cc', marginBottom: '0.5rem' }}>
                   {metric.number}
                 </div>
-                <p style={{ color: '#666', fontSize: '1.05rem', margin: '0' }}>{metric.label}</p>
+                <p style={{ color: '#666', fontSize: 'clamp(0.9rem, 1.6vw, 1.05rem)', margin: '0', lineHeight: '1.6' }}>{metric.label}</p>
               </div>
             ))}
           </div>
@@ -207,13 +207,13 @@ const Projects = () => {
       </section>
 
       {/* Why Our Projects Succeed Section */}
-      <section style={{ backgroundColor: '#f8f9fa', padding: '5rem 0' }}>
+      <section style={{ backgroundColor: '#f8f9fa', padding: 'clamp(2.5rem, 6vw, 5rem) 0' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '1rem', fontSize: '2.5rem' }}>Why Our Projects Succeed</h2>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
+            <h2 style={{ color: '#0066cc', marginBottom: '0.5rem', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 'bold' }}>Why Our Projects Succeed</h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: 'clamp(1.5rem, 2.5vw, 2rem)' }}>
             {[
               { icon: '🎯', title: 'Clear Objectives', description: 'Well-defined goals and success metrics from day one' },
               { icon: '👥', title: 'Expert Teams', description: 'Dedicated teams with industry-specific expertise' },
@@ -227,17 +227,26 @@ const Projects = () => {
                 style={{
                   background: 'white',
                   borderRadius: '12px',
-                  padding: '2rem',
+                  padding: 'clamp(1.25rem, 2.5vw, 2rem)',
                   textAlign: 'center',
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
                   borderTop: '4px solid #0066cc',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 102, 204, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.06)';
                 }}
               >
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{reason.icon}</div>
-                <h4 style={{ color: '#0066cc', marginBottom: '0.75rem', fontSize: '1.2rem' }}>
+                <div style={{ fontSize: 'clamp(2.25rem, 4vw, 3rem)', marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)' }}>{reason.icon}</div>
+                <h4 style={{ color: '#0066cc', marginBottom: '0.75rem', fontSize: 'clamp(1rem, 2vw, 1.2rem)', fontWeight: 'bold' }}>
                   {reason.title}
                 </h4>
-                <p style={{ color: '#666', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                <p style={{ color: '#666', lineHeight: '1.6', fontSize: 'clamp(0.9rem, 1.5vw, 0.95rem)' }}>
                   {reason.description}
                 </p>
               </div>
@@ -251,20 +260,20 @@ const Projects = () => {
         style={{
           background: 'linear-gradient(135deg, #0066cc 0%, #0052a3 100%)',
           color: 'white',
-          padding: '5rem 0',
+          padding: 'clamp(2.5rem, 6vw, 5rem) 0',
           textAlign: 'center',
         }}
       >
         <div className="container">
-          <h2 style={{ marginBottom: '1rem', fontSize: '2.5rem' }}>Ready to Achieve Your Goals?</h2>
-          <p style={{ fontSize: '1.1rem', marginBottom: '2rem', opacity: '0.95', maxWidth: '600px', margin: '0 auto 2rem' }}>
+          <h2 style={{ marginBottom: 'clamp(0.75rem, 2vw, 1rem)', fontSize: 'clamp(1.4rem, 4vw, 2.5rem)', fontWeight: 'bold' }}>Ready to Achieve Your Goals?</h2>
+          <p style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)', marginBottom: 'clamp(1.5rem, 2vw, 2rem)', opacity: '0.95', maxWidth: '600px', margin: '0 auto clamp(1.5rem, 2vw, 2rem)', lineHeight: '1.6' }}>
             Let's discuss how our proven approach can deliver measurable results for your organization
           </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/contact" className="btn btn-primary" style={{ display: 'inline-block', background: 'white', color: '#0066cc', fontWeight: 'bold', padding: '0.9rem 2rem', fontSize: '1.05rem', textDecoration: 'none', borderRadius: '6px' }}>
+          <div style={{ display: 'flex', gap: 'clamp(0.75rem, 1.5vw, 1rem)', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/contact" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'white', color: '#0066cc', fontWeight: 'bold', padding: 'clamp(0.75rem, 1.5vw, 0.9rem) clamp(1.5rem, 3vw, 2rem)', fontSize: 'clamp(0.9rem, 1.6vw, 1.05rem)', textDecoration: 'none', borderRadius: '8px', minHeight: '44px', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 16px rgba(255, 255, 255, 0.2)'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = 'none'; }}>
               Start Your Project
             </Link>
-            <Link to="/services" className="btn btn-secondary" style={{ display: 'inline-block', borderColor: 'white', color: 'white', fontWeight: 'bold', padding: '0.9rem 2rem', fontSize: '1.05rem', textDecoration: 'none', borderRadius: '6px', border: '2px solid white' }}>
+            <Link to="/services" className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderColor: 'white', color: 'white', fontWeight: 'bold', padding: 'clamp(0.75rem, 1.5vw, 0.9rem) clamp(1.5rem, 3vw, 2rem)', fontSize: 'clamp(0.9rem, 1.6vw, 1.05rem)', textDecoration: 'none', borderRadius: '8px', border: '2px solid white', minHeight: '44px', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { e.target.style.background = 'rgba(255, 255, 255, 0.1)'; e.target.style.transform = 'translateY(-2px)'; }} onMouseLeave={(e) => { e.target.style.background = 'transparent'; e.target.style.transform = 'translateY(0)'; }}>
               Explore Services
             </Link>
           </div>

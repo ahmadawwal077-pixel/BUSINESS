@@ -137,42 +137,42 @@ const Blog = () => {
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
           color: 'white',
-          padding: '8rem 0',
+          padding: 'clamp(3rem, 8vw, 8rem) 0',
           textAlign: 'center',
-          minHeight: '600px',
+          minHeight: 'clamp(400px, 60vh, 600px)',
           display: 'flex',
           alignItems: 'center',
         }}
       >
         <div className="container">
-          <h1 style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: 'bold', letterSpacing: '1px' }}>
+          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', marginBottom: 'clamp(0.75rem, 2vw, 1rem)', fontWeight: 'bold', letterSpacing: '-0.5px' }}>
             PositiveHills Blog
           </h1>
-          <p style={{ fontSize: '1.4rem', marginBottom: '2rem', fontWeight: '300' }}>
+          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.4rem)', marginBottom: 'clamp(0.75rem, 1.5vw, 2rem)', fontWeight: '300', lineHeight: '1.6' }}>
             Insights, strategies, and best practices for business success
           </p>
-          <p style={{ fontSize: '1.1rem', opacity: '0.95' }}>
+          <p style={{ fontSize: 'clamp(0.9rem, 1.8vw, 1.1rem)', opacity: '0.95', lineHeight: '1.6' }}>
             Expert articles on consulting, strategy, and organizational excellence
           </p>
         </div>
       </section>
 
       {/* Blog Section */}
-      <section style={{ backgroundColor: '#f8f9fa', padding: '5rem 0' }}>
+      <section style={{ backgroundColor: '#f8f9fa', padding: 'clamp(2.5rem, 6vw, 5rem) 0' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ color: '#0066cc', marginBottom: '1rem', fontSize: '2.5rem' }}>Latest Insights</h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>Stay informed with our expert articles and thought leadership</p>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)', maxWidth: '700px', margin: '0 auto clamp(2rem, 4vw, 3rem)' }}>
+            <h2 style={{ color: '#0066cc', marginBottom: '0.5rem', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 'bold' }}>Latest Insights</h2>
+            <p style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)', color: '#666', lineHeight: '1.8' }}>Stay informed with our expert articles and thought leadership</p>
           </div>
 
           {/* Category Filter */}
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem' }}>
+          <div style={{ display: 'flex', gap: 'clamp(0.75rem, 1.5vw, 1rem)', justifyContent: 'center', flexWrap: 'wrap', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 style={{
-                  padding: '0.7rem 1.5rem',
+                  padding: 'clamp(0.6rem, 1.2vw, 0.7rem) clamp(1.2rem, 2.5vw, 1.5rem)',
                   borderRadius: '25px',
                   border: selectedCategory === cat ? 'none' : '2px solid #ddd',
                   background: selectedCategory === cat ? '#0066cc' : 'white',
@@ -180,7 +180,10 @@ const Blog = () => {
                   fontWeight: '600',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
-                  fontSize: '0.95rem',
+                  fontSize: 'clamp(0.85rem, 1.5vw, 0.95rem)',
+                  minHeight: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
                 }}
                 onMouseEnter={(e) => {
                   if (selectedCategory !== cat) {
@@ -207,7 +210,7 @@ const Blog = () => {
             </div>
           ) : (
             <>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '2.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: 'clamp(1.5rem, 2.5vw, 2.5rem)' }}>
                 {filteredBlogs.map((blog) => (
                   <Link
                     key={blog._id}
@@ -237,7 +240,7 @@ const Blog = () => {
                       }}
                     >
                       {/* Featured Image */}
-                      <div style={{ position: 'relative', overflow: 'hidden', height: '220px' }}>
+                      <div style={{ position: 'relative', overflow: 'hidden', height: 'clamp(200px, 35vw, 220px)' }}>
                         <img
                           src={blog.featuredImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=250&fit=crop'}
                           alt={blog.title}
@@ -257,13 +260,13 @@ const Blog = () => {
                         <div
                           style={{
                             position: 'absolute',
-                            top: '1rem',
-                            right: '1rem',
+                            top: 'clamp(0.5rem, 1vw, 1rem)',
+                            right: 'clamp(0.5rem, 1vw, 1rem)',
                             background: blog.color || '#0066cc',
                             color: 'white',
-                            padding: '0.5rem 1rem',
+                            padding: 'clamp(0.4rem, 0.8vw, 0.5rem) clamp(0.75rem, 1.5vw, 1rem)',
                             borderRadius: '20px',
-                            fontSize: '0.85rem',
+                            fontSize: 'clamp(0.75rem, 1.4vw, 0.85rem)',
                             fontWeight: '600',
                           }}
                         >
@@ -272,8 +275,8 @@ const Blog = () => {
                       </div>
 
                       {/* Content */}
-                      <div style={{ padding: '2rem', flex: '1', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', color: blog.color || '#0066cc' }}>
+                      <div style={{ padding: 'clamp(1.25rem, 2.5vw, 2rem)', flex: '1', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ fontSize: 'clamp(2rem, 3.5vw, 2.5rem)', marginBottom: 'clamp(0.5rem, 1vw, 0.75rem)', color: blog.color || '#0066cc' }}>
                           {(() => {
                             const iconValue = blog.icon;
                             let IconComp = typeof iconValue === 'string' ? iconsMap[iconValue] : iconValue;
@@ -292,29 +295,29 @@ const Blog = () => {
                             );
                           })()}
                         </div>
-                        <h3 style={{ color: blog.color || '#0066cc', marginBottom: '0.75rem', fontSize: '1.3rem', lineHeight: '1.4' }}>
+                        <h3 style={{ color: blog.color || '#0066cc', marginBottom: '0.75rem', fontSize: 'clamp(1.1rem, 2.2vw, 1.3rem)', lineHeight: '1.4' }}>
                           {blog.title}
                         </h3>
-                        <p style={{ color: '#666', lineHeight: '1.7', marginBottom: '1rem', flex: '1' }}>
+                        <p style={{ color: '#666', lineHeight: '1.8', marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', flex: '1', fontSize: 'clamp(0.9rem, 1.5vw, 1rem)' }}>
                           {blog.excerpt}
                         </p>
 
                         {/* Footer */}
-                        <div style={{ borderTop: '1px solid #eee', paddingTop: '1rem' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <small style={{ color: '#999' }}>
+                        <div style={{ borderTop: '1px solid #eee', paddingTop: 'clamp(0.75rem, 1.5vw, 1rem)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'clamp(0.5rem, 1vw, 1rem)' }}>
+                            <small style={{ color: '#999', fontSize: 'clamp(0.8rem, 1.4vw, 0.88rem)' }}>
                               By <strong>{blog.author?.name || 'Admin'}</strong>
                             </small>
                             <small style={{ color: '#999' }}>
                               {new Date(blog.createdAt).toLocaleDateString()}
                             </small>
                           </div>
-                          <div style={{ marginTop: '0.75rem' }}>
+                          <div style={{ marginTop: 'clamp(0.5rem, 1vw, 0.75rem)' }}>
                             <span
                               style={{
                                 color: blog.color || '#0066cc',
                                 fontWeight: '600',
-                                fontSize: '0.9rem',
+                                fontSize: 'clamp(0.8rem, 1.4vw, 0.9rem)',
                                 display: 'flex',
                                 alignItems: 'center',
                               }}

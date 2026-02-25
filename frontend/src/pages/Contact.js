@@ -44,31 +44,31 @@ const Contact = () => {
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
           color: 'white',
-          padding: '8rem 0',
+          padding: 'clamp(3rem, 8vw, 8rem) 0',
           textAlign: 'center',
-          minHeight: '600px',
+          minHeight: 'clamp(400px, 60vh, 600px)',
           display: 'flex',
           alignItems: 'center',
         }}
       >
         <div className="container">
-          <h1 style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: 'bold', letterSpacing: '1px' }}>
+          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', marginBottom: 'clamp(0.75rem, 2vw, 1rem)', fontWeight: 'bold', letterSpacing: '-0.5px' }}>
             Get In Touch
           </h1>
-          <p style={{ fontSize: '1.4rem', marginBottom: '2rem', fontWeight: '300' }}>
+          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.4rem)', marginBottom: 'clamp(0.75rem, 1.5vw, 2rem)', fontWeight: '300', lineHeight: '1.6' }}>
             We'd love to hear from you and discuss how we can help
           </p>
-          <p style={{ fontSize: '1.1rem', opacity: '0.95' }}>
+          <p style={{ fontSize: 'clamp(0.9rem, 1.8vw, 1.1rem)', opacity: '0.95', lineHeight: '1.6' }}>
             Reach out to our team for consultation and inquiries
           </p>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section style={{ backgroundColor: 'white', padding: '5rem 0' }}>
+      <section style={{ backgroundColor: 'white', padding: 'clamp(2.5rem, 6vw, 5rem) 0' }}>
         <div className="container">
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', marginBottom: '4rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: 'clamp(3rem, 5vw, 4rem)' }}>
               {/* Contact Info Cards */}
               {[
                 {
@@ -103,7 +103,7 @@ const Contact = () => {
                   style={{
                     background: '#f8f9fa',
                     borderRadius: '12px',
-                    padding: '2rem',
+                    padding: 'clamp(1.5rem, 2.5vw, 2rem)',
                     textAlign: 'center',
                     borderLeft: `5px solid ${item.color}`,
                     transition: 'all 0.3s ease',
@@ -117,21 +117,21 @@ const Contact = () => {
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
-                  <div style={{ fontSize: '3rem', marginBottom: '1rem', color: item.color }}>
+                  <div style={{ fontSize: 'clamp(2.5rem, 4vw, 3rem)', marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', color: item.color }}>
                     {React.createElement(item.icon, { size: 48, weight: 'bold' })}
                   </div>
-                  <h4 style={{ color: item.color, marginBottom: '1rem', fontSize: '1.2rem' }}>
+                  <h4 style={{ color: item.color, marginBottom: 'clamp(0.75rem, 1.5vw, 1rem)', fontSize: 'clamp(1rem, 2vw, 1.2rem)', fontWeight: 'bold' }}>
                     {item.title}
                   </h4>
                   {item.link ? (
                     <a
                       href={item.link}
-                      style={{ color: '#666', textDecoration: 'none', lineHeight: '1.8' }}
+                      style={{ color: '#666', textDecoration: 'none', lineHeight: '1.8', fontSize: 'clamp(0.9rem, 1.5vw, 1rem)' }}
                     >
                       {item.content[0]}
                     </a>
                   ) : (
-                    <div style={{ color: '#666', lineHeight: '1.8' }}>
+                    <div style={{ color: '#666', lineHeight: '1.8', fontSize: 'clamp(0.9rem, 1.5vw, 1rem)' }}>
                       {item.content.map((line, i) => (
                         <div key={i}>{line}</div>
                       ))}
@@ -142,10 +142,10 @@ const Contact = () => {
             </div>
 
             {/* Contact Form */}
-            <div style={{ backgroundColor: '#f8f9fa', borderRadius: '12px', padding: '3rem', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)' }}>
-              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                <h2 style={{ color: '#0066cc', marginBottom: '0.5rem', fontSize: '2rem' }}>Send Us a Message</h2>
-                <p style={{ fontSize: '1.05rem', color: '#666' }}>We'll respond as quickly as possible</p>
+            <div style={{ backgroundColor: '#f8f9fa', borderRadius: '12px', padding: 'clamp(2rem, 4vw, 3rem)', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)' }}>
+              <div style={{ textAlign: 'center', marginBottom: 'clamp(1.5rem, 3vw, 2rem)' }}>
+                <h2 style={{ color: '#0066cc', marginBottom: '0.5rem', fontSize: 'clamp(1.4rem, 4vw, 2rem)', fontWeight: 'bold' }}>Send Us a Message</h2>
+                <p style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.05rem)', color: '#666' }}>We'll respond as quickly as possible</p>
               </div>
 
               {success && (
@@ -164,10 +164,10 @@ const Contact = () => {
               )}
 
               <form onSubmit={handleSubmit} style={{ maxWidth: '700px', margin: '0 auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 'clamp(1rem, 2vw, 1.5rem)', marginBottom: 'clamp(1rem, 2vw, 1.5rem)' }}>
                   {/* Name */}
                   <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333', fontSize: 'clamp(0.9rem, 1.5vw, 1rem)' }}>
                       Name <span style={{ color: '#e74c3c' }}>*</span>
                     </label>
                     <input
@@ -178,12 +178,13 @@ const Contact = () => {
                       required
                       style={{
                         width: '100%',
-                        padding: '0.75rem 1rem',
+                        padding: 'clamp(0.6rem, 1.2vw, 0.75rem) clamp(0.8rem, 1.5vw, 1rem)',
                         border: '2px solid #ddd',
                         borderRadius: '8px',
-                        fontSize: '1rem',
+                        fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                         transition: 'all 0.3s ease',
                         boxSizing: 'border-box',
+                        minHeight: '44px',
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#0066cc';
@@ -198,7 +199,7 @@ const Contact = () => {
 
                   {/* Email */}
                   <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333', fontSize: 'clamp(0.9rem, 1.5vw, 1rem)' }}>
                       Email <span style={{ color: '#e74c3c' }}>*</span>
                     </label>
                     <input
@@ -209,12 +210,13 @@ const Contact = () => {
                       required
                       style={{
                         width: '100%',
-                        padding: '0.75rem 1rem',
+                        padding: 'clamp(0.6rem, 1.2vw, 0.75rem) clamp(0.8rem, 1.5vw, 1rem)',
                         border: '2px solid #ddd',
                         borderRadius: '8px',
-                        fontSize: '1rem',
+                        fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                         transition: 'all 0.3s ease',
                         boxSizing: 'border-box',
+                        minHeight: '44px',
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#0066cc';
@@ -231,7 +233,7 @@ const Contact = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
                   {/* Phone */}
                   <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333', fontSize: 'clamp(0.9rem, 1.5vw, 1rem)' }}>
                       Phone <span style={{ color: '#999' }}>(Optional)</span>
                     </label>
                     <input
@@ -241,12 +243,13 @@ const Contact = () => {
                       onChange={handleChange}
                       style={{
                         width: '100%',
-                        padding: '0.75rem 1rem',
+                        padding: 'clamp(0.6rem, 1.2vw, 0.75rem) clamp(0.8rem, 1.5vw, 1rem)',
                         border: '2px solid #ddd',
                         borderRadius: '8px',
-                        fontSize: '1rem',
+                        fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                         transition: 'all 0.3s ease',
                         boxSizing: 'border-box',
+                        minHeight: '44px',
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#0066cc';
@@ -261,7 +264,7 @@ const Contact = () => {
 
                   {/* Subject */}
                   <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333', fontSize: 'clamp(0.9rem, 1.5vw, 1rem)' }}>
                       Subject <span style={{ color: '#e74c3c' }}>*</span>
                     </label>
                     <input
@@ -272,12 +275,13 @@ const Contact = () => {
                       required
                       style={{
                         width: '100%',
-                        padding: '0.75rem 1rem',
+                        padding: 'clamp(0.6rem, 1.2vw, 0.75rem) clamp(0.8rem, 1.5vw, 1rem)',
                         border: '2px solid #ddd',
                         borderRadius: '8px',
-                        fontSize: '1rem',
+                        fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                         transition: 'all 0.3s ease',
                         boxSizing: 'border-box',
+                        minHeight: '44px',
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#0066cc';
@@ -292,8 +296,8 @@ const Contact = () => {
                 </div>
 
                 {/* Message */}
-                <div style={{ marginBottom: '2rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333' }}>
+                <div style={{ marginBottom: 'clamp(1.5rem, 3vw, 2rem)' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#333', fontSize: 'clamp(0.9rem, 1.5vw, 1rem)' }}>
                     Message <span style={{ color: '#e74c3c' }}>*</span>
                   </label>
                   <textarea
@@ -304,14 +308,15 @@ const Contact = () => {
                     rows="6"
                     style={{
                       width: '100%',
-                      padding: '0.75rem 1rem',
+                      padding: 'clamp(0.6rem, 1.2vw, 0.75rem) clamp(0.8rem, 1.5vw, 1rem)',
                       border: '2px solid #ddd',
                       borderRadius: '8px',
-                      fontSize: '1rem',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                       fontFamily: 'inherit',
                       transition: 'all 0.3s ease',
                       boxSizing: 'border-box',
                       resize: 'vertical',
+                      minHeight: '150px',
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = '#0066cc';
@@ -329,15 +334,16 @@ const Contact = () => {
                   type="submit"
                   style={{
                     width: '100%',
-                    padding: '1rem 2rem',
+                    padding: 'clamp(0.8rem, 1.5vw, 1rem) clamp(1.5rem, 3vw, 2rem)',
                     background: '#0066cc',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
-                    fontSize: '1.05rem',
+                    fontSize: 'clamp(0.95rem, 1.6vw, 1.05rem)',
                     fontWeight: '600',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
+                    minHeight: '44px',
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.background = '#0052a3';
