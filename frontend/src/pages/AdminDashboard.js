@@ -495,7 +495,7 @@ const AdminDashboard = () => {
           flexWrap: 'wrap',
           overflowX: 'auto',
         }}>
-          {['courses', 'assignments', 'upcomingClasses', 'attendance'].map((tab) => (
+          {['courses', 'assignments', 'upcomingClasses', 'attendance', 'whatsapp'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -530,6 +530,7 @@ const AdminDashboard = () => {
               {tab === 'assignments' && '📋 Assignments'}
               {tab === 'upcomingClasses' && '🎓 Upcoming Classes'}
               {tab === 'attendance' && '✅ Attendance'}
+              {tab === 'whatsapp' && '💬 WhatsApp'}
             </button>
           ))}
         </div>
@@ -1145,6 +1146,63 @@ const AdminDashboard = () => {
                     </button>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'whatsapp' && (
+          <div style={{
+            background: 'white',
+            borderRadius: '15px',
+            padding: 'clamp(1.5rem, 3vw, 2rem)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+          }}>
+            <h2 style={{
+              margin: '0 0 clamp(1.5rem, 2vw, 2rem) 0',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+              fontWeight: 'bold',
+              color: '#1f2937',
+            }}>
+              Students WhatsApp Directory ({students.length})
+            </h2>
+
+            {students.length === 0 ? (
+              <div style={{ color: '#6b7280' }}>No students found.</div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ textAlign: 'left', borderBottom: '1px solid #e5e7eb' }}>
+                      <th style={{ padding: '0.75rem', fontWeight: 700 }}>Name</th>
+                      <th style={{ padding: '0.75rem', fontWeight: 700 }}>Email</th>
+                      <th style={{ padding: '0.75rem', fontWeight: 700 }}>WhatsApp</th>
+                      <th style={{ padding: '0.75rem', fontWeight: 700 }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {students.map(s => (
+                      <tr key={s._id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                        <td style={{ padding: '0.75rem' }}>{s.name || '—'}</td>
+                        <td style={{ padding: '0.75rem', color: '#6b7280' }}>{s.email || '—'}</td>
+                        <td style={{ padding: '0.75rem' }}>{s.whatsapp || s.phone || '—'}</td>
+                        <td style={{ padding: '0.75rem' }}>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                              onClick={() => {
+                                const val = s.whatsapp || s.phone || '';
+                                if (val && navigator.clipboard) navigator.clipboard.writeText(val).then(() => showMessage('success', 'Copied to clipboard'));
+                              }}
+                              style={{ padding: '0.4rem 0.75rem', borderRadius: '6px', border: 'none', background: '#e5e7eb', cursor: 'pointer' }}
+                            >
+                              Copy
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

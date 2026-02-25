@@ -116,13 +116,13 @@ exports.testEmail = async (req, res) => {
 // Register
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, whatsapp } = req.body;
 
     console.log('Register request:', { name, email }); // Debug log
 
-    // Validate input
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email, and password are required' });
+    // Validate input (whatsapp required)
+    if (!name || !email || !password || !whatsapp) {
+      return res.status(400).json({ message: 'Name, email, password, and whatsapp are required' });
     }
 
     // Check if user exists
@@ -142,11 +142,21 @@ exports.register = async (req, res) => {
       .update(verificationToken)
       .digest('hex');
 
+    // Normalize whatsapp (keep digits and leading +)
+    const whatsappNormalized = (whatsapp || '').toString().replace(/[^0-9+]/g, '');
+
+    // Enforce country-code format: must start with + and 8-15 digits total
+    const whatsappRegex = /^\+\d{8,15}$/;
+    if (!whatsappRegex.test(whatsappNormalized)) {
+      return res.status(400).json({ message: 'Invalid whatsapp format. Include country code, e.g. +1234567890' });
+    }
+
     // Create new user
     user = new User({
       name,
       email,
       password: hashedPassword,
+      whatsapp: whatsappNormalized,
       emailVerificationToken: verificationTokenHash,
       emailVerificationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
     });
@@ -574,11 +584,22 @@ exports.getCurrentUser = async (req, res) => {
 // Update user profile
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, phone, company } = req.body;
-    
+    const { name, phone, company, whatsapp } = req.body;
+
+    const update = { name, phone, company };
+
+    if (typeof whatsapp !== 'undefined') {
+      const whatsappNormalized = (whatsapp || '').toString().replace(/[^0-9+]/g, '');
+      const whatsappRegex = /^\+\d{8,15}$/;
+      if (!whatsappRegex.test(whatsappNormalized)) {
+        return res.status(400).json({ message: 'Invalid whatsapp format. Include country code, e.g. +1234567890' });
+      }
+      update.whatsapp = whatsappNormalized;
+    }
+
     const user = await User.findByIdAndUpdate(
       req.userId,
-      { name, phone, company },
+      update,
       { new: true }
     ).select('-password');
 

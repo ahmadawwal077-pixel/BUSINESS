@@ -9,6 +9,7 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    whatsapp: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -32,16 +33,26 @@ const Register = () => {
       return;
     }
 
+    // WhatsApp validation (required)
+    const phone = (formData.whatsapp || '').trim();
+    const phoneNormalized = phone.replace(/[^0-9+]/g, '');
+    const phoneDigits = phoneNormalized.replace(/\D/g, '');
+    if (!phone || phoneDigits.length < 7) {
+      setError('Please provide a valid WhatsApp number');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await register(formData.name, formData.email, formData.password);
+      await register(formData.name, formData.email, formData.password, phoneNormalized);
       setSuccess('Account created successfully! Please check your email to verify your account.');
       setFormData({
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
+        whatsapp: '',
       });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
@@ -273,7 +284,7 @@ const Register = () => {
                   color: '#1f2937',
                   fontSize: '0.95rem',
                 }}>
-                  Email Address
+                    Email Address
                 </label>
                 <input
                   type="email"
@@ -281,6 +292,45 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem 1rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '10px',
+                    fontSize: '0.95rem',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box',
+                    fontFamily: 'inherit',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#0066cc';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#e5e7eb';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+
+              {/* WhatsApp Field */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  fontSize: '0.95rem',
+                }}>
+                  WhatsApp Number (required)
+                </label>
+                <input
+                  type="tel"
+                  name="whatsapp"
+                  value={formData.whatsapp}
+                  onChange={handleChange}
+                  placeholder="+234 801 234 5678"
                   required
                   style={{
                     width: '100%',
@@ -450,7 +500,7 @@ const Register = () => {
               </Link>
             </form>
           </div>
-        </div>
+          </div>
 
         {/* Footer Text */}
         <p style={{

@@ -42,9 +42,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, whatsapp) => {
     try {
-      const response = await authAPI.register({ name, email, password });
+      const payload = { name, email, password };
+      if (whatsapp) payload.whatsapp = whatsapp;
+      const response = await authAPI.register(payload);
       // Don't auto-login, require email verification first
       return response.data;
     } catch (error) {

@@ -7,6 +7,7 @@ const Profile = () => {
     name: '',
     email: '',
     phone: '',
+    whatsapp: '',
     company: '',
   });
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,7 @@ const Profile = () => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
+        whatsapp: user.whatsapp || '',
         company: user.company || '',
       });
     }
@@ -40,6 +42,7 @@ const Profile = () => {
         name: formData.name,
         phone: formData.phone,
         company: formData.company,
+        whatsapp: formData.whatsapp,
       });
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
@@ -198,6 +201,51 @@ const Profile = () => {
             </div>
 
             {/* Phone Field */}
+            {/* WhatsApp Field */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '0.75rem',
+                fontWeight: '600',
+                color: '#1f2937',
+                fontSize: '0.95rem',
+              }}>
+                💬 WhatsApp Number
+              </label>
+              <input
+                type="tel"
+                name="whatsapp"
+                value={formData.whatsapp}
+                onChange={handleChange}
+                placeholder="+1 555 123 4567"
+                style={{
+                  width: '100%'
+                , padding: '0.95rem 1.25rem',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '12px',
+                  fontSize: '0.95rem',
+                  fontFamily: 'inherit',
+                  transition: 'all 0.3s ease',
+                  boxSizing: 'border-box',
+                  color: '#333',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#0066cc';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#e5e7eb';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+              <p style={{
+                margin: '0.5rem 0 0 0',
+                color: '#6b7280',
+                fontSize: '0.85rem',
+              }}>
+                Include country code, e.g. +2348031234567
+              </p>
+            </div>
             <div style={{ marginBottom: '2rem' }}>
               <label style={{
                 display: 'block',
