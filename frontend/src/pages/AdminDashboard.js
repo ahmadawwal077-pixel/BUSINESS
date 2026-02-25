@@ -1265,7 +1265,7 @@ const AdminDashboard = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -1274,57 +1274,85 @@ const AdminDashboard = () => {
         }}>
           <div style={{
             background: 'white',
-            borderRadius: '15px',
-            padding: 'clamp(1.5rem, 3vw, 2rem)',
-            maxWidth: 'clamp(280px, 90vw, 500px)',
+            borderRadius: '20px',
+            padding: 'clamp(2rem, 4vw, 3rem)',
+            maxWidth: 'clamp(350px, 95vw, 1000px)',
             width: '100%',
-            maxHeight: '90vh',
+            maxHeight: '95vh',
             overflowY: 'auto',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)',
           }}>
-            <h2 style={{
-              margin: '0 0 clamp(1rem, 2vw, 1.5rem) 0',
-              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
-              fontWeight: 'bold',
-              color: '#1f2937',
+            <div style={{
+              marginBottom: 'clamp(1.5rem, 3vw, 2rem)',
             }}>
-              {editingCourse ? 'Edit Course' : 'Add New Course'}
-            </h2>
+              <h2 style={{
+                margin: '0 0 0.5rem 0',
+                fontSize: 'clamp(1.4rem, 4vw, 2rem)',
+                fontWeight: 'bold',
+                color: '#0066cc',
+                letterSpacing: '-0.5px',
+              }}>
+                {editingCourse ? 'Edit Course' : 'Add New Course'}
+              </h2>
+              <div style={{
+                height: '3px',
+                width: '60px',
+                background: 'linear-gradient(90deg, #0066cc 0%, #00b4d8 100%)',
+                borderRadius: '2px',
+              }}></div>
+            </div>
 
             <form onSubmit={editingCourse ? handleUpdateCourse : handleAddCourse}>
-              <div style={{ marginBottom: '1rem' }}>
+              {/* Title Field */}
+              <div style={{ marginBottom: 'clamp(1.5rem, 2vw, 2rem)' }}>
                 <label style={{
                   display: 'block',
-                  marginBottom: '0.5rem',
+                  marginBottom: '0.7rem',
                   fontWeight: '600',
                   color: '#1f2937',
+                  fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                 }}>
-                  Course Title *
+                  Course Title <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={courseForm.title}
                   onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
+                  placeholder="e.g., Advanced Web Development Mastery"
                   style={{
                     width: '100%',
-                    padding: '0.8rem',
+                    padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                     border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '0.9rem',
+                    borderRadius: '10px',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                     boxSizing: 'border-box',
+                    transition: 'all 0.3s ease',
+                    backgroundColor: '#f9fafb',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#0066cc';
+                    e.target.style.backgroundColor = '#fff';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#e5e7eb';
+                    e.target.style.backgroundColor = '#f9fafb';
+                    e.target.style.boxShadow = 'none';
                   }}
                 />
               </div>
 
-              <div style={{ marginBottom: '1rem' }}>
+              {/* Description Field - Full Width */}
+              <div style={{ marginBottom: 'clamp(1.5rem, 2vw, 2rem)' }}>
                 <label style={{
                   display: 'block',
-                  marginBottom: '0.5rem',
+                  marginBottom: '0.7rem',
                   fontWeight: '600',
                   color: '#1f2937',
+                  fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                 }}>
-                  Description * (Pro Editor)
+                  Description (Pro Editor) <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <RichTextEditor
                   value={courseForm.description}
@@ -1333,20 +1361,22 @@ const AdminDashboard = () => {
                 />
               </div>
 
+              {/* Category & Level - 2 Columns on Desktop, 1 on Mobile */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '1rem',
-                marginBottom: '1rem',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
+                gap: 'clamp(1rem, 2vw, 1.5rem)',
+                marginBottom: 'clamp(1.5rem, 2vw, 2rem)',
               }}>
                 <div>
                   <label style={{
                     display: 'block',
-                    marginBottom: '0.5rem',
+                    marginBottom: '0.7rem',
                     fontWeight: '600',
                     color: '#1f2937',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                   }}>
-                    Category *
+                    Category <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <select
                     required
@@ -1354,10 +1384,27 @@ const AdminDashboard = () => {
                     onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: '0.8rem',
+                      padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '0.9rem',
+                      borderRadius: '10px',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                      backgroundColor: '#f9fafb',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      appearance: 'none',
+                      backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%221f2937%22 stroke-width=%222%22%3E%3Cpolyline points=%226 9 12 15 18 9%22%3E%3C/polyline%3E%3C/svg%3E")',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 0.75rem center',
+                      backgroundSize: '1.25rem',
+                      paddingRight: '2.5rem',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
                     }}
                   >
                     <option>Web Development</option>
@@ -1372,11 +1419,12 @@ const AdminDashboard = () => {
                 <div>
                   <label style={{
                     display: 'block',
-                    marginBottom: '0.5rem',
+                    marginBottom: '0.7rem',
                     fontWeight: '600',
                     color: '#1f2937',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                   }}>
-                    Level *
+                    Level <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <select
                     required
@@ -1384,10 +1432,27 @@ const AdminDashboard = () => {
                     onChange={(e) => setCourseForm({ ...courseForm, level: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: '0.8rem',
+                      padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '0.9rem',
+                      borderRadius: '10px',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                      backgroundColor: '#f9fafb',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      appearance: 'none',
+                      backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%221f2937%22 stroke-width=%222%22%3E%3Cpolyline points=%226 9 12 15 18 9%22%3E%3C/polyline%3E%3C/svg%3E")',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 0.75rem center',
+                      backgroundSize: '1.25rem',
+                      paddingRight: '2.5rem',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
                     }}
                   >
                     <option>Beginner</option>
@@ -1397,33 +1462,48 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
+              {/* Price, Duration, Max Students - 3 Columns on Desktop */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr',
-                gap: '1rem',
-                marginBottom: '1rem',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+                gap: 'clamp(1rem, 2vw, 1.5rem)',
+                marginBottom: 'clamp(1.5rem, 2vw, 2rem)',
               }}>
                 <div>
                   <label style={{
                     display: 'block',
-                    marginBottom: '0.5rem',
+                    marginBottom: '0.7rem',
                     fontWeight: '600',
                     color: '#1f2937',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                   }}>
-                    Price (₦) *
+                    Price (₦) <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
                     type="number"
                     required
                     value={courseForm.price}
                     onChange={(e) => setCourseForm({ ...courseForm, price: e.target.value })}
+                    placeholder="5000"
                     style={{
                       width: '100%',
-                      padding: '0.8rem',
+                      padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '0.9rem',
+                      borderRadius: '10px',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                       boxSizing: 'border-box',
+                      transition: 'all 0.3s ease',
+                      backgroundColor: '#f9fafb',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.backgroundColor = '#fff';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.backgroundColor = '#f9fafb';
+                      e.target.style.boxShadow = 'none';
                     }}
                   />
                 </div>
@@ -1431,24 +1511,38 @@ const AdminDashboard = () => {
                 <div>
                   <label style={{
                     display: 'block',
-                    marginBottom: '0.5rem',
+                    marginBottom: '0.7rem',
                     fontWeight: '600',
                     color: '#1f2937',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                   }}>
-                    Duration (weeks) *
+                    Duration (weeks) <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
                     type="number"
                     required
                     value={courseForm.duration}
                     onChange={(e) => setCourseForm({ ...courseForm, duration: e.target.value })}
+                    placeholder="4"
                     style={{
                       width: '100%',
-                      padding: '0.8rem',
+                      padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '0.9rem',
+                      borderRadius: '10px',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                       boxSizing: 'border-box',
+                      transition: 'all 0.3s ease',
+                      backgroundColor: '#f9fafb',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.backgroundColor = '#fff';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.backgroundColor = '#f9fafb';
+                      e.target.style.boxShadow = 'none';
                     }}
                   />
                 </div>
@@ -1456,77 +1550,125 @@ const AdminDashboard = () => {
                 <div>
                   <label style={{
                     display: 'block',
-                    marginBottom: '0.5rem',
+                    marginBottom: '0.7rem',
                     fontWeight: '600',
                     color: '#1f2937',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                   }}>
-                    Max Students *
+                    Max Students <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
                     type="number"
                     required
                     value={courseForm.maxStudents}
                     onChange={(e) => setCourseForm({ ...courseForm, maxStudents: e.target.value })}
+                    placeholder="30"
                     style={{
                       width: '100%',
-                      padding: '0.8rem',
+                      padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '0.9rem',
+                      borderRadius: '10px',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                       boxSizing: 'border-box',
+                      transition: 'all 0.3s ease',
+                      backgroundColor: '#f9fafb',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.backgroundColor = '#fff';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.backgroundColor = '#f9fafb';
+                      e.target.style.boxShadow = 'none';
                     }}
                   />
                 </div>
               </div>
 
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                }}>
-                  Start Date *
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={courseForm.startDate}
-                  onChange={(e) => setCourseForm({ ...courseForm, startDate: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.8rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '0.9rem',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
+              {/* Start & End Dates - 2 Columns on Desktop */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
+                gap: 'clamp(1rem, 2vw, 1.5rem)',
+                marginBottom: 'clamp(1.5rem, 2vw, 2rem)',
+              }}>
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.7rem',
+                    fontWeight: '600',
+                    color: '#1f2937',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                  }}>
+                    Start Date <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={courseForm.startDate}
+                    onChange={(e) => setCourseForm({ ...courseForm, startDate: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: 'clamp(0.75rem, 1.5vw, 1rem)',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '10px',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                      boxSizing: 'border-box',
+                      transition: 'all 0.3s ease',
+                      backgroundColor: '#f9fafb',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.backgroundColor = '#fff';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.backgroundColor = '#f9fafb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                </div>
 
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                }}>
-                  End Date *
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={courseForm.endDate}
-                  onChange={(e) => setCourseForm({ ...courseForm, endDate: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.8rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '0.9rem',
-                    boxSizing: 'border-box',
-                  }}
-                />
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.7rem',
+                    fontWeight: '600',
+                    color: '#1f2937',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                  }}>
+                    End Date <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={courseForm.endDate}
+                    onChange={(e) => setCourseForm({ ...courseForm, endDate: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: 'clamp(0.75rem, 1.5vw, 1rem)',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '10px',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                      boxSizing: 'border-box',
+                      transition: 'all 0.3s ease',
+                      backgroundColor: '#f9fafb',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.backgroundColor = '#fff';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.backgroundColor = '#f9fafb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                </div>
               </div>
 
               <div style={{
@@ -1538,26 +1680,29 @@ const AdminDashboard = () => {
                 <div>
                   <label style={{
                     display: 'block',
-                    marginBottom: '0.5rem',
+                    marginBottom: '0.7rem',
                     fontWeight: '600',
                     color: '#1f2937',
-                    fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                   }}>
-                    Schedule Days *
+                    Schedule Days <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <div style={{
                     border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
+                    borderRadius: '10px',
+                    padding: 'clamp(1rem, 1.5vw, 1.2rem)',
                     background: '#f9fafb',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                    gap: '0.5rem',
                   }}>
                     {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
                       <label key={day} style={{
                         display: 'flex',
                         alignItems: 'center',
-                        marginBottom: '0.5rem',
                         cursor: 'pointer',
-                        fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
+                        fontSize: 'clamp(0.85rem, 1.5vw, 0.95rem)',
+                        padding: '0.5rem',
                       }}>
                         <input
                           type="checkbox"
@@ -1570,11 +1715,12 @@ const AdminDashboard = () => {
                             }
                           }}
                           style={{
-                            marginRight: '0.5rem',
+                            marginRight: '0.6rem',
                             cursor: 'pointer',
                             width: '18px',
                             height: '18px',
                             minWidth: '18px',
+                            accentColor: '#0066cc',
                           }}
                         />
                         {day}
@@ -1582,8 +1728,8 @@ const AdminDashboard = () => {
                     ))}
                   </div>
                   {courseForm.scheduleDays.length === 0 && (
-                    <div style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.25rem' }}>
-                      Select at least one day
+                    <div style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.5rem', fontWeight: '600' }}>
+                      ⚠️ Select at least one day
                     </div>
                   )}
                 </div>
@@ -1591,10 +1737,10 @@ const AdminDashboard = () => {
                 <div>
                   <label style={{
                     display: 'block',
-                    marginBottom: '0.5rem',
+                    marginBottom: '0.7rem',
                     fontWeight: '600',
                     color: '#1f2937',
-                    fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                   }}>
                     Start Time
                   </label>
@@ -1604,12 +1750,24 @@ const AdminDashboard = () => {
                     onChange={(e) => setCourseForm({ ...courseForm, scheduleStartTime: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
+                      padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
+                      borderRadius: '10px',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                       boxSizing: 'border-box',
-                      minHeight: '40px',
+                      transition: 'all 0.3s ease',
+                      backgroundColor: '#f9fafb',
+                      minHeight: '44px',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.backgroundColor = '#fff';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.backgroundColor = '#f9fafb';
+                      e.target.style.boxShadow = 'none';
                     }}
                   />
                 </div>
@@ -1617,10 +1775,10 @@ const AdminDashboard = () => {
                 <div>
                   <label style={{
                     display: 'block',
-                    marginBottom: '0.5rem',
+                    marginBottom: '0.7rem',
                     fontWeight: '600',
                     color: '#1f2937',
-                    fontSize: 'clamp(0.85rem, 1.6vw, 0.95rem)',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                   }}>
                     End Time
                   </label>
@@ -1630,44 +1788,63 @@ const AdminDashboard = () => {
                     onChange={(e) => setCourseForm({ ...courseForm, scheduleEndTime: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: 'clamp(0.6rem, 1.2vw, 0.8rem)',
+                      padding: 'clamp(0.75rem, 1.5vw, 1rem)',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
+                      borderRadius: '10px',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                       boxSizing: 'border-box',
-                      minHeight: '40px',
+                      transition: 'all 0.3s ease',
+                      backgroundColor: '#f9fafb',
+                      minHeight: '44px',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.backgroundColor = '#fff';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.backgroundColor = '#f9fafb';
+                      e.target.style.boxShadow = 'none';
                     }}
                   />
                 </div>
               </div>
 
+              {/* Form Buttons */}
               <div style={{
                 display: 'flex',
-                gap: 'clamp(0.75rem, 1.5vw, 1rem)',
+                gap: 'clamp(0.75rem, 2vw, 1rem)',
+                marginTop: 'clamp(2rem, 3vw, 2.5rem)',
+                paddingTop: 'clamp(1.5rem, 2vw, 2rem)',
+                borderTop: '1px solid #e5e7eb',
               }}>
                 <button
                   type="submit"
                   style={{
                     flex: 1,
-                    padding: 'clamp(0.6rem, 1.5vw, 0.8rem)',
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 100%)',
+                    padding: 'clamp(0.7rem, 1.5vw, 1rem)',
+                    background: 'linear-gradient(135deg, #0066cc 0%, #00b4d8 100%)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '8px',
-                    fontWeight: '600',
+                    borderRadius: '10px',
+                    fontWeight: '700',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
-                    minHeight: '40px',
-                    fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
+                    minHeight: '48px',
+                    fontSize: 'clamp(0.85rem, 1.5vw, 1rem)',
+                    boxShadow: '0 4px 15px rgba(0, 102, 204, 0.3)',
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.opacity = '0.9';
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 6px 20px rgba(0, 102, 204, 0.4)';
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.opacity = '1';
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 15px rgba(0, 102, 204, 0.3)';
                   }}
                 >
-                  {editingCourse ? 'Update Course' : 'Add Course'}
+                  {editingCourse ? '💾 Update Course' : '➕ Add Course'}
                 </button>
                 <button
                   type="button"
@@ -1677,31 +1854,33 @@ const AdminDashboard = () => {
                   }}
                   style={{
                     flex: 1,
-                    padding: 'clamp(0.6rem, 1.5vw, 0.8rem)',
-                    background: '#e5e7eb',
-                    color: '#1f2937',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontWeight: '600',
+                    padding: 'clamp(0.7rem, 1.5vw, 1rem)',
+                    background: '#f3f4f6',
+                    color: '#4b5563',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '10px',
+                    fontWeight: '700',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
-                    minHeight: '40px',
-                    fontSize: 'clamp(0.8rem, 1.5vw, 0.95rem)',
+                    minHeight: '48px',
+                    fontSize: 'clamp(0.85rem, 1.5vw, 1rem)',
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.background = '#d1d5db';
+                    e.target.style.background = '#e5e7eb';
+                    e.target.style.borderColor = '#d1d5db';
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.background = '#e5e7eb';
+                    e.target.style.background = '#f3f4f6';
+                    e.target.style.borderColor = '#e5e7eb';
                   }}
                 >
-                  Cancel
+                  ✕ Cancel
                 </button>
               </div>
             </form>
           </div>
         </div>
-      )}
+      )}}
 
       {/* Add Assignment Modal */}
       {showAddAssignmentModal && selectedCourseForAssignment && (
