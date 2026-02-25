@@ -59,6 +59,8 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,                   // Render frontend
   'https://frontend-0nbu.onrender.com',       // Your frontend
   'https://business-hkk7.onrender.com',       // Your backend (self)
+  'https://www.synctax360.com',               // Custom domain added
+  'https://synctax360.com',                   // Custom domain (no www)
 ];
 
 const corsOptions = {
