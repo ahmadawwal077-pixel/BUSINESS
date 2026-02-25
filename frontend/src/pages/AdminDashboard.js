@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { courseAPI, liveClassAPI } from '../services/api';
 import AssignmentManager from '../components/AssignmentManager';
+import RichTextEditor from '../components/RichTextEditor';
 
 const AdminDashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -1323,21 +1324,12 @@ const AdminDashboard = () => {
                   fontWeight: '600',
                   color: '#1f2937',
                 }}>
-                  Description *
+                  Description * (Pro Editor)
                 </label>
-                <textarea
-                  required
+                <RichTextEditor
                   value={courseForm.description}
-                  onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
-                  rows="4"
-                  style={{
-                    width: '100%',
-                    padding: '0.8rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '0.9rem',
-                    boxSizing: 'border-box',
-                  }}
+                  onChange={(value) => setCourseForm({ ...courseForm, description: value })}
+                  placeholder="Write your professional course description here with headings, paragraphs, lists, and formatting..."
                 />
               </div>
 

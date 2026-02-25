@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { courseAPI } from '../services/api';
+import { stripHtml } from '../utils/htmlHelpers';
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -594,7 +595,7 @@ const Courses = () => {
                           lineHeight: '1.5',
                           flex: 1,
                         }}>
-                          {course.description?.substring(0, 100)}...
+                          {stripHtml(course.description, 100)}
                         </p>
 
                         {/* Course Meta */}

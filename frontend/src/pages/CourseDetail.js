@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { courseAPI } from '../services/api';
+import { stripHtml } from '../utils/htmlHelpers';
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -217,23 +218,23 @@ const CourseDetail = () => {
           <div style={{
             padding: 'clamp(1.5rem, 3vw, 3rem)',
           }}>
-            <h1 style={{
+            <h3 style={{
               margin: '0 0 1rem 0',
               fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
               fontWeight: 'bold',
               color: '#1f2937',
             }}>
               {course.title}
-            </h1>
+            </h3>
 
             <p style={{
               margin: '0 0 2rem 0',
               fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
               color: '#6b7280',
               lineHeight: '1.6',
-            }}>
-              {course.description}
-            </p>
+            }}
+            dangerouslySetInnerHTML={{ __html: course.description || '' }}
+            />
 
             <div style={{
               display: 'grid',
