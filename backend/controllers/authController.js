@@ -164,7 +164,7 @@ exports.register = async (req, res) => {
     await user.save();
     console.log('User saved successfully:', user._id); // Debug log
 
-    // Send congratulation email with account details
+    // build email content (full HTML from original implementation)
     const congratulationEmailContent = `
       <!DOCTYPE html>
       <html>
@@ -300,16 +300,25 @@ exports.register = async (req, res) => {
       </html>
     `;
 
-    const emailResult = await sendEmail(email, '🎉 Welcome! Your Account is Ready - Business Consultation Platform', congratulationEmailContent);
-    
-    console.log('Email sending result:', emailResult);
-
+    // respond early so client isn't blocked by slow email delivery
     res.status(201).json({
-      message: 'User registered successfully. Congratulation email sent!',
+      message: 'User registered successfully. Verification email is on the way.',
       success: true,
-      emailSent: emailResult.success,
       userId: user._id,
     });
+
+    // dispatch welcome email asynchronously
+    (async () => {
+      try {
+        const emailResult = await sendEmail(email, '🎉 Welcome! Your Account is Ready - Business Consultation Platform', congratulationEmailContent);
+        console.log('Welcome email result for', user._id, emailResult);
+        if (!emailResult.success) {
+          console.error('Email delivery failure for user', user._id, emailResult.error);
+        }
+      } catch (e) {
+        console.error('Unexpected error sending welcome email for user', user._id, e);
+      }
+    })();
   } catch (error) {
     console.error('Register error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });

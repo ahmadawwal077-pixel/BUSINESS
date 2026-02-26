@@ -36,7 +36,7 @@ console.log('   Status: Ready');
 
 export const apiClient = axios.create({
   baseURL: API_URL,
-  timeout: 10000, // 10 second timeout
+  timeout: 20000, // 20 second timeout (registration used to hit smtp delays)
   headers: {
     'Content-Type': 'application/json',
   }

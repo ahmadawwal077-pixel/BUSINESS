@@ -6,6 +6,7 @@ const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -147,7 +148,7 @@ const Login = () => {
               </div>
 
               {/* Password Field */}
-              <div style={{ marginBottom: '2rem' }}>
+              <div style={{ marginBottom: '0.75rem' }}>
                 <label style={{
                   display: 'block',
                   marginBottom: '0.5rem',
@@ -157,32 +158,65 @@ const Login = () => {
                 }}>
                   Password
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  required
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.9rem 1rem',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '10px',
+                      fontSize: '0.95rem',
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box',
+                      fontFamily: 'inherit',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#6b7280',
+                      fontSize: '0.9rem',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </span>
+                </div>
+              </div>
+              {/* forgot password link */}
+              <div style={{ textAlign: 'right', marginBottom: '1.5rem' }}>
+                <Link
+                  to="/forgot-password"
                   style={{
-                    width: '100%',
-                    padding: '0.9rem 1rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '10px',
-                    fontSize: '0.95rem',
-                    transition: 'all 0.3s ease',
-                    boxSizing: 'border-box',
-                    fontFamily: 'inherit',
+                    fontSize: '0.9rem',
+                    color: '#0066cc',
+                    textDecoration: 'none',
+                    fontWeight: '500',
                   }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#0066cc';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
+                  onMouseEnter={(e) => (e.target.style.color = '#00b4d8')}
+                  onMouseLeave={(e) => (e.target.style.color = '#0066cc')}
+                >
+                  Forgot password?
+                </Link>
               </div>
 
               {/* Submit Button */}

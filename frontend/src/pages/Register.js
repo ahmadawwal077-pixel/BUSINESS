@@ -11,6 +11,8 @@ const Register = () => {
     confirmPassword: '',
     whatsapp: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -45,8 +47,9 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await register(formData.name, formData.email, formData.password, phoneNormalized);
-      setSuccess('Account created successfully! Please check your email to verify your account.');
+      const resp = await register(formData.name, formData.email, formData.password, phoneNormalized);
+      // server now responds quickly; use its message if provided
+      setSuccess(resp?.message || 'Account created successfully! Please check your email to verify your account.');
       setFormData({
         name: '',
         email: '',
@@ -55,7 +58,12 @@ const Register = () => {
         whatsapp: '',
       });
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      // if the request timed out it might still have created the account
+      if (err.code === 'ECONNABORTED') {
+        setSuccess('Account created but the server took too long to respond. Check your email to verify.');
+      } else {
+        setError(err.response?.data?.message || 'Registration failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -364,32 +372,49 @@ const Register = () => {
                 }}>
                   Password
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.9rem 1rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '10px',
-                    fontSize: '0.95rem',
-                    transition: 'all 0.3s ease',
-                    boxSizing: 'border-box',
-                    fontFamily: 'inherit',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#0066cc';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.9rem 1rem',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '10px',
+                      fontSize: '0.95rem',
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box',
+                      fontFamily: 'inherit',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#6b7280',
+                      fontSize: '0.9rem',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </span>
+                </div>
               </div>
 
               {/* Confirm Password Field */}
@@ -403,32 +428,49 @@ const Register = () => {
                 }}>
                   Confirm Password
                 </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '0.9rem 1rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '10px',
-                    fontSize: '0.95rem',
-                    transition: 'all 0.3s ease',
-                    boxSizing: 'border-box',
-                    fontFamily: 'inherit',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#0066cc';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showConfirm ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.9rem 1rem',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '10px',
+                      fontSize: '0.95rem',
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box',
+                      fontFamily: 'inherit',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#0066cc';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(0, 102, 204, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                  <span
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#6b7280',
+                      fontSize: '0.9rem',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {showConfirm ? 'Hide' : 'Show'}
+                  </span>
+                </div>
               </div>
 
               {/* Submit Button */}
