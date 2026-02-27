@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -36,10 +35,9 @@ import AnalyticsConsent from './components/AnalyticsConsent';
 
 function App() {
   return (
-    <GoogleReCaptchaProvider reCaptchaKey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}>
-      <Router>
-        <AuthProvider>
-          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Router>
+      <AuthProvider>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <Navbar />
           <AnalyticsConsent />
           <main style={{ flex: 1 }}>
@@ -131,7 +129,6 @@ function App() {
         </div>
       </AuthProvider>
     </Router>
-    </GoogleReCaptchaProvider>
   );
 }
 

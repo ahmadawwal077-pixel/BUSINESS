@@ -90,13 +90,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 console.log('🔓 CORS enabled for:', process.env.FRONTEND_URL || 'http://localhost:3000');
 
-// ensure reCAPTCHA secret is configured
-if (!process.env.RECAPTCHA_SECRET) {
-  console.warn('⚠️ RECAPTCHA_SECRET is missing! requests requiring human verification will fail.');
-} else {
-  console.log('🔐 reCAPTCHA secret is set.');
-}
-
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);

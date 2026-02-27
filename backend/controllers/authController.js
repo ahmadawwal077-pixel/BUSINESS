@@ -119,7 +119,6 @@ exports.register = async (req, res) => {
     const { name, email, password, whatsapp } = req.body;
 
     console.log('Register request:', { name, email }); // Debug log
-    console.log('reCAPTCHA verification:', req.recaptcha); // Log reCAPTCHA result
 
     // Validate input (whatsapp required)
     if (!name || !email || !password || !whatsapp) {

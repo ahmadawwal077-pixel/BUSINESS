@@ -42,11 +42,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password, whatsapp, recaptchaToken) => {
+  const register = async (name, email, password, whatsapp) => {
     try {
       const payload = { name, email, password };
       if (whatsapp) payload.whatsapp = whatsapp;
-      if (recaptchaToken) payload.recaptchaToken = recaptchaToken;
       const response = await authAPI.register(payload);
       // Don't auto-login, require email verification first
       return response.data;
@@ -54,6 +53,7 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
