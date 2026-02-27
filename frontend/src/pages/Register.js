@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const Register = () => {
   const { register } = useContext(AuthContext);
@@ -16,6 +17,13 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
+  // v3 is invisible; we no longer render a widget client‑side.
+  // log sitekey for debugging just in case
+  const recaptchaSiteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
+  console.log('reCAPTCHA v3 site key (should be invisible):', recaptchaSiteKey);
 
   const handleChange = (e) => {
     setFormData({
@@ -35,6 +43,22 @@ const Register = () => {
       return;
     }
 
+    // run v3 check immediately before sending
+    if (!executeRecaptcha) {
+      setError('reCAPTCHA not yet initialized');
+      return;
+    }
+    let token;
+    try {
+      token = await executeRecaptcha('register');
+      console.log('reCAPTCHA v3 token:', token);
+      // keep copy in state for debugging if needed
+      setRecaptchaToken(token);
+    } catch {
+      setError('reCAPTCHA verification failed');
+      return;
+    }
+
     // WhatsApp validation (required)
     const phone = (formData.whatsapp || '').trim();
     const phoneNormalized = phone.replace(/[^0-9+]/g, '');
@@ -47,7 +71,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const resp = await register(formData.name, formData.email, formData.password, phoneNormalized);
+      const resp = await register(formData.name, formData.email, formData.password, phoneNormalized, token);
       // server now responds quickly; use its message if provided
       setSuccess(resp?.message || 'Account created successfully! Please check your email to verify your account.');
       setFormData({
@@ -57,18 +81,26 @@ const Register = () => {
         confirmPassword: '',
         whatsapp: '',
       });
+      setRecaptchaToken(null);
     } catch (err) {
       // if the request timed out it might still have created the account
       if (err.code === 'ECONNABORTED') {
         setSuccess('Account created but the server took too long to respond. Check your email to verify.');
       } else {
-        setError(err.response?.data?.message || 'Registration failed');
+        // log full response for debugging
+        console.error('Registration error response:', err.response?.data);
+        const msg = err.response?.data?.message || 'Registration failed';
+        const codes = err.response?.data?.error_codes;
+        if (codes) {
+          setError(`${msg} (${codes.join(', ')})`);
+        } else {
+          setError(msg);
+        }
       }
     } finally {
       setLoading(false);
     }
   };
-
   if (success) {
     return (
       <div
@@ -471,6 +503,11 @@ const Register = () => {
                     {showConfirm ? 'Hide' : 'Show'}
                   </span>
                 </div>
+              </div>
+
+              {/* reCAPTCHA (v3 invisible) */}
+              <div style={{ marginBottom: '1.5rem', textAlign: 'center', color: '#6b7280', fontSize: '0.85rem' }}>
+                <small>Bot protection powered by Google reCAPTCHA v3 (invisible).</small>
               </div>
 
               {/* Submit Button */}

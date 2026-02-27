@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { authAPI } from '../services/api';
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -10,13 +9,6 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  // resend form state
-  const [showResend, setShowResend] = useState(false);
-  const [resendEmail, setResendEmail] = useState('');
-  const [resendMessage, setResendMessage] = useState('');
-  const [resendError, setResendError] = useState('');
-  const [resendLoading, setResendLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -28,21 +20,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setResendMessage('');
-    setResendError('');
     setLoading(true);
 
     try {
       await login(formData.email, formData.password);
       navigate('/dashboard');
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed';
-      setError(msg);
-      // if verification is required, allow resend
-      if (msg.toLowerCase().includes('verify')) {
-        setShowResend(true);
-        setResendEmail(formData.email);
-      }
+      setError(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -108,7 +92,6 @@ const Login = () => {
 
           {/* Form Container */}
           <div style={{ padding: '3rem 2rem' }}>
-            <form onSubmit={handleSubmit}>
             {error && (
               <div style={{
                 background: 'linear-gradient(135deg, #f87171 0%, #dc2626 100%)',
@@ -121,25 +104,11 @@ const Login = () => {
                 border: '1px solid rgba(255, 255, 255, 0.2)',
               }}>
                 ❌ {error}
-                {showResend && (
-                  <div style={{ marginTop: '0.5rem', textAlign: 'right' }}>
-                    <button
-                      onClick={() => setShowResend(true)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#fff',
-                        textDecoration: 'underline',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem',
-                      }}
-                    >
-                      Resend verification email
-                    </button>
-                  </div>
-                )}
               </div>
             )}
+
+            <form onSubmit={handleSubmit}>
+              {/* Email Field */}
               <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{
                   display: 'block',
@@ -233,8 +202,8 @@ const Login = () => {
                   </span>
                 </div>
               </div>
-              {/* forgot password and optional resend */}
-              <div style={{ textAlign: 'right', marginBottom: '1.5rem', position: 'relative' }}>
+              {/* forgot password link */}
+              <div style={{ textAlign: 'right', marginBottom: '1.5rem' }}>
                 <Link
                   to="/forgot-password"
                   style={{
@@ -249,55 +218,6 @@ const Login = () => {
                   Forgot password?
                 </Link>
               </div>
-              {showResend && (
-                <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-                  {resendMessage && <p style={{ color: '#10b981' }}>{resendMessage}</p>}
-                  {resendError && <p style={{ color: '#ef4444' }}>{resendError}</p>}
-                  <form
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-                      setResendError('');
-                      setResendMessage('');
-                      setResendLoading(true);
-                      try {
-                        const resp = await authAPI.resendVerification(resendEmail);
-                        setResendMessage(resp.data.message || 'Email sent');
-                      } catch (err) {
-                        setResendError(err.response?.data?.message || 'Failed to resend');
-                      } finally {
-                        setResendLoading(false);
-                      }
-                    }}
-                    style={{ display: 'inline-flex', gap: '0.5rem' }}
-                  >
-                    <input
-                      type="email"
-                      value={resendEmail}
-                      onChange={(e) => setResendEmail(e.target.value)}
-                      required
-                      style={{
-                        padding: '0.6rem 1rem',
-                        borderRadius: '6px',
-                        border: '1px solid #e5e7eb',
-                      }}
-                    />
-                    <button
-                      type="submit"
-                      disabled={resendLoading}
-                      style={{
-                        padding: '0.6rem 1rem',
-                        borderRadius: '6px',
-                        background: '#0066cc',
-                        color: 'white',
-                        border: 'none',
-                        cursor: resendLoading ? 'not-allowed' : 'pointer',
-                      }}
-                    >
-                      {resendLoading ? 'Sending...' : 'Resend'}
-                    </button>
-                  </form>
-                </div>
-              )}
 
               {/* Submit Button */}
               <button

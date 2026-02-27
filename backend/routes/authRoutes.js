@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { register, login, getCurrentUser, updateProfile, verifyEmail, resendVerification, forgotPassword, resetPassword, testEmail } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
+const recaptchaMiddleware = require('../middleware/recaptchaMiddleware');
 
-router.post('/register', register);
+router.post('/register', recaptchaMiddleware, register);
 router.post('/login', login);
 router.get('/verify-email/:token', verifyEmail);
-router.post('/resend-verification', resendVerification);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
 router.get('/me', protect, getCurrentUser);

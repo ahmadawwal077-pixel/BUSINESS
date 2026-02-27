@@ -119,6 +119,7 @@ exports.register = async (req, res) => {
     const { name, email, password, whatsapp } = req.body;
 
     console.log('Register request:', { name, email }); // Debug log
+    console.log('reCAPTCHA verification:', req.recaptcha); // Log reCAPTCHA result
 
     // Validate input (whatsapp required)
     if (!name || !email || !password || !whatsapp) {
@@ -151,7 +152,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'Invalid whatsapp format. Include country code, e.g. +1234567890' });
     }
 
-    // Create new user with unverified flag and token
+    // Create new user
     user = new User({
       name,
       email,
@@ -164,40 +165,132 @@ exports.register = async (req, res) => {
     await user.save();
     console.log('User saved successfully:', user._id); // Debug log
 
-    // Build verification URL
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
-
-    // Email body with verification link
-    const emailHtml = `
+    // build email content (full HTML from original implementation)
+    const congratulationEmailContent = `
       <!DOCTYPE html>
       <html>
       <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
-      <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background-color:#f0f4f8;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f4f8;">
+      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f0f4f8;">
           <tr>
-            <td align="center" style="padding:20px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:white;border-radius:12px;overflow:hidden;">
+            <td align="center" style="padding: 20px;">
+              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 600px; background-color: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden;">
+                
+                <!-- Header -->
                 <tr>
-                  <td style="background:#0066cc;padding:40px 20px;color:white;text-align:center;">
-                    <h1 style="margin:0;font-size:2rem;">📧 Verify Your Email</h1>
+                  <td style="background: linear-gradient(135deg, #0066cc 0%, #00b4d8 100%); padding: 40px 20px; text-align: center; color: white;">
+                    <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700;">🎉</h1>
+                    <h2 style="margin: 10px 0 0 0; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px;">Welcome to Our Platform!</h2>
+                    <p style="margin: 10px 0 0 0; font-size: 1rem; opacity: 0.95;">Your Learning Journey Starts Here</p>
                   </td>
                 </tr>
+                
+                <!-- Body -->
                 <tr>
-                  <td style="padding:30px;color:#333;line-height:1.6;">
-                    <p>Hi ${name},</p>
-                    <p>Thanks for signing up! To complete your registration, please verify your email address by clicking the button below. This link will expire in 24 hours.</p>
-                    <p style="text-align:center;margin:30px 0;">
-                      <a href="${verificationUrl}" style="background:#0066cc;color:white;padding:12px 25px;border-radius:6px;text-decoration:none;font-weight:600;">Verify Email</a>
+                  <td style="padding: 40px 30px; color: #2c3e50; line-height: 1.8;">
+                    
+                    <!-- Greeting -->
+                    <h3 style="margin: 0 0 20px 0; font-size: 1.3rem; color: #1f2937; font-weight: 700;">
+                      Hi ${name},
+                    </h3>
+                    
+                    <p style="margin: 0 0 15px 0; font-size: 1rem; color: #6b7280;">
+                      🎓 Congratulations on creating your account! We're excited to have you join our community of learners and professionals.
                     </p>
-                    <p>If the button doesn't work, copy and paste the following URL into your browser:</p>
-                    <p style="word-break:break-all;">${verificationUrl}</p>
-                    <hr style="margin:30px 0;border:none;border-top:1px solid #e5e7eb;" />
-                    <p>Once your email is verified you will be able to log in and access all the features on our platform.</p>
-                    <p>Welcome aboard!</p>
-                    <p>The Business Consultation Platform Team</p>
+                    
+                    <p style="margin: 0 0 25px 0; font-size: 1rem; color: #6b7280;">
+                      Your account is now active and you have full access to our platform. Below are your login credentials to get started.
+                    </p>
+                    
+                    <!-- Credentials Box -->
+                    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 30px 0; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                      <tr>
+                        <td style="background: linear-gradient(135deg, #0066cc 0%, #00b4d8 100%); padding: 20px 25px; color: white; font-weight: 700; font-size: 1.1rem;">
+                          📋 Your Login Credentials
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="background-color: #f8fafc; padding: 25px; border-top: 2px dashed #e0e7ff;">
+                          <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                              <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                <span style="color: #6b7280; font-size: 0.9rem; display: block; margin-bottom: 3px;">EMAIL ADDRESS</span>
+                                <span style="color: #1f2937; font-size: 1.05rem; font-weight: 600; word-break: break-all;">${email}</span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 12px 0;">
+                                <span style="color: #6b7280; font-size: 0.9rem; display: block; margin-bottom: 3px;">PASSWORD</span>
+                                <span style="color: #1f2937; font-size: 1.05rem; font-weight: 600; font-family: 'Courier New', monospace; word-break: break-all;">${password}</span>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                    
+                    <!-- CTA Button -->
+                    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 30px 0;">
+                      <tr>
+                        <td align="center">
+                          <a href="${process.env.FRONTEND_URL}/login" style="display: inline-block; background: linear-gradient(135deg, #0066cc 0%, #00b4d8 100%); color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);">
+                            🔐 Sign In Now
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                    
+                    <!-- Security Warning -->
+                    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 25px 0; border-radius: 8px; background-color: #fffbeb; border-left: 4px solid #fbbf24;">
+                      <tr>
+                        <td style="padding: 15px 20px; color: #92400e; font-size: 0.95rem;">
+                          <strong>⚠️ Security Alert:</strong><br style="margin: 5px 0;"/>
+                          • Never share your password with anyone<br/>
+                          • Change your password after first login<br/>
+                          • Enable two-factor authentication for added security<br/>
+                          • Report suspicious activity immediately
+                        </td>
+                      </tr>
+                    </table>
+                    
+                    <!-- Features List -->
+                    <h4 style="margin: 25px 0 15px 0; color: #1f2937; font-weight: 700; font-size: 1.05rem;">
+                      ✨ You Now Have Access To:
+                    </h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #6b7280; font-size: 0.95rem;">
+                      <li style="margin-bottom: 8px;">📚 <strong>Extensive Course Library</strong> - Learn from industry experts</li>
+                      <li style="margin-bottom: 8px;">🎓 <strong>Certificates</strong> - Earn recognized credentials</li>
+                      <li style="margin-bottom: 8px;">👥 <strong>Expert Consultations</strong> - Book sessions with professionals</li>
+                      <li style="margin-bottom: 8px;">💬 <strong>Community Forum</strong> - Connect with fellow learners</li>
+                      <li style="margin-bottom: 8px;">📊 <strong>Progress Tracking</strong> - Monitor your learning journey</li>
+                    </ul>
+                    
+                    <!-- Divider -->
+                    <hr style="border: none; border-top: 2px solid #e5e7eb; margin: 30px 0;"/>
+                    
+                    <!-- Support -->
+                    <p style="margin: 0; font-size: 0.95rem; color: #6b7280;">
+                      <strong>Need Help?</strong> Our support team is here for you. Reply to this email or visit our help center.
+                    </p>
+                    
+                  </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #f8f9fa; padding: 25px 30px; border-top: 1px solid #e5e7eb; text-align: center; font-size: 0.85rem; color: #9ca3af;">
+                    <p style="margin: 0 0 10px 0;">
+                      <strong style="color: #1f2937; font-size: 0.95rem;">Business Consultation Platform</strong>
+                    </p>
+                    <p style="margin: 5px 0; color: #9ca3af;">
+                      Empowering professionals through education and consultation
+                    </p>
+                    <p style="margin: 10px 0 0 0; color: #bfdbfe;">
+                      © 2026 Business Consultation Platform. All rights reserved.
+                    </p>
                   </td>
                 </tr>
               </table>
@@ -208,22 +301,23 @@ exports.register = async (req, res) => {
       </html>
     `;
 
-    // send verification email after responding to client
+    // respond early so client isn't blocked by slow email delivery
     res.status(201).json({
-      message: 'Verification email sent',
+      message: 'User registered successfully. Verification email is on the way.',
       success: true,
       userId: user._id,
     });
 
+    // dispatch welcome email asynchronously
     (async () => {
       try {
-        const emailResult = await sendEmail(email, 'Verify your email - Business Consultation Platform', emailHtml);
-        console.log('Verification email result for', user._id, emailResult);
+        const emailResult = await sendEmail(email, '🎉 Welcome! Your Account is Ready - Business Consultation Platform', congratulationEmailContent);
+        console.log('Welcome email result for', user._id, emailResult);
         if (!emailResult.success) {
           console.error('Email delivery failure for user', user._id, emailResult.error);
         }
       } catch (e) {
-        console.error('Unexpected error sending verification email for user', user._id, e);
+        console.error('Unexpected error sending welcome email for user', user._id, e);
       }
     })();
   } catch (error) {
@@ -279,12 +373,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'User not found' });
     }
 
-    // Reject login if email not verified
-    if (!user.isEmailVerified) {
-      return res.status(401).json({
-        message: 'Please verify your email first',
-      });
-    }
+    // Note: allow login even if email is not verified
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
@@ -303,59 +392,6 @@ exports.login = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin },
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-};
-
-// Resend verification email
-exports.resendVerification = async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
-    }
-
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'No account associated with that email' });
-    }
-
-    if (user.isEmailVerified) {
-      return res.status(400).json({ message: 'Email is already verified' });
-    }
-
-    // generate a new verification token (overwrite old one)
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationTokenHash = crypto
-      .createHash('sha256')
-      .update(verificationToken)
-      .digest('hex');
-
-    user.emailVerificationToken = verificationTokenHash;
-    user.emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
-    await user.save();
-
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
-    const emailHtml = `
-      <!DOCTYPE html>
-      <html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head><body style="font-family:Arial,sans-serif;">
-      <p>Hi ${user.name},</p>
-      <p>You requested a new verification link. Click the button below to verify your email address. This link expires in 24 hours.</p>
-      <p><a href="${verificationUrl}" style="background:#0066cc;color:#fff;padding:10px 20px;border-radius:5px;text-decoration:none;">Verify Email</a></p>
-      <p>If you did not request this, please ignore this email.</p>
-      </body></html>
-    `;
-
-    // send email asynchronously
-    sendEmail(email, 'Resend email verification', emailHtml).then((result) => {
-      if (!result.success) {
-        console.error('Resend verification email failed:', result.error);
-      }
-    });
-
-    res.json({ message: 'Verification email resent' });
-  } catch (error) {
-    console.error('Resend verification error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

@@ -1,21 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
-import { AuthContext } from '../context/AuthContext';
 
 const VerifyEmail = () => {
   const { token } = useParams();
-  const { resendVerification } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState('');
-
-  // resend form states
-  const [showResendForm, setShowResendForm] = useState(false);
-  const [resendEmail, setResendEmail] = useState('');
-  const [resendMessage, setResendMessage] = useState('');
-  const [resendError, setResendError] = useState('');
-  const [resendLoading, setResendLoading] = useState(false);
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -38,22 +29,6 @@ const VerifyEmail = () => {
       setLoading(false);
     }
   }, [token]);
-
-  const handleResend = async (e) => {
-    e.preventDefault();
-    setResendError('');
-    setResendMessage('');
-    setResendLoading(true);
-    try {
-      const resp = await resendVerification(resendEmail);
-      setResendMessage(resp?.message || 'Verification email resent');
-    } catch (err) {
-      setResendError(err.response?.data?.message || 'Failed to resend');
-    } finally {
-      setResendLoading(false);
-    }
-  };
-
 
   if (loading) {
     return (
@@ -151,56 +126,6 @@ const VerifyEmail = () => {
             <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '1rem' }}>
               {error}
             </p>
-            {/* resend section */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              {!showResendForm ? (
-                <button
-                  onClick={() => setShowResendForm(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#0066cc',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                    fontSize: '0.95rem',
-                  }}
-                >
-                  Resend verification email
-                </button>
-              ) : (
-                <form onSubmit={handleResend} style={{ textAlign: 'center' }}>
-                  <input
-                    type="email"
-                    placeholder="your email"
-                    value={resendEmail}
-                    onChange={(e) => setResendEmail(e.target.value)}
-                    required
-                    style={{
-                      padding: '0.6rem 1rem',
-                      borderRadius: '6px',
-                      border: '1px solid #e5e7eb',
-                      marginRight: '0.5rem',
-                    }}
-                  />
-                  <button
-                    type="submit"
-                    disabled={resendLoading}
-                    style={{
-                      padding: '0.6rem 1rem',
-                      borderRadius: '6px',
-                      background: '#0066cc',
-                      color: 'white',
-                      border: 'none',
-                      cursor: resendLoading ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {resendLoading ? 'Sending...' : 'Send'}
-                  </button>
-                </form>
-              )}
-              {resendError && <p style={{ color: '#ef4444', marginTop: '0.5rem' }}>{resendError}</p>}
-              {resendMessage && <p style={{ color: '#10b981', marginTop: '0.5rem' }}>{resendMessage}</p>}
-            </div>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link
                 to="/login"

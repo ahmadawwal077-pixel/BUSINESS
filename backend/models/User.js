@@ -52,17 +52,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// provide a convenient alias that matches generic "isVerified" terminology
-userSchema.virtual('isVerified')
-  .get(function() {
-    return this.isEmailVerified;
-  })
-  .set(function(val) {
-    this.isEmailVerified = val;
-  });
-
-// ensure virtuals are included when converting to JSON
-userSchema.set('toJSON', { virtuals: true });
-userSchema.set('toObject', { virtuals: true });
-
 module.exports = mongoose.model('User', userSchema);
