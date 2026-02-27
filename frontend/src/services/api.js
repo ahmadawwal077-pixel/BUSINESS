@@ -105,6 +105,7 @@ export const authAPI = {
   getCurrentUser: () => apiClient.get('/auth/me'),
   updateProfile: (data) => apiClient.put('/auth/profile', data),
   verifyEmail: (token) => apiClient.get(`/auth/verify-email/${token}`),
+  resendVerification: (email) => apiClient.post('/auth/resend-verification', { email }),
   forgotPassword: (data) => apiClient.post('/auth/forgot-password', data),
   resetPassword: (token, data) => apiClient.post(`/auth/reset-password/${token}`, data),
 };

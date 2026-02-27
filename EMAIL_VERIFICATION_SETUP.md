@@ -62,7 +62,8 @@ For email functionality to work, you need to:
 2. **Auth Controller** (`controllers/authController.js`):
    - New `verifyEmail` function - validates email verification tokens
    - Updated `register` function - generates verification token and sends email
-   - Updated `login` function - requires email verification before login
+   - New `resendVerification` function - reissues token and sends a fresh link
+   - Updated `login` function - requires email verification before login, returns 401 with message if unverified
    - New `forgotPassword` function - generates password reset token and sends email
    - New `resetPassword` function - validates reset token and updates password
 
@@ -187,7 +188,7 @@ The emails are sent with HTML formatting including:
 
 ## Future Enhancements
 
-- Email resend functionality
+- Email resend functionality (now implemented via `/auth/resend-verification`)
 - Rate limiting on email sends
 - Custom email templates
 - Email notification preferences
